@@ -25,7 +25,7 @@ import { setShowOnCard } from "@/lib/services/checks";
 import { declareProof, verifyProof } from "@/lib/services/proofs";
 import type { ApiUser } from "@/lib/api";
 import type { Locale } from "@/i18n/config";
-import type { LanguageRequirement } from "@/db/schema";
+import type { LanguageRequirement, ProofRequirement } from "@/db/schema";
 
 const PASSWORD = process.env.SEED_PASSWORD ?? "junction2026";
 const MIN = 60_000;
@@ -39,7 +39,21 @@ const COMPANIES = [
   { key: "games", name: "Suomenoja Games Oy", sector: "Games", about: "Small studio making mobile puzzle games.", need: { id: "games-qa-tester", title: "QA tester", summary: "Find bugs before players do, write reproducible bug reports and decide what is worth fixing first.", skills: ["bug reproduction", "bug reporting", "prioritisation"], level: "junior" }, mode: "optional" },
   { key: "build", name: "Espoo Build Oy", sector: "Construction", about: "Builds apartment blocks in the Espoo region.", need: { id: "build-site-coordinator", title: "Site coordinator", summary: "Keep subcontractors, deliveries and safety on schedule on a busy site, and solve problems when plans change.", skills: ["planning", "safety awareness", "problem solving", "communication with subcontractors"], level: "mid" }, mode: "required" },
   { key: "retail", name: "Espoonlahti Retail Oy", sector: "Retail", about: "Runs grocery stores in southern Espoo.", need: { id: "retail-team-lead", title: "Store team lead", summary: "Lead a team of 8 in a busy store.", skills: ["team leadership", "customer service", "scheduling"], level: "junior" }, mode: "off" },
+  { key: "bus", name: "Kaitaa Liikenne Oy", sector: "Transport", about: "Bus operator on city routes in southern Espoo.", need: { id: "bus-driver", title: "Bus driver: city routes in Espoo", summary: "Drive scheduled bus routes in southern Espoo, mornings or evenings. Keep the timetable without taking risks, help passengers who need it, and handle disruptions like road works or a sick passenger calmly.", skills: ["safe driving in city traffic", "keeping to the timetable", "customer service", "handling disruptions"], level: "junior", languageRequirements: [{ language: "fi", level: "B1" }] as LanguageRequirement[] }, mode: "required" },
 ] as const;
+
+/* ---------- more jobs, so the demo is not only tech: care, transport, building, retail, food, cleaning ---------- */
+type ExtraNeed = { owner: string; need: { id: string; title: string; summary: string; skills: string[]; level: "junior" | "mid" | "senior"; languageRequirements?: LanguageRequirement[]; proofRequirements?: ProofRequirement[] } };
+const EXTRA_NEEDS: ExtraNeed[] = [
+  { owner: "recruiter@health.demo", need: { id: "health-practical-nurse", title: "Practical nurse: home care visits", summary: "Visit elderly clients at home in Matinkylä and Olari: give medicines, notice changes in their condition, help with daily tasks and report clearly to the nurse. About 8 visits a shift.", skills: ["medication safety", "observing and reporting changes", "client communication", "planning a visit route"], level: "junior", languageRequirements: [{ language: "fi", level: "B1" }], proofRequirements: [{ code: "licence-practical-nurse", required: true }] } },
+  { owner: "recruiter@build.demo", need: { id: "build-construction-worker", title: "Construction worker: formwork and concrete", summary: "Work on apartment building sites in Espoo: build formwork, pour concrete, keep the site safe and tidy. Read simple drawings and follow the foreman's plan.", skills: ["formwork and concrete work", "site safety", "reading simple drawings", "teamwork on site"], level: "junior", proofRequirements: [{ code: "card-safety", required: true }] } },
+  { owner: "recruiter@retail.demo", need: { id: "retail-sales-assistant", title: "Sales assistant: busy weekends", summary: "Serve customers in a shopping centre store on busy weekends: help people find what they need, run the till, handle returns and complaints, and keep shelves full.", skills: ["customer service", "handling complaints", "till and returns", "keeping shelves in order"], level: "junior" } },
+  { owner: "hello@kivenlahtibakery.demo", need: { id: "bakery-baker", title: "Baker: early morning production", summary: "Bake bread and pastries from 4 am so the shops open with full shelves. Follow recipes exactly, keep hygiene rules, and adjust when an oven breaks or an order changes.", skills: ["following recipes and timing", "food hygiene", "working fast and accurately", "solving production problems"], level: "junior", proofRequirements: [{ code: "card-hygiene", required: true }] } },
+  { owner: "recruiter@lifts.demo", need: { id: "lifts-maintenance-technician", title: "Lift service technician: maintenance rounds", summary: "Visit buildings across Espoo to service and repair lifts. Find faults safely, fix them or call for parts, and explain to residents what is happening.", skills: ["fault finding", "electrical and mechanical safety", "planning a day of service visits", "explaining to residents"], level: "mid", proofRequirements: [{ code: "card-safety", required: true }] } },
+  { owner: "recruiter@kauklahtiparcel.demo", need: { id: "parcel-delivery-driver", title: "Delivery driver: last-mile parcels", summary: "Deliver about 120 parcels a day by van in western Espoo. Plan the route, use the scanner app, deal with missing recipients and keep to delivery windows.", skills: ["route planning", "using the scanner app", "customer service at the door", "safe driving"], level: "junior" } },
+  { owner: "recruiter@otaniemi.demo", need: { id: "otaniemi-office-cleaner", title: "Office cleaner: evenings", summary: "Clean offices and meeting rooms in Otaniemi in the evening. Follow the cleaning plan, use the right products safely, and report broken things or missing supplies.", skills: ["following a cleaning plan", "safe use of cleaning products", "working independently", "reporting problems"], level: "junior" } },
+  { owner: "recruiter@otaniemi.demo", need: { id: "otaniemi-ai-product-engineer", title: "AI product engineer: safe AI features for citizens", summary: "We are adding AI features to a public service used by thousands of residents. We need someone who can ship them fast without leaking personal data, who knows when not to trust the model, and who can explain the trade-offs to non-technical colleagues.", skills: ["TypeScript and web APIs", "working with LLMs", "privacy by design", "testing and evaluation", "explaining trade-offs"], level: "mid" } },
+];
 
 /* ---------- synthetic jobseekers, mirroring Espoo's language mix ---------- */
 type Persona = { name: string; mother: string; answerLang: Locale; nonNative: boolean };
@@ -138,6 +152,13 @@ async function main() {
     await db.insert(eventNeeds).values({ eventId: event.id, needId: c.need.id });
   }
 
+  for (const x of EXTRA_NEEDS) {
+    const [row] = await db.select({ co: companies, ownerId: user.id }).from(companies).innerJoin(user, eq(user.id, companies.ownerId)).where(eq(user.email, x.owner));
+    const [esco, anchors] = await Promise.all([mapToEsco(x.need.skills, `${x.need.title}: ${x.need.summary}`), generateAnchors(x.need)]);
+    await db.insert(needs).values({ ...x.need, companyId: row.co.id, escoSkills: esco, anchors, confirmedBy: row.ownerId, confirmedAt: new Date() });
+    await db.insert(eventNeeds).values({ eventId: event.id, needId: x.need.id });
+  }
+
   // 2. Jobseekers
   console.log(`Jobseekers (${PEOPLE.length})…`);
   const people: { p: Persona; u: { id: string } }[] = [];
@@ -149,7 +170,7 @@ async function main() {
 
   // 3. Past testing slots (yesterday) so finished checks have a real booking on a real workstation
   const ws = await db.select().from(workstations);
-  const checkNeeds = ["nordic-logistics-data", "espoo-cloud-platform", ...COMPANIES.filter((c) => c.mode !== "off").map((c) => c.need.id)];
+  const checkNeeds = ["nordic-logistics-data", "espoo-cloud-platform", ...COMPANIES.filter((c) => c.mode !== "off").map((c) => c.need.id), ...EXTRA_NEEDS.map((x) => x.need.id)];
   const existingNeedIds = new Set((await db.select({ id: needs.id }).from(needs)).map((n) => n.id));
   const pickable = checkNeeds.filter((id) => existingNeedIds.has(id));
   const plan = people.map(({ p, u }, i) => ({ p, u, level: LEVELS[i % 3], needId: pickable[i % pickable.length], ws: ws[i % ws.length], at: new Date(Date.now() - (26 - (i % 8)) * 60 * MIN) }));
