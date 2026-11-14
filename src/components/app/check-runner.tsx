@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowUp, Loader2, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiCall } from "./api-client";
-import { EvaluationView, type EvaluationData } from "./evaluation-view";
+import { EvaluationView, type EvaluationData, type SkillAnchor } from "./evaluation-view";
 
 type Turn = { question: string; said?: string; seen: string };
 type AnswerResult = { done: boolean; said: string; seen: string; question?: string; turn?: number; max?: number; evaluation?: EvaluationData };
@@ -14,7 +14,7 @@ const MAX_SECONDS = 30;
 const MAX_TURNS = 6;
 
 /** The skill check conversation: voice or text, privacy guard on every answer, evaluation at the end. */
-export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null }) {
+export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null; anchors?: SkillAnchor[]; who?: string }) {
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>(props.initialTurns);
   const [question, setQuestion] = useState(props.pendingQuestion);
@@ -84,9 +84,19 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
       <div className="mt-8 space-y-6">
         {turns.map((t, i) => (
           <div key={i} className="space-y-3">
-            <p className="font-medium">{t.question}</p>
-            {t.said && <div className="ml-auto max-w-[85%] rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground">{t.said}</div>}
-            <p className="ml-auto max-w-[85%] text-right text-xs text-muted-foreground">AI saw: {t.seen}</p>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-primary">Question {i + 1}</p>
+              <p className="mt-1 font-medium">{t.question}</p>
+            </div>
+            {t.said && (
+              <div className="ml-auto max-w-[85%]">
+                <p className="mb-1 text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">{props.who ?? "Your"} answer</p>
+                <div className="rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground">{t.said}</div>
+              </div>
+            )}
+            <p className="ml-auto max-w-[85%] rounded-lg bg-muted px-3 py-2 text-right text-xs text-muted-foreground">
+              <span className="font-medium">What the AI saw</span> (personal details removed): {t.seen}
+            </p>
           </div>
         ))}
         {question && <p className="font-medium">{question}</p>}
@@ -120,7 +130,7 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
 
       {evaluation && (
         <div className="mt-12 border-t pt-10">
-          <EvaluationView e={evaluation} audience="candidate" />
+          <EvaluationView e={evaluation} audience="candidate" anchors={props.anchors} />
           {props.kiosk && (
             <Button size="lg" className="mt-10" onClick={() => router.push(`/${props.lang}/kiosk`)}>
               Next company or finish

@@ -4,7 +4,8 @@ import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { getCheck } from "@/lib/services/checks";
 import { bookingForCheck } from "@/lib/services/company";
-import { EvaluationView, type EvaluationData } from "@/components/app/evaluation-view";
+import { EvaluationView, type EvaluationData, type SkillAnchor } from "@/components/app/evaluation-view";
+import { loadNeed } from "@/lib/services/needs";
 import { Transcript } from "@/components/app/transcript";
 import { DecisionPanel } from "@/components/app/decision-panel";
 import { PageTitle, Section, fmtTime } from "@/components/app/ui";
@@ -29,7 +30,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
         </PageTitle>
       </div>
 
-      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" proofs={check.proofs} />
+      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" proofs={check.proofs} anchors={((await loadNeed(check.need.id).catch(() => null))?.anchors ?? []) as SkillAnchor[]} />
 
       <Section title="Your decision">
         {booking ? (

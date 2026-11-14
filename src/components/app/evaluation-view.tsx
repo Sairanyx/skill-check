@@ -19,7 +19,10 @@ const LANGUAGE_NAMES: Record<string, string> = { fi: "Finnish", sv: "Swedish", e
 export type ProofStatus = { code: string; label: string; required: boolean; level?: string; status: "verified" | "declared" | "missing" };
 const PROOF_STATUS = { verified: "Verified by the City", declared: "Not checked yet", missing: "Missing" } as const;
 
-export function EvaluationView({ e, audience, proofs = [] }: { e: EvaluationData; audience: "candidate" | "reviewer"; proofs?: ProofStatus[] }) {
+export type SkillAnchor = { skill: string; anchors: { "1": string; "3": string; "5": string } };
+
+export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: EvaluationData; audience: "candidate" | "reviewer"; proofs?: ProofStatus[]; anchors?: SkillAnchor[] }) {
+  const strong = (skill: string) => anchors.find((a) => a.skill.toLowerCase() === skill.toLowerCase())?.anchors["5"];
   const rubric = (e.rubric ?? []) as { criterion: string; score: number; evidence: string[]; reason?: string }[];
   const flags = e.fairnessFlags ?? e.fairness?.flags ?? [];
   const note = e.fairnessNote ?? e.fairness?.note ?? "";
@@ -34,7 +37,7 @@ export function EvaluationView({ e, audience, proofs = [] }: { e: EvaluationData
 
       {rubric.length > 0 && (
         <section>
-          <h2 className="font-semibold">Evidence</h2>
+          <h2 className="font-semibold">Feedback per skill</h2>
           <div className="mt-4 space-y-5">
             {rubric.map((r) => (
               <div key={r.criterion}>
@@ -45,16 +48,30 @@ export function EvaluationView({ e, audience, proofs = [] }: { e: EvaluationData
                 <div className="mt-1 h-1 rounded-full bg-muted">
                   <div className="h-1 rounded-full bg-primary" style={{ width: `${r.score * 10}%` }} />
                 </div>
-                {r.evidence.length ? (
-                  <>
-                    {r.evidence.map((q) => (
-                      <p key={q} className="mt-1 text-sm text-muted-foreground">“{q}”</p>
-                    ))}
-                    {r.reason && <p className="mt-1 text-xs text-muted-foreground">{r.reason}</p>}
-                  </>
-                ) : (
-                  <p className="mt-1 text-sm text-muted-foreground">Not shown in the answers. Lowers confidence, not the score.</p>
-                )}
+                <dl className="mt-2 space-y-2 text-sm">
+                  {strong(r.criterion) && (
+                    <div>
+                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">What a strong answer shows</dt>
+                      <dd>{strong(r.criterion)}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{audience === "candidate" ? "From your answers" : "From the answers"}</dt>
+                    {r.evidence.length ? (
+                      r.evidence.map((q) => (
+                        <dd key={q} className="italic text-muted-foreground">“{q}”</dd>
+                      ))
+                    ) : (
+                      <dd className="text-muted-foreground">Not shown in the answers. Lowers confidence, not the score.</dd>
+                    )}
+                  </div>
+                  {r.evidence.length > 0 && r.reason && (
+                    <div>
+                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Feedback</dt>
+                      <dd>{r.reason}</dd>
+                    </div>
+                  )}
+                </dl>
               </div>
             ))}
           </div>

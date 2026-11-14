@@ -8,6 +8,8 @@ import { eq } from "drizzle-orm";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { getCheck } from "@/lib/services/checks";
+import { loadNeed } from "@/lib/services/needs";
+import type { SkillAnchor } from "@/components/app/evaluation-view";
 import { freeSlots, outcomes } from "@/lib/services/decisions";
 import { db, bookings, meetingSlots, meetingRooms } from "@/db";
 import { CheckRunner } from "@/components/app/check-runner";
@@ -22,6 +24,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
   const check = await getCheck(me, id).catch(() => null);
   if (!check) notFound();
   const onKiosk = !!(await cookies()).get(KIOSK_COOKIE)?.value;
+  const need = await loadNeed(check.need.id).catch(() => null);
 
   const accepted = (await outcomes(id)).filter((o) => o.accepted);
   const invited = accepted.length > 0;
@@ -82,6 +85,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
       )}
 
       <CheckRunner
+        anchors={(need?.anchors ?? []) as SkillAnchor[]}
         kiosk={onKiosk}
         checkId={id}
         lang={check.language}
