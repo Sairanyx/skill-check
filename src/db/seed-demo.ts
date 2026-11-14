@@ -24,6 +24,7 @@ import { setContactShare } from "@/lib/services/privacy";
 import { setShowOnCard } from "@/lib/services/checks";
 import type { ApiUser } from "@/lib/api";
 import type { Locale } from "@/i18n/config";
+import type { LanguageRequirement } from "@/db/schema";
 
 const PASSWORD = process.env.SEED_PASSWORD ?? "junction2026";
 const MIN = 60_000;
@@ -33,7 +34,7 @@ const COMPANIES = [
   { key: "otaniemi", name: "Otaniemi Networks Oy", sector: "Telecom", about: "Builds and tests 5G network equipment.", need: { id: "otaniemi-test-engineer", title: "Network test engineer", summary: "Our 5G base stations fail tests in ways nobody can reproduce. We need someone who can design test cases, read logs and narrow down root causes.", skills: ["test design", "log analysis", "networking basics", "root-cause analysis"], level: "mid" }, mode: "required" },
   { key: "keilaniemi", name: "Keilaniemi Energy Oy", sector: "Energy", about: "Runs a regional electricity grid and forecasts demand.", need: { id: "keilaniemi-data-engineer", title: "Data engineer: grid forecasting", summary: "Our demand forecasts miss cold spells. We need someone who can build reliable data pipelines from meter data and spot bad data before it breaks the forecast.", skills: ["data pipelines", "data quality", "SQL", "time series basics"], level: "mid" }, mode: "required" },
   { key: "lifts", name: "Leppävaara Lifts Oy", sector: "Engineering", about: "Maintains lifts and escalators in Espoo.", need: { id: "lifts-service-technician", title: "Service technician", summary: "Technicians visit sites alone, diagnose faults safely and explain the problem to building managers.", skills: ["fault diagnosis", "safety procedures", "customer communication"], level: "junior" }, mode: "optional" },
-  { key: "health", name: "Matinkylä Health Oy", sector: "Health tech", about: "Software for home-care nurses.", need: { id: "health-customer-success", title: "Customer success specialist (Finnish + Swedish)", summary: "We help care organisations adopt our app. You handle frustrated users, find the real problem and turn feedback into clear tickets.", skills: ["problem clarification", "customer communication", "prioritisation", "writing clear tickets"], level: "mid" }, mode: "required" },
+  { key: "health", name: "Matinkylä Health Oy", sector: "Health tech", about: "Software for home-care nurses.", need: { id: "health-customer-success", title: "Customer success specialist (Finnish + Swedish)", summary: "We help care organisations adopt our app. You handle frustrated users, find the real problem and turn feedback into clear tickets.", skills: ["problem clarification", "customer communication", "prioritisation", "writing clear tickets"], level: "mid", languageRequirements: [{ language: "fi", level: "B2" }, { language: "sv", level: "B2" }] as LanguageRequirement[] }, mode: "required" },
   { key: "games", name: "Suomenoja Games Oy", sector: "Games", about: "Small studio making mobile puzzle games.", need: { id: "games-qa-tester", title: "QA tester", summary: "Find bugs before players do, write reproducible bug reports and decide what is worth fixing first.", skills: ["bug reproduction", "bug reporting", "prioritisation"], level: "junior" }, mode: "optional" },
   { key: "build", name: "Espoo Build Oy", sector: "Construction", about: "Builds apartment blocks in the Espoo region.", need: { id: "build-site-coordinator", title: "Site coordinator", summary: "Keep subcontractors, deliveries and safety on schedule on a busy site, and solve problems when plans change.", skills: ["planning", "safety awareness", "problem solving", "communication with subcontractors"], level: "mid" }, mode: "required" },
   { key: "retail", name: "Espoonlahti Retail Oy", sector: "Retail", about: "Runs grocery stores in southern Espoo.", need: { id: "retail-team-lead", title: "Store team lead", summary: "Lead a team of 8 in a busy store.", skills: ["team leadership", "customer service", "scheduling"], level: "junior" }, mode: "off" },
@@ -73,6 +74,7 @@ async function roleplayAnswer(p: Persona, level: (typeof LEVELS)[number], questi
         content: `You role-play a jobseeker in a short skill interview. Answer the interviewer's last question in ${LANG[p.answerLang]}, 2 to 4 sentences, in first person.
 ${LEVEL_TEXT[level]}
 ${p.nonNative ? `${LANG[p.answerLang]} is not your mother tongue (${p.mother} is): use simple sentences and a few grammar mistakes, but keep the SAME quality of reasoning.` : ""}
+If the interviewer asks you to answer in a different language, answer in that language at YOUR real level of it: ${p.mother === "Swedish" ? "Swedish is your mother tongue" : p.mother === "Finnish" ? "school Swedish, about B1 (simple but understandable)" : "only a few words of Swedish (A1), and Finnish at B1"}.
 In about one answer in three, mention your name (${p.name}) or a previous employer or school by name, as people naturally do. Output only the answer.`,
       },
       { role: "user", content: `${history}\nINTERVIEWER: ${question}` },
@@ -100,7 +102,7 @@ async function runCheck(candidate: { id: string }, p: Persona, needId: string, l
     .insert(skillChecks)
     .values({ candidateId: candidate.id, needId, appointmentId, workstationId, language: p.answerLang, status: needsReview ? "needs_review" : "evaluated", turns, startedAt: new Date(finishedAt.getTime() - 25 * MIN), finishedAt, expiresAt: new Date(finishedAt.getTime() + 365 * 24 * 60 * MIN) })
     .returning();
-  await db.insert(evaluations).values({ checkId: check.id, match: ev.match, level: ev.level, confidence: ev.confidence, difficulty: difficultyReached(turns), rubric: ev.rubric, strengths: ev.strengths, gaps: ev.gaps, fairnessFlags: ev.fairness.flags, fairnessNote: ev.fairness.note, model: ev.model, method: ev.method });
+  await db.insert(evaluations).values({ checkId: check.id, match: ev.match, level: ev.level, confidence: ev.confidence, difficulty: difficultyReached(turns), rubric: ev.rubric, strengths: ev.strengths, gaps: ev.gaps, fairnessFlags: ev.fairness.flags, fairnessNote: ev.fairness.note, model: ev.model, method: ev.method, languageAssessment: ev.language.length ? ev.language : null });
   await audit({ id: candidate.id, name: p.name, email: "", role: "candidate" }, "check.started", { subjectId: candidate.id, targetType: "skill_check", targetId: check.id, meta: { needId, language: p.answerLang, seeded: true } });
   await audit(null, "evaluation.created", { subjectId: candidate.id, targetType: "skill_check", targetId: check.id, meta: { model: ev.model, match: ev.match, confidence: ev.confidence, routedToHumanReview: needsReview } });
   return { check, ev, needsReview };
