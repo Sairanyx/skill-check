@@ -56,3 +56,16 @@ export async function POST(req: Request, { params }: RouteContext<"/api/v1/appoi
 ## 3. Two small messages
 - When the testing time is over, answering says "This workstation is reserved for someone else right now". Better: "Your testing time has ended."
 - The panel ignores small talk ("Oh hello!") and repeats the question. Better: one short friendly sentence, then the question (Chris is on it).
+
+## 4. New companies are stuck without a company profile (important)
+**Problem:** a company that signs up has no row in `companies`. The company portal then shows no events, and adding a need fails with "Create your company profile first". Nothing outside the seed creates that row, so every real company hits a dead end.
+**Front end (done):** at sign-up, "I am hiring" now asks for **Company name** (required).
+**Backend fix** in `signUp` (`src/app/actions/auth.ts`), right after the role update:
+```ts
+if (role === "company") {
+  const u = await db.query.user.findFirst({ where: eq(user.email, email) });
+  if (u && !(await db.query.companies.findFirst({ where: eq(companies.ownerId, u.id) })))
+    await db.insert(companies).values({ name: String(form.get("name") || "New company"), ownerId: u.id });
+}
+```
+(import `companies` from `@/db`). Then the new company sees the events and can add needs straight away.
