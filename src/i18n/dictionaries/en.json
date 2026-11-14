@@ -58,7 +58,13 @@
       "Personal details are removed before any AI sees or scores your answers.",
       "Scored on what you can do, never on accent, grammar, age or origin.",
       "Checked in person, so nobody can cheat with AI."
-    ]
+    ],
+    "demoCta": "Take the guided demo",
+    "doorsTitle": "Who are you?",
+    "login": "Log in",
+    "signup": "Sign up",
+    "staffLogin": "Staff log in",
+    "staffNote": "For City of Espoo staff. No sign-up."
   },
   "dashboard": {
     "candidate": {

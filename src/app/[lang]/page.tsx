@@ -17,12 +17,31 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">{t.title}</h1>
         <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{t.subtitle}</p>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Link href={`/${lang}/candidate`} className={`${buttonVariants({ size: "lg" })} h-11 px-6 text-base`}>
-            {t.ctaCandidate}
+          <Link href={`/${lang}/tour`} className={`${buttonVariants({ size: "lg" })} h-11 px-6 text-base`}>
+            {t.demoCta}
           </Link>
-          <Link href={`/${lang}/signup`} className={`${buttonVariants({ size: "lg", variant: "outline" })} h-11 px-6 text-base`}>
-            {t.ctaCompany}
-          </Link>
+        </div>
+      </section>
+
+      <section className="border-t py-16">
+        <h2 className="text-xl font-semibold">{t.doorsTitle}</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {roles.map((role) => (
+            <div key={role} className="flex flex-col rounded-lg border p-6">
+              <h3 className="font-semibold text-primary">{t.roles[role].title}</h3>
+              <p className="mt-2 flex-1 text-sm text-muted-foreground">{role === "city" ? `${t.roles[role].text} ${t.staffNote}` : t.roles[role].text}</p>
+              <div className="mt-5 flex gap-3">
+                <Link href={`/${lang}/login?as=${role}`} className={buttonVariants({ variant: role === "city" ? "outline" : "default" })}>
+                  {role === "city" ? t.staffLogin : t.login}
+                </Link>
+                {role !== "city" && (
+                  <Link href={`/${lang}/signup?as=${role}`} className={buttonVariants({ variant: "outline" })}>
+                    {t.signup}
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -39,17 +58,7 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
         </ol>
       </section>
 
-      <section className="border-t py-16">
-        <h2 className="text-xl font-semibold">{t.rolesTitle}</h2>
-        <div className="mt-8 grid gap-8 md:grid-cols-3">
-          {roles.map((role) => (
-            <Link key={role} href={`/${lang}/${role}`} className="group">
-              <h3 className="font-medium text-primary group-hover:underline">{t.roles[role].title} →</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{t.roles[role].text}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+
 
       <section className="border-t py-16">
         <h2 className="text-xl font-semibold">{t.privacyTitle}</h2>

@@ -58,7 +58,13 @@
       "Personuppgifter tas bort innan någon AI ser eller bedömer dina svar.",
       "Bedömningen gäller vad du kan, aldrig accent, grammatik, ålder eller bakgrund.",
       "Testet görs på plats, så ingen kan fuska med AI."
-    ]
+    ],
+    "demoCta": "Se den guidade demon",
+    "doorsTitle": "Vem är du?",
+    "login": "Logga in",
+    "signup": "Skapa konto",
+    "staffLogin": "Personalinloggning",
+    "staffNote": "För Esbo stads personal. Ingen registrering."
   },
   "dashboard": {
     "candidate": {

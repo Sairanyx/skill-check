@@ -58,7 +58,13 @@
       "Henkilötiedot poistetaan ennen kuin mikään tekoäly näkee tai arvioi vastauksesi.",
       "Arvioinnissa ratkaisee osaaminen, ei koskaan aksentti, kielioppi, ikä tai tausta.",
       "Testi tehdään paikan päällä, joten tekoälyllä huijaaminen ei onnistu."
-    ]
+    ],
+    "demoCta": "Katso opastettu demo",
+    "doorsTitle": "Kuka olet?",
+    "login": "Kirjaudu",
+    "signup": "Luo tili",
+    "staffLogin": "Henkilöstön kirjautuminen",
+    "staffNote": "Espoon kaupungin henkilöstölle. Ei rekisteröitymistä."
   },
   "dashboard": {
     "candidate": {
