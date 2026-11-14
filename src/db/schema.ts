@@ -103,6 +103,11 @@ export const levelEnum = pgEnum("level", ["junior", "mid", "senior"]);
 
 export type EscoSkill = { input: string; uri: string; label: { en: string; fi?: string; sv?: string } };
 
+export const checkModeEnum = pgEnum("check_mode", ["required", "optional", "off"]);
+
+/** Optional company questions per seniority level. The AI uses them as starting points. */
+export type QuestionBank = { junior?: string[]; mid?: string[]; senior?: string[] };
+
 export const needs = pgTable("needs", {
   id: id(),
   companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
@@ -112,6 +117,9 @@ export const needs = pgTable("needs", {
   // Each skill linked to the EU ESCO taxonomy (labels in en/fi/sv) so needs are comparable across companies and languages.
   escoSkills: jsonb("esco_skills").$type<EscoSkill[]>(),
   level: levelEnum("level").notNull().default("mid"),
+  checkMode: checkModeEnum("check_mode").notNull().default("required"), // required | optional | off (anyone can come)
+  questionBank: jsonb("question_bank").$type<QuestionBank>(), // null = AI builds easy filter questions itself
+  questionBankReview: jsonb("question_bank_review").$type<{ ok: boolean; problems: string[] }>(), // fairness screening
   source: text("source").notNull().default("written"), // "written" | "ai_drafted"
   confirmedBy: text("confirmed_by").references(() => user.id), // a human confirmed the AI draft
   confirmedAt: timestamp("confirmed_at"),
@@ -119,72 +127,126 @@ export const needs = pgTable("needs", {
   createdAt: createdAt(),
 });
 
+/** Company B accepts skill-check results from need A as equivalent (transferable checks). */
+export const needEquivalences = pgTable("need_equivalences", {
+  id: id(),
+  needId: text("need_id").notNull().references(() => needs.id, { onDelete: "cascade" }), // B's need
+  acceptsNeedId: text("accepts_need_id").notNull().references(() => needs.id, { onDelete: "cascade" }), // A's need
+  acceptedBy: text("accepted_by").notNull().references(() => user.id),
+  createdAt: createdAt(),
+});
+
 /* ------------------------------------------------------------------ *
- * 3. Events run by the City of Espoo
+ * 3. Recruitment events run by the City of Espoo
  * ------------------------------------------------------------------ */
 export const events = pgTable("events", {
   id: id(),
   title: text("title").notNull(),
   startsAt: timestamp("starts_at").notNull(),
-  mode: text("mode").notNull().default("in_person"), // in_person | online | hybrid
+  rsvpDeadline: timestamp("rsvp_deadline"), // companies confirm attendance before this
+  mode: text("mode").notNull().default("in_person"),
   location: text("location"),
   createdAt: createdAt(),
 });
 
+/** A company invited to an event. confirmedAt = the company said "we will attend". */
 export const eventCompanies = pgTable("event_companies", {
   id: id(),
   eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
   companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+  confirmedAt: timestamp("confirmed_at"),
+  confirmedBy: text("confirmed_by").references(() => user.id),
 });
 
-export const rooms = pgTable("rooms", {
+/** Which needs a company brings to an event. */
+export const eventNeeds = pgTable("event_needs", {
+  id: id(),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  needId: text("need_id").notNull().references(() => needs.id, { onDelete: "cascade" }),
+});
+
+/** Rooms and 10-minute slots for company meetings at the event (not the testing rooms). */
+export const meetingRooms = pgTable("meeting_rooms", {
   id: id(),
   eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
 });
 
-export const slots = pgTable("slots", {
+export const meetingSlots = pgTable("meeting_slots", {
   id: id(),
   eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
-  roomId: text("room_id").notNull().references(() => rooms.id, { onDelete: "cascade" }),
+  roomId: text("room_id").notNull().references(() => meetingRooms.id, { onDelete: "cascade" }),
   startsAt: timestamp("starts_at").notNull(),
   endsAt: timestamp("ends_at").notNull(),
-});
-
-/**
- * Skill-check sessions run by the City of Espoo. Checks can ONLY be taken during a session,
- * at the agreed venue/room (or a City-hosted online room), unlocked with the room code shown there.
- */
-export const checkSessions = pgTable("check_sessions", {
-  id: id(),
-  title: text("title").notNull(),
-  mode: text("mode").notNull().default("on_site"), // on_site | online
-  venue: text("venue").notNull(), // e.g. "Espoo Employment Services, Leppävaara"
-  room: text("room").notNull(), // e.g. "Room 2" or the online room link
-  startsAt: timestamp("starts_at").notNull(),
-  endsAt: timestamp("ends_at").notNull(),
-  capacity: integer("capacity").notNull().default(10),
-  accessCode: text("access_code"), // set when City staff open the session, shown only in the room
-  openedAt: timestamp("opened_at"),
-  closedAt: timestamp("closed_at"),
-  createdBy: text("created_by").references(() => user.id),
-  createdAt: createdAt(),
-});
-
-export const sessionBookings = pgTable("session_bookings", {
-  id: id(),
-  sessionId: text("session_id").notNull().references(() => checkSessions.id, { onDelete: "cascade" }),
-  candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-  checkedInAt: timestamp("checked_in_at"), // set when the candidate enters the room code
-  createdAt: createdAt(),
 });
 
 /* ------------------------------------------------------------------ *
- * 4. Skill checks and AI evidence
+ * 4. Testing rooms (EXAM-room model): venue → room → workstation → 30 min slot
+ * ------------------------------------------------------------------ */
+export const venues = pgTable("venues", {
+  id: id(),
+  name: text("name").notNull(),
+  address: text("address").notNull(),
+});
+
+export const testRooms = pgTable("test_rooms", {
+  id: id(),
+  venueId: text("venue_id").notNull().references(() => venues.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+});
+
+/**
+ * A City computer in a testing room, run as a locked kiosk. Enrolled by City staff: the computer gets a
+ * secret cookie and only its SHA-256 hash is stored. It only lets in the person booked for the current slot.
+ */
+export const workstations = pgTable("workstations", {
+  id: id(),
+  roomId: text("room_id").notNull().references(() => testRooms.id, { onDelete: "cascade" }),
+  label: text("label").notNull(), // e.g. "Workstation 3"
+  tokenHash: text("token_hash").unique(),
+  enrolledBy: text("enrolled_by").references(() => user.id),
+  enrolledAt: timestamp("enrolled_at"),
+  revokedAt: timestamp("revoked_at"),
+});
+
+export const testSlots = pgTable(
+  "test_slots",
+  {
+    id: id(),
+    workstationId: text("workstation_id").notNull().references(() => workstations.id, { onDelete: "cascade" }),
+    startsAt: timestamp("starts_at").notNull(),
+    endsAt: timestamp("ends_at").notNull(),
+  },
+  (t) => [index("test_slots_ws_time_idx").on(t.workstationId, t.startsAt)],
+);
+
+export const appointmentStatusEnum = pgEnum("appointment_status", [
+  "booked", "in_progress", "completed", "rescheduled", "cancelled", "no_show",
+]);
+
+/** Who sits where and when. Up to 3 company needs per appointment. */
+export const appointments = pgTable(
+  "appointments",
+  {
+    id: id(),
+    candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    slotId: text("slot_id").notNull().references(() => testSlots.id),
+    needIds: jsonb("need_ids").$type<string[]>().notNull(),
+    status: appointmentStatusEnum("status").notNull().default("booked"),
+    rescheduleCount: integer("reschedule_count").notNull().default(0),
+    previousAppointmentId: text("previous_appointment_id"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("appointments_slot_idx").on(t.slotId), index("appointments_candidate_idx").on(t.candidateId)],
+);
+
+/* ------------------------------------------------------------------ *
+ * 5. Skill checks and AI evidence
  * ------------------------------------------------------------------ */
 export const checkStatusEnum = pgEnum("check_status", ["in_progress", "evaluated", "needs_review", "withdrawn"]);
 
-export type StoredTurn = { question: string; said: string; seen: string };
+export type Difficulty = "low" | "medium" | "high";
+export type StoredTurn = { question: string; said: string; seen: string; difficulty?: Difficulty };
 
 export const skillChecks = pgTable(
   "skill_checks",
@@ -192,15 +254,20 @@ export const skillChecks = pgTable(
     id: id(),
     candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
     needId: text("need_id").notNull().references(() => needs.id, { onDelete: "cascade" }),
-    sessionId: text("session_id").references(() => checkSessions.id), // where it was taken (venue rule)
+    appointmentId: text("appointment_id").references(() => appointments.id),
+    workstationId: text("workstation_id").references(() => workstations.id), // the City computer it ran on
     language: text("language").notNull(),
     status: checkStatusEnum("status").notNull().default("in_progress"),
     // `said` = what the candidate wrote/said (stays in Finland). `seen` = pseudonymised text the AI got.
     turns: jsonb("turns").$type<StoredTurn[]>().notNull().default([]),
     pendingQuestion: text("pending_question"), // the question currently waiting for an answer
+    pendingDifficulty: text("pending_difficulty").$type<Difficulty>(),
+    showOnCard: boolean("show_on_card").notNull().default(false), // candidate opt-in: emblem on the event card
+    shareWithEquivalent: boolean("share_with_equivalent").notNull().default(false), // opt-in: companies that accept this check
     codeResult: jsonb("code_result"),
     startedAt: createdAt(),
     finishedAt: timestamp("finished_at"),
+    expiresAt: timestamp("expires_at"), // 12 months after finishing, then deleted (retention)
   },
   (t) => [index("skill_checks_need_idx").on(t.needId)],
 );
@@ -211,6 +278,7 @@ export const evaluations = pgTable("evaluations", {
   match: real("match").notNull(), // 0–10
   level: levelEnum("level").notNull(),
   confidence: real("confidence").notNull(), // 0–1
+  difficulty: text("difficulty").$type<Difficulty>(), // highest question difficulty reached
   rubric: jsonb("rubric").notNull(),
   strengths: jsonb("strengths").$type<string[]>().notNull(),
   gaps: jsonb("gaps").$type<string[]>().notNull(),
@@ -221,7 +289,7 @@ export const evaluations = pgTable("evaluations", {
 });
 
 /* ------------------------------------------------------------------ *
- * 5. Human decisions = the audit log. Rows are only ever inserted, never updated.
+ * 6. Human decisions = the audit log. Rows are only ever inserted, never updated.
  * ------------------------------------------------------------------ */
 export const decisionEnum = pgEnum("decision", ["invite", "not_now", "needs_review", "approve", "reject"]);
 
@@ -260,7 +328,7 @@ export const auditEvents = pgTable(
 
 export const bookings = pgTable("bookings", {
   id: id(),
-  slotId: text("slot_id").notNull().references(() => slots.id),
+  slotId: text("slot_id").notNull().references(() => meetingSlots.id),
   checkId: text("check_id").notNull().references(() => skillChecks.id, { onDelete: "cascade" }),
   candidateId: text("candidate_id").notNull().references(() => user.id),
   companyId: text("company_id").notNull().references(() => companies.id),

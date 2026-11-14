@@ -15,8 +15,9 @@ async function main() {
   await sql.begin(async (tx) => {
     await tx`ALTER TABLE audit_events DISABLE TRIGGER USER`;
     await tx`ALTER TABLE decisions DISABLE TRIGGER USER`;
-    await tx`TRUNCATE audit_events, decisions, bookings, evaluations, skill_checks, session_bookings, check_sessions,
-      slots, rooms, event_companies, events, needs, companies, verification, account, session, jwks, "user" CASCADE`;
+    await tx`TRUNCATE audit_events, decisions, bookings, evaluations, skill_checks, appointments, test_slots, workstations,
+      test_rooms, venues, meeting_slots, meeting_rooms, event_needs, event_companies, events, need_equivalences, needs,
+      companies, verification, account, session, jwks, "user" CASCADE`;
     await tx`ALTER TABLE audit_events ENABLE TRIGGER USER`;
     await tx`ALTER TABLE decisions ENABLE TRIGGER USER`;
   });

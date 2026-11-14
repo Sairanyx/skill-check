@@ -1,19 +1,23 @@
 /**
- * Synthetic demo data. Run: npm run db:seed  (safe to re-run: it skips what already exists)
+ * Synthetic demo data. Run on an empty database: npm run db:reset -- --yes && npm run db:seed
  * No real people or companies. All passwords are DEMO_PASSWORD.
  */
-import { eq } from "drizzle-orm";
+import { and, eq, lte, gt } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { db, user, companies, needs, events, rooms, slots, eventCompanies, checkSessions, sessionBookings } from "@/db";
-import { DEMO_NEEDS } from "@/lib/demo-data";
+import {
+  db, user, companies, needs, events, eventCompanies, eventNeeds, meetingRooms, meetingSlots,
+  venues, testRooms, workstations, testSlots, appointments, type QuestionBank,
+} from "@/db";
 import { mapToEsco } from "@/lib/esco";
 
 const DEMO_PASSWORD = process.env.SEED_PASSWORD ?? "junction2026"; // set SEED_PASSWORD for the live demo
+const MIN = 60_000;
 
 const people = [
   { email: "aino@demo.skillcheck.fi", name: "Candidate 7F2A", role: "candidate" },
   { email: "recruiter@nordiclogistics.demo", name: "Nordic Logistics", role: "company" },
   { email: "recruiter@tapiolacloud.demo", name: "Tapiola Cloud", role: "company" },
+  { email: "hello@kivenlahtibakery.demo", name: "Kivenlahti Bakery", role: "company" },
   { email: "events@espoo.demo", name: "City of Espoo", role: "city" },
 ] as const;
 
@@ -24,71 +28,121 @@ async function ensureUser(p: (typeof people)[number]) {
   return (await db.query.user.findFirst({ where: eq(user.email, p.email) }))!;
 }
 
+const nordicBank: QuestionBank = {
+  junior: ["How would you find duplicate rows in a table of parcel scans?"],
+  mid: [
+    "Our three depot systems log timestamps differently. How would you combine them before analysing delays?",
+    "A manager asks why Tuesdays are late. What would you check first, and why?",
+  ],
+  senior: ["How would you set up delay reporting so the depots trust the numbers?"],
+};
+
+/** Start of the current 30-minute block, so one slot is running right now for the demo. */
+function blockStart(d = new Date()) {
+  const t = new Date(d);
+  t.setUTCSeconds(0, 0);
+  t.setUTCMinutes(t.getUTCMinutes() < 30 ? 0 : 30);
+  return t;
+}
+
 async function main() {
-  const [aino, nordic, tapiola, city] = await Promise.all(people.map(ensureUser));
+  const [aino, nordic, tapiola, bakery] = await Promise.all(people.map(ensureUser));
 
-  // Companies + needs (ids match the demo-data ids so existing links keep working)
-  const owners = { "Nordic Logistics Oy": nordic.id, "Tapiola Cloud Oy": tapiola.id } as Record<string, string>;
-  for (const n of DEMO_NEEDS) {
-    let company = await db.query.companies.findFirst({ where: eq(companies.name, n.company) });
-    if (!company) {
-      [company] = await db.insert(companies).values({ name: n.company, ownerId: owners[n.company], sector: "Tech" }).returning();
-    }
-    const has = await db.query.needs.findFirst({ where: eq(needs.id, n.id) });
-    if (!has) {
-      await db.insert(needs).values({
-        id: n.id, companyId: company.id, title: n.title, summary: n.summary, skills: n.skills,
-        escoSkills: await mapToEsco(n.skills, `${n.title}: ${n.summary}`),
-        level: n.level, source: "written", confirmedBy: owners[n.company], confirmedAt: new Date(),
-      });
-    }
+  // Companies and needs
+  const [nordicCo, tapiolaCo, bakeryCo] = await db
+    .insert(companies)
+    .values([
+      { name: "Nordic Logistics Oy", ownerId: nordic.id, sector: "Logistics", website: "https://nordiclogistics.demo", description: "Parcel delivery company with three depots in the Helsinki region." },
+      { name: "Tapiola Cloud Oy", ownerId: tapiola.id, sector: "Software", website: "https://tapiolacloud.demo", description: "Runs cloud platforms for Finnish retail companies." },
+      { name: "Kivenlahti Bakery Oy", ownerId: bakery.id, sector: "Food", description: "Family bakery with two shops in Espoo." },
+    ])
+    .returning();
+
+  const needRows = [
+    {
+      id: "nordic-logistics-data", companyId: nordicCo.id, title: "Data analyst: delivery delays",
+      summary: "Our delivery data is messy: duplicate scans, missing timestamps, three different depot systems. We need someone who can clean it, find why deliveries are late and explain it to non-technical managers.",
+      skills: ["data cleaning", "SQL", "Python or Excel", "root-cause analysis", "explaining results"], level: "mid" as const,
+      checkMode: "required" as const, questionBank: nordicBank, questionBankReview: { ok: true, problems: [] },
+      owner: nordic.id,
+    },
+    {
+      id: "espoo-cloud-platform", companyId: tapiolaCo.id, title: "Cloud engineer: cost control",
+      summary: "Our cloud bill grew 40% in a year. We need someone who can find the waste, automate scaling and keep services reliable while costs go down.",
+      skills: ["Kubernetes", "cloud cost optimisation", "monitoring", "automation", "trade-off reasoning"], level: "mid" as const,
+      checkMode: "optional" as const, questionBank: null, questionBankReview: null, owner: tapiola.id,
+    },
+    {
+      id: "bakery-shift-lead", companyId: bakeryCo.id, title: "Shift lead, morning bakery",
+      summary: "Lead the 5:00 morning shift in our Espoo bakery shop.",
+      skills: ["team leadership", "food hygiene", "customer service"], level: "junior" as const,
+      checkMode: "off" as const, questionBank: null, questionBankReview: null, owner: bakery.id,
+    },
+  ];
+  for (const { owner, ...n } of needRows) {
+    await db.insert(needs).values({ ...n, escoSkills: await mapToEsco(n.skills, `${n.title}: ${n.summary}`), confirmedBy: owner, confirmedAt: new Date() });
   }
 
-  // One event with two rooms and 10-minute slots
-  let event = await db.query.events.findFirst({ where: eq(events.title, "Espoo Tech Talent Day") });
-  if (!event) {
-    [event] = await db.insert(events).values({
-      title: "Espoo Tech Talent Day", startsAt: new Date("2026-11-27T13:00:00+02:00"),
-      mode: "hybrid", location: "Espoo, Finland",
-    }).returning();
-    const created = await db.insert(rooms).values([{ eventId: event.id, name: "Room A" }, { eventId: event.id, name: "Room B" }]).returning();
-    const start = new Date("2026-11-27T13:00:00+02:00").getTime();
-    await db.insert(slots).values(
-      created.flatMap((room) =>
-        Array.from({ length: 12 }, (_, i) => ({
-          eventId: event!.id, roomId: room.id,
-          startsAt: new Date(start + i * 10 * 60_000), endsAt: new Date(start + (i + 1) * 10 * 60_000),
-        })),
-      ),
+  // The City's recruitment event: companies confirm attendance before the RSVP deadline
+  const eventStart = new Date("2026-11-27T13:00:00+02:00");
+  const [event] = await db
+    .insert(events)
+    .values({ title: "Espoo Tech Talent Day", startsAt: eventStart, rsvpDeadline: new Date("2026-11-20T16:00:00+02:00"), mode: "in_person", location: "Espoo, Finland" })
+    .returning();
+  await db.insert(eventCompanies).values([
+    { eventId: event.id, companyId: nordicCo.id, confirmedAt: new Date(), confirmedBy: nordic.id },
+    { eventId: event.id, companyId: tapiolaCo.id, confirmedAt: new Date(), confirmedBy: tapiola.id },
+    { eventId: event.id, companyId: bakeryCo.id },
+  ]);
+  await db.insert(eventNeeds).values(needRows.map((n) => ({ eventId: event.id, needId: n.id })));
+  const mRooms = await db.insert(meetingRooms).values([{ eventId: event.id, name: "Room A" }, { eventId: event.id, name: "Room B" }]).returning();
+  await db.insert(meetingSlots).values(
+    mRooms.flatMap((room) =>
+      Array.from({ length: 12 }, (_, i) => ({
+        eventId: event.id, roomId: room.id,
+        startsAt: new Date(eventStart.getTime() + i * 10 * MIN), endsAt: new Date(eventStart.getTime() + (i + 1) * 10 * MIN),
+      })),
+    ),
+  );
+
+  // Testing rooms (EXAM-room model): venues → rooms → workstations → 30 min slots
+  const [lepp, ota] = await db
+    .insert(venues)
+    .values([
+      { name: "Espoo Employment Services, Leppävaara", address: "Leppävaara, Espoo" },
+      { name: "Otaniemi Testing Room", address: "Otaniemi, Espoo" },
+    ])
+    .returning();
+  const rooms = await db.insert(testRooms).values([{ venueId: lepp.id, name: "Testing room 2" }, { venueId: ota.id, name: "Testing room A" }]).returning();
+  const stations = await db
+    .insert(workstations)
+    .values(rooms.flatMap((r) => [1, 2, 3, 4].map((n) => ({ roomId: r.id, label: `Workstation ${n}` }))))
+    .returning();
+
+  // Slots: from the current 30-min block, for 3 days, every half hour (a real deployment would follow opening hours)
+  const first = blockStart();
+  const slotsPerStation = 3 * 24 * 2;
+  for (const ws of stations) {
+    await db.insert(testSlots).values(
+      Array.from({ length: slotsPerStation }, (_, i) => ({
+        workstationId: ws.id,
+        startsAt: new Date(first.getTime() + i * 30 * MIN),
+        endsAt: new Date(first.getTime() + (i + 1) * 30 * MIN),
+      })),
     );
-    const all = await db.select().from(companies);
-    await db.insert(eventCompanies).values(all.map((c) => ({ eventId: event!.id, companyId: c.id })));
   }
 
-  // Skill-check sessions run by the City (checks are only possible inside an open session)
-  const existingSessions = await db.select().from(checkSessions);
-  if (!existingSessions.length) {
-    const now = Date.now();
-    const [onSite] = await db
-      .insert(checkSessions)
-      .values([
-        {
-          title: "Skill checks: Tech Talent Day", mode: "on_site", venue: "Espoo Employment Services, Leppävaara",
-          room: "Room 2", startsAt: new Date(now - 60 * 60_000), endsAt: new Date(now + 10 * 60 * 60_000),
-          capacity: 12, createdBy: city.id,
-        },
-        {
-          title: "Skill checks: online room", mode: "online", venue: "City of Espoo online room",
-          room: "Hosted video room, link sent after booking", startsAt: new Date(now + 24 * 60 * 60_000),
-          endsAt: new Date(now + 27 * 60 * 60_000), capacity: 20, createdBy: city.id,
-        },
-      ])
-      .returning();
-    await db.insert(sessionBookings).values({ sessionId: onSite.id, candidateId: aino.id });
-  }
+  // Aino is booked on Leppävaara Workstation 1, in the slot running right now
+  const ws1 = stations[0];
+  const [nowSlot] = await db
+    .select()
+    .from(testSlots)
+    .where(and(eq(testSlots.workstationId, ws1.id), lte(testSlots.startsAt, new Date()), gt(testSlots.endsAt, new Date())));
+  await db.insert(appointments).values({ candidateId: aino.id, slotId: nowSlot.id, needIds: ["nordic-logistics-data", "espoo-cloud-platform"] });
 
   console.log("Seeded. Log in with any of:");
   for (const p of people) console.log(`  ${p.role.padEnd(9)} ${p.email}  /  ${DEMO_PASSWORD}`);
+  console.log(`Aino is booked now on ${lepp.name}, ${rooms[0].name}, ${ws1.label}. Enroll that computer as City staff first.`);
   process.exit(0);
 }
 
