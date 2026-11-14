@@ -36,7 +36,7 @@ All open models are served with vLLM. The final score is the median of the three
 - **Fail safe:** if any automatic check cannot run, the result goes to a person.
 
 ## Tech
-Next.js 16, React 19, TypeScript, Tailwind, Better Auth, Drizzle ORM, PostgreSQL on **Aiven** (Finland), vLLM on **Verda** GPUs (Finland), **Gemma**, **Gemini**, Mistral, Whisper, ESCO skills taxonomy, **Context.dev** (drafts a company need from its website).
+Next.js 16, React 19, TypeScript, Tailwind, Better Auth, Drizzle ORM, PostgreSQL on **Aiven** (Finland), vLLM on **Verda** GPUs (Finland), **Gemma**, **Gemini**, Mistral, Whisper, ESCO skills taxonomy, **Context.dev** (drafts a company need from its website). CI on **CRACI** runners: lint, typecheck, unit tests and build on every push, with an SBOM of every dependency.
 
 ## Run it
 ```bash

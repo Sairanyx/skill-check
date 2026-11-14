@@ -25,7 +25,7 @@ In our benchmark the three judges agreed 82% of the time, and answering in a sec
 - **Gemini:** Gemini 3.8 Flash is the interviewer and judge 3 (pseudonymised text only)
 - **Aiven:** PostgreSQL in Finland, append-only audit log
 - **Context.dev:** drafts a company need from its website
-- **CRACI / Modal:** if the teammate finishes tests in CI and the fairness bench
+- **CRACI:** every push runs lint, typecheck, 35 unit tests and the production build on CRACI runners, which record a CycloneDX SBOM of every dependency (the EU Cyber Resilience Act direction for public-sector software)
 
 ## 2. Verda Discord post (required for the Verda prize)
 

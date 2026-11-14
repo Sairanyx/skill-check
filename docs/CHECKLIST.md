@@ -27,7 +27,7 @@ Status: **Sat 14 Nov, 19:30**. Live: https://skillcheck.fi
 - **Company "Edit need" page:** language, proofs, questions and anchors (screened for bias), similar needs
 - **Context.dev:** draft a need from the company website
 - **Three event types:** in person, online, hybrid
-- **Automated tests** (35 unit tests, `npm test`) and **CI** on every push (lint, typecheck, tests, build). CRACI: set the repo variable `RUNNER` to their runner label
+- **Automated tests** (35 unit tests, `npm test`) and **CI on CRACI runners** on every push (lint, typecheck, tests, build), with a supply-chain SBOM per build
 - **Mobile check:** no page scrolls sideways at phone width, header and candidate table tidied
 - Rate limits on login and AI, 15-minute meetings, `npm run demo:now`, README, operations guide (`infra/README.md` §7)
 
