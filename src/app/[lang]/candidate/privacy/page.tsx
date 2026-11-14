@@ -17,6 +17,11 @@ const ACTION: Record<string, string> = {
   "session.checked_in": "You checked in at the venue",
   "session.checkin_failed": "Wrong room code entered",
   "data.exported": "You downloaded your data",
+  "proof.declared": "You added a proof",
+  "proof.removed": "You removed a proof",
+  "proof.verified": "City staff verified a proof",
+  "proof.rejected": "City staff did not accept a proof",
+  "proofs.listed": "City staff opened proofs to check",
 };
 
 export default async function PrivacyPage({ params }: PageProps<"/[lang]/candidate/privacy">) {

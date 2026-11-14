@@ -49,7 +49,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
         )}
       </Section>
 
-      <Section title="Your results" action={<span className="flex gap-4 text-sm"><Link href={`/${lang}/candidate/card`} className="text-primary hover:underline">Event card</Link><Link href={`/${lang}/candidate/privacy`} className="text-primary hover:underline">Your data</Link></span>}>
+      <Section title="Your results" action={<span className="flex gap-4 text-sm"><Link href={`/${lang}/candidate/card`} className="text-primary hover:underline">Event card</Link><Link href={`/${lang}/candidate/proofs`} className="text-primary hover:underline">Proofs</Link><Link href={`/${lang}/candidate/privacy`} className="text-primary hover:underline">Your data</Link></span>}>
         {checks.length ? (
           <ul className="divide-y border-y">
             {checks.map((c) => (
