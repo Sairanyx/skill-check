@@ -140,3 +140,16 @@ Switch the thinking model with one setting: `INTERVIEW_PROVIDER=gemma | gemini`.
 | Could | Modal sandbox code task for tech roles | Best use of Modal prize |
 | Could | Video-of-work path for hands-on roles | Inclusion |
 | Could | Inbound JWT verification for partner systems (Brella, Tavata) | Platform story |
+
+## Capacity (does it scale?)
+Espoo is the employment authority for ~30,000 jobseekers, but not all of them need a skill check, and a check is valid for 12 months. Working estimate:
+
+| | Estimate |
+|---|---|
+| Skill checks | ~50 a day (250 a week), at most ~12,000 a year. People with a valid badge do not come back |
+| Testing-room computers | 30-minute slots, ~7 h a day = 14 checks per computer → **4 computers = one room** |
+| Peak before an event | e.g. +300 people in the last 2 weeks = +30 a day → 2–3 more computers for those weeks |
+| AI (one GPU) | the demo ran 30 full checks in 5 minutes. 50 a day is a few minutes of GPU work |
+| Database | 11 MB for 30 checks today → well under 1 GB a year |
+
+**The limit is rooms and staff, not software.** A pilot can start with one existing City room and 4 computers. Not needed at this scale: Kafka, a separate data API or a bigger database.
