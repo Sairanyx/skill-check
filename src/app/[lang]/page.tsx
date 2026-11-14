@@ -27,20 +27,11 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
         <h2 className="text-xl font-semibold">{t.doorsTitle}</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {roles.map((role) => (
-            <div key={role} className="flex flex-col rounded-lg border p-6">
-              <h3 className="font-semibold text-primary">{t.roles[role].title}</h3>
+            <Link key={role} href={`/${lang}/login?as=${role}`} className="group flex flex-col rounded-lg border p-6 transition-colors hover:border-primary hover:bg-primary/5">
+              <h3 className="font-semibold text-primary group-hover:underline">{t.roles[role].title} →</h3>
               <p className="mt-2 flex-1 text-sm text-muted-foreground">{role === "city" ? `${t.roles[role].text} ${t.staffNote}` : t.roles[role].text}</p>
-              <div className="mt-5 flex gap-3">
-                <Link href={`/${lang}/login?as=${role}`} className={buttonVariants({ variant: role === "city" ? "outline" : "default" })}>
-                  {role === "city" ? t.staffLogin : t.login}
-                </Link>
-                {role !== "city" && (
-                  <Link href={`/${lang}/signup?as=${role}`} className={buttonVariants({ variant: "outline" })}>
-                    {t.signup}
-                  </Link>
-                )}
-              </div>
-            </div>
+              <span className="mt-4 text-sm font-medium text-primary">{role === "city" ? t.staffLogin : `${t.login} · ${t.signup}`}</span>
+            </Link>
           ))}
         </div>
       </section>
