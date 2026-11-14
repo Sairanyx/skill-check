@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { signIn, signUp, type FormState } from "@/app/actions/auth";
 import { LogoIcon } from "./logo";
 import { formProblem } from "@/components/app/form-check";
+import { leaveKioskMode } from "@/app/actions/kiosk";
 
 type Role = "candidate" | "company" | "city";
 const TABS: { role: Role; label: string }[] = [
@@ -27,6 +28,8 @@ export function AuthForm({ mode, lang, role: initialRole = "candidate" }: { mode
   const [state, action, pending] = useActionState<FormState, FormData>(mode === "login" ? signIn : signUp, {});
   const role = mode === "signup" && initialRole === "city" ? "candidate" : initialRole;
   const [problem, setProblem] = useState<string | null>(null);
+  const [cleared, setCleared] = useState(false);
+  const kioskBlocked = mode === "login" && !cleared && /computer|workstation/i.test(state.error ?? "");
 
   return (
     <form
@@ -39,6 +42,7 @@ export function AuthForm({ mode, lang, role: initialRole = "candidate" }: { mode
       }}
       className="mx-auto mt-16 max-w-sm space-y-5 px-4"
     >
+      <Link href={`/${lang}`} className="text-sm font-medium text-primary hover:underline">← Home</Link>
       <LogoIcon className="size-10" />
       <h1 className="text-2xl font-semibold">{mode === "login" ? "Log in" : "Create an account"}</h1>
       <nav className="flex gap-1 rounded-lg bg-muted p-1 text-sm" aria-label="Who are you?">
@@ -57,19 +61,8 @@ export function AuthForm({ mode, lang, role: initialRole = "candidate" }: { mode
       {mode === "login" && (
         <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
           <p>
-            Demo account: <strong>{DEMO[role].who}</strong>
+            Demo account filled in: <strong>{DEMO[role].who}</strong>. Just press Log in.
           </p>
-          <button
-            type="button"
-            className="mt-1 text-primary underline"
-            onClick={(e) => {
-              const f = e.currentTarget.form!;
-              (f.elements.namedItem("email") as HTMLInputElement).value = DEMO[role].email;
-              (f.elements.namedItem("password") as HTMLInputElement).value = DEMO_PASSWORD;
-            }}
-          >
-            Use the demo account
-          </button>
         </div>
       )}
 
@@ -85,13 +78,30 @@ export function AuthForm({ mode, lang, role: initialRole = "candidate" }: { mode
       )}
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" required autoComplete="email" />
+        <Input key={`e-${role}`} id="email" name="email" type="email" required autoComplete={mode === "login" ? "off" : "email"} defaultValue={mode === "login" ? DEMO[role].email : undefined} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input id="password" name="password" type="password" required minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} />
+        <Input key={`p-${role}`} id="password" name="password" type="password" required minLength={8} autoComplete={mode === "login" ? "off" : "new-password"} defaultValue={mode === "login" ? DEMO_PASSWORD : undefined} />
       </div>
-      {(problem ?? state.error) && <p className="text-sm text-destructive">{problem ?? state.error}</p>}
+      {kioskBlocked ? (
+        <div className="rounded-lg border border-destructive/40 p-3 text-sm">
+          <p className="text-destructive">This browser is set up as an EXAM room computer, so only the person booked on it can log in.</p>
+          <button
+            type="button"
+            className="mt-1 text-primary underline"
+            onClick={async () => {
+              await leaveKioskMode();
+              setCleared(true);
+            }}
+          >
+            Use this browser normally again
+          </button>
+        </div>
+      ) : (
+        (problem ?? (cleared ? null : state.error)) && <p className="text-sm text-destructive">{problem ?? state.error}</p>
+      )}
+      {cleared && <p className="text-sm text-primary">Done. This is a normal browser again. Press Log in.</p>}
       <Button type="submit" size="lg" className="h-11 w-full text-base" disabled={pending}>
         {mode === "login" ? "Log in" : "Create account"}
       </Button>
