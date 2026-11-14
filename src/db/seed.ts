@@ -89,10 +89,11 @@ async function main() {
     .insert(events)
     .values({ title: "Espoo Tech Talent Day", startsAt: eventStart, rsvpDeadline: new Date("2026-11-20T16:00:00+02:00"), mode: "in_person", location: "Espoo, Finland" })
     .returning();
+  const now = new Date();
   await db.insert(eventCompanies).values([
-    { eventId: event.id, companyId: nordicCo.id, confirmedAt: new Date(), confirmedBy: nordic.id },
-    { eventId: event.id, companyId: tapiolaCo.id, confirmedAt: new Date(), confirmedBy: tapiola.id },
-    { eventId: event.id, companyId: bakeryCo.id },
+    { eventId: event.id, companyId: nordicCo.id, checkMode: "required", approvedAt: now, confirmedAt: now, confirmedBy: nordic.id },
+    { eventId: event.id, companyId: tapiolaCo.id, checkMode: "optional", approvedAt: now, confirmedAt: now, confirmedBy: tapiola.id },
+    { eventId: event.id, companyId: bakeryCo.id, checkMode: "off" }, // applied, waiting for City approval
   ]);
   await db.insert(eventNeeds).values(needRows.map((n) => ({ eventId: event.id, needId: n.id })));
   const mRooms = await db.insert(meetingRooms).values([{ eventId: event.id, name: "Room A" }, { eventId: event.id, name: "Room B" }]).returning();

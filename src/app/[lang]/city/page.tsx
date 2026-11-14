@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { cityStats } from "@/lib/services/decisions";
-import { reviewQueue } from "@/lib/services/checks";
+import { reviewQueue, cityMatchingList } from "@/lib/services/checks";
+import { eventApplications } from "@/lib/services/company";
+import { db, events as eventsTable } from "@/db";
+import { EventPolicyToggle, ApproveCompany } from "@/components/app/event-actions";
 import { testingOverview } from "@/lib/services/testing";
 import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
 import { EnrollHere } from "@/components/app/city-actions";
@@ -12,7 +15,8 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   await requireRole(lang, "city");
-  const [stats, queue, stations] = await Promise.all([cityStats(), reviewQueue(), testingOverview()]);
+  const [stats, queue, stations, matching, events] = await Promise.all([cityStats(), reviewQueue(), testingOverview(), cityMatchingList(), db.select().from(eventsTable).orderBy(eventsTable.startsAt)]);
+  const applications = await Promise.all(events.map((e) => eventApplications(e.id)));
   const decided = stats.decisions.aiFollowed + stats.decisions.aiOverridden;
   const tiles = [
     { label: "Skill checks", value: stats.checks.total },
@@ -36,6 +40,42 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
           </div>
         ))}
       </div>
+
+      <Section title="Events">
+        {events.map((e, i) => (
+          <div key={e.id} className="mb-6">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
+              <p className="font-medium">{e.title} <span className="font-normal text-muted-foreground">· {fmtTime(e.startsAt)}</span></p>
+              <EventPolicyToggle eventId={e.id} policy={e.checkPolicy} />
+            </div>
+            <ul className="divide-y border-y text-sm">
+              {applications[i].map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-4 py-2">
+                  <span>{a.company} <span className="text-muted-foreground">· {a.checkMode === "off" ? "no skill check needed" : `skill check ${a.checkMode}`}</span></span>
+                  {a.confirmedAt ? <span className="text-primary">Confirmed</span> : a.approvedAt ? <span className="text-muted-foreground">Approved, waiting for confirmation</span> : <ApproveCompany eventId={e.id} appId={a.id} />}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </Section>
+
+      <Section title="Matching">
+        {matching.length ? (
+          <ul className="divide-y border-y text-sm">
+            {matching.map((m) => (
+              <li key={m.checkId}>
+                <Link href={`/${lang}/city/review/${m.checkId}`} className="flex justify-between gap-6 py-3 hover:text-primary">
+                  <span>{m.alias} · {m.company} · {m.needTitle}</span>
+                  <span className="text-muted-foreground">{m.match}/10 · {m.state}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Empty>Results appear here after skill checks. Accept them for the company, or leave it to the company.</Empty>
+        )}
+      </Section>
 
       <Section title="Human review queue" action={<Link href={`/${lang}/city/audit`} className="text-sm text-primary hover:underline">Audit log</Link>}>
         {queue.length ? (
