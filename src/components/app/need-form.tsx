@@ -11,11 +11,40 @@ import { apiCall } from "./api-client";
 const LANGS = [["fi", "Finnish"], ["sv", "Swedish"], ["en", "English"]] as const;
 const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
+type Draft = { title: string; summary: string; skills: string[]; level: string; source?: string };
+
 export function NeedForm({ lang }: { lang: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const [reading, setReading] = useState(false);
   return (
+    <div className="max-w-2xl space-y-8">
     <form
+      className="flex flex-wrap items-end gap-3 rounded-md border p-4"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const url = String(new FormData(e.currentTarget).get("url"));
+        setReading(true);
+        setError(null);
+        try {
+          setDraft(await apiCall<Draft>("/needs/draft", { json: { url } }));
+        } catch (err) {
+          setError((err as Error).message);
+        } finally {
+          setReading(false);
+        }
+      }}
+    >
+      <div className="min-w-64 flex-1 space-y-2">
+        <Label htmlFor="url">Start from your website or a job post (optional)</Label>
+        <Input id="url" name="url" type="url" placeholder="https://yourcompany.fi/careers" />
+      </div>
+      <Button type="submit" variant="outline" disabled={reading}>{reading ? "Reading…" : "Fill in"}</Button>
+      <p className="w-full text-xs text-muted-foreground">Read with Context.dev. Check and edit the draft before saving.</p>
+    </form>
+    <form
+      key={draft?.source ?? "empty"}
       className="max-w-2xl space-y-5"
       onSubmit={async (e) => {
         e.preventDefault();
@@ -27,6 +56,7 @@ export function NeedForm({ lang }: { lang: string }) {
               summary: f.get("summary"),
               skills: String(f.get("skills")).split(","),
               level: f.get("level"),
+              source: draft?.source,
               languageRequirements: LANGS.filter(([code]) => f.get(`lang-${code}`)).map(([code]) => ({ language: code, level: f.get(`lang-${code}`) })),
             },
           });
@@ -39,19 +69,19 @@ export function NeedForm({ lang }: { lang: string }) {
     >
       <div className="space-y-2">
         <Label htmlFor="title">Role or problem</Label>
-        <Input id="title" name="title" required placeholder="Cloud engineer: cost control" />
+        <Input id="title" name="title" required placeholder="Cloud engineer: cost control" defaultValue={draft?.title} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="summary">What is the real problem?</Label>
-        <Textarea id="summary" name="summary" required rows={4} placeholder="Our cloud bill grew 40% in a year. We need someone who…" />
+        <Textarea id="summary" name="summary" required rows={4} placeholder="Our cloud bill grew 40% in a year. We need someone who…" defaultValue={draft?.summary} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="skills">Key skills (comma separated)</Label>
-        <Input id="skills" name="skills" required placeholder="Kubernetes, monitoring, cost optimisation" />
+        <Input id="skills" name="skills" required placeholder="Kubernetes, monitoring, cost optimisation" defaultValue={draft?.skills.join(", ")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="level">Level</Label>
-        <select id="level" name="level" defaultValue="mid" className="h-9 rounded-md border bg-background px-2 text-sm">
+        <select id="level" name="level" defaultValue={draft?.level ?? "mid"} className="h-9 rounded-md border bg-background px-2 text-sm">
           <option value="junior">Junior</option>
           <option value="mid">Mid</option>
           <option value="senior">Senior</option>
@@ -77,5 +107,6 @@ export function NeedForm({ lang }: { lang: string }) {
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" size="lg">Save need</Button>
     </form>
+    </div>
   );
 }
