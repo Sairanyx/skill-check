@@ -146,3 +146,19 @@ Every important design choice, with the research behind it (Finland first), how 
 - **Tested:** natural Finnish and English follow-up questions, about 3 seconds each. Gemma and Mistral gave identical scores on the first live check.
 - **➕** Strong conversation quality, independent judges, scoring stays in Finland.
 - **➖** The interview depends on a US cloud service (with fallback). Gemma and Gemini share a company, so Gemini is not used as a judge by default.
+
+## D20. Panel benchmark: three judges, median score
+**Result** (28 synthetic demo checks, 14 Nov 2026, `npm run bench:panel`):
+
+| Judge | Native speakers | Answering in a second language | Gap |
+|---|---|---|---|
+| Gemma 4 26B | 5.12 | 5.46 | -0.34 |
+| Mistral Small 3.2 24B | 5.92 | 6.05 | -0.13 |
+| Gemini 3.8 Flash | 4.73 | 5.11 | -0.38 |
+| **Panel (median)** | **5.17** | **5.51** | **-0.34** |
+
+Agreement between the judges: **0.82** (1 = identical scores).
+- **Each judge has a bias of its own:** Mistral is the most generous, Gemini the strictest. The median keeps either extreme from deciding, as the panel research predicts (Verga et al. 2024).
+- **No penalty for answering in a second language:** all three judges scored second-language answers slightly higher, not lower. Pseudonymisation and the "ignore grammar" rule work as intended.
+- **Limits:** synthetic answers written by an AI, small groups (19 and 9). A real pilot must repeat this with real, consented answers.
+- **To check:** one weak Swedish check scored 0 with every judge (no quote passed verification), while the first run gave 2.8.
