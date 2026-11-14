@@ -1,0 +1,251 @@
+/*
+ * Espoo Design System Tokens
+ * Derived from https://www.espoo.fi/en
+ *
+ * Typography:
+ *   - Headings / UI / Buttons: Lato (300, 400, 700, 900)
+ *   - Body / Inputs: Work Sans (400, 600)
+ */
+
+:root {
+	/* Font families */
+	--espoo-font-heading: 'Lato', Helvetica, Arial, sans-serif;
+	--espoo-font-body: 'Work Sans', Helvetica, Arial, sans-serif;
+
+	/* Brand & Accents */
+	--espoo-blue: #0050bb;
+	--espoo-navy: #012169;
+	--espoo-deep-navy: #011135;
+	--espoo-mist: #dfe5eb;
+	--espoo-peach: #fde6db;
+	--espoo-apricot: #ffc386;
+	--espoo-blossom: #fca5c7;
+	--espoo-coral: #ff4f57;
+	--espoo-sun: #ffdc47;
+	--espoo-muted: #54595d;
+	--espoo-silver: #a7acb0;
+
+	/* Semantic Theme Tokens (Light Mode Default) */
+	--accents--alert: #ff4f57;
+	--accents--graphic: #0050bb;
+	--accents--info: #dfe5eb;
+	--accents--subtle: #dfe5eb;
+	--accents--strong: #012169;
+	--accents--warning: #ffc386;
+
+	--backgrounds--accordion: #dfe5eb;
+	--backgrounds--alert: #fde6db;
+	--backgrounds--alertMessages: #ff4f57;
+	--backgrounds--block: #ffffff;
+	--backgrounds--body: #0050bb;
+	--backgrounds--border: #dfe5eb;
+	--backgrounds--brand: #0050bb;
+	--backgrounds--content: #ffffff;
+	--backgrounds--contentAlternative: #ffffff;
+	--backgrounds--footer: #0050bb;
+	--backgrounds--formElement: #ffffff;
+	--backgrounds--header: #ffffff;
+	--backgrounds--hero: #0050bb;
+	--backgrounds--menu: #fde6db;
+	--backgrounds--news: #ffc386;
+	--backgrounds--noteMessages: #ffdc47;
+	--backgrounds--placeholder: #a7acb0;
+	--backgrounds--rowEven: #ffffff;
+	--backgrounds--rowOdd: #dfe5eb;
+	--backgrounds--unitInfo: #fca5c7;
+	--backgrounds--warning: #fde6db;
+
+	--interactives--primary: #0050bb;
+	--interactives--primaryForeground: #ffffff;
+	--interactives--primaryHover: #012169;
+	--interactives--primaryHoverForeground: #ffffff;
+	--interactives--primaryDisabledBackground: rgba(0, 80, 187, 0.45);
+	--interactives--primaryDisabledForeground: #012169;
+	--interactives--primaryOutline: #012169;
+
+	--typography--body: #000000;
+	--typography--bodyOnThemeColor: #ffffff;
+	--typography--header: #012169;
+	--typography--linkDefault: #0050bb;
+	--typography--linkHeading: #012169;
+	--typography--linkHeadingHover: #0050bb;
+	--typography--linkHeadingHoverOnThemeColor: #ffc386;
+	--typography--noteMessages: #012169;
+	--typography--placeholder: #54595d;
+
+	/* Shadows & Radii */
+	--shadows--default: 0.25rem 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.15);
+	--shadows--elevated: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.3);
+	--espoo-radius: 0.5rem;
+	--espoo-radius-sm: 0.25rem;
+	--espoo-border-width: 0.125rem;
+
+	/* Responsive Spacing */
+	--spacing--basicPadding: 1.25rem;
+	--spacing--bodyPadding: 1.25rem;
+	--spacing--boxPadding: 1.25rem;
+	--spacing--buttonPadding: 0.75rem;
+	--spacing--edgePadding: 0;
+	--spacing--footerPadding: 2rem;
+	--spacing--headerPadding: 0.75rem;
+	--spacing--itemPadding: 1.5rem;
+	--spacing--sidePadding: 1.25rem;
+	--spacing--textPadding: 1rem;
+	--spacing--tinyPadding: 0.25rem;
+}
+
+@media all and (min-width: 50em) {
+	:root {
+		--spacing--basicPadding: 1.5rem;
+		--spacing--bodyPadding: 2.5rem;
+		--spacing--boxPadding: 1.5rem;
+		--spacing--buttonPadding: 0.875rem;
+		--spacing--footerPadding: 2.5rem;
+		--spacing--headerPadding: 1.25rem;
+		--spacing--itemPadding: 2rem;
+		--spacing--sidePadding: 2.5rem;
+		--spacing--textPadding: 1.25rem;
+		--spacing--tinyPadding: 0.5rem;
+	}
+}
+
+@media all and (min-width: 70em) {
+	:root {
+		--spacing--basicPadding: 2rem;
+		--spacing--bodyPadding: 4rem;
+		--spacing--boxPadding: 2rem;
+		--spacing--buttonPadding: 0.875rem;
+		--spacing--edgePadding: 4rem;
+		--spacing--footerPadding: 3.5rem;
+		--spacing--headerPadding: 1.5rem;
+		--spacing--itemPadding: 2.5rem;
+		--spacing--sidePadding: 4rem;
+		--spacing--textPadding: 1.5rem;
+		--spacing--tinyPadding: 0.5rem;
+	}
+}
+
+/* Espoo Dark / High-Contrast Theme */
+[data-espoo-theme='dark'] {
+	--accents--graphic: #ffc386;
+	--accents--info: #011135;
+	--accents--subtle: #54595d;
+	--accents--strong: #ffffff;
+
+	--backgrounds--accordion: #012169;
+	--backgrounds--alert: #011135;
+	--backgrounds--block: #0050bb;
+	--backgrounds--body: #012169;
+	--backgrounds--border: rgba(255, 255, 255, 0.28);
+	--backgrounds--content: #011135;
+	--backgrounds--contentAlternative: #012169;
+	--backgrounds--footer: #012169;
+	--backgrounds--formElement: #0f0f1e;
+	--backgrounds--header: #012169;
+	--backgrounds--hero: #012169;
+	--backgrounds--menu: #011135;
+	--backgrounds--news: #011135;
+	--backgrounds--rowEven: #012169;
+	--backgrounds--rowOdd: #011135;
+	--backgrounds--unitInfo: #011135;
+	--backgrounds--warning: #011135;
+
+	--interactives--primary: #ffc386;
+	--interactives--primaryForeground: #011135;
+	--interactives--primaryHover: #fde6db;
+	--interactives--primaryHoverForeground: #012169;
+	--interactives--primaryDisabledBackground: rgba(255, 195, 134, 0.45);
+	--interactives--primaryDisabledForeground: #a7acb0;
+	--interactives--primaryOutline: #fde6db;
+
+	--typography--body: #ffffff;
+	--typography--header: #ffffff;
+	--typography--linkDefault: #ffc386;
+	--typography--linkHeading: #ffffff;
+	--typography--linkHeadingHover: #ffc386;
+	--typography--placeholder: #a7acb0;
+
+	--shadows--default: 0.25rem 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Base Espoo Document Scope */
+.espoo-root {
+	background-color: var(--backgrounds--content);
+	color: var(--typography--body);
+	font-family: var(--espoo-font-body);
+	font-weight: 400;
+	font-size: 1rem;
+	line-height: 1.625rem;
+	-webkit-font-smoothing: antialiased;
+}
+
+@media all and (min-width: 60em) {
+	.espoo-root {
+		font-size: 1.125rem;
+		line-height: 1.75rem;
+	}
+}
+
+.espoo-root h1,
+.espoo-root h2,
+.espoo-root h3,
+.espoo-root h4 {
+	font-family: var(--espoo-font-heading);
+	color: var(--typography--header);
+	margin: 0;
+}
+
+.espoo-root h1 {
+	font-weight: 400;
+	font-size: 1.875rem;
+	line-height: 2.375rem;
+}
+
+@media all and (min-width: 60em) {
+	.espoo-root h1 {
+		font-size: 2.5rem;
+		line-height: 3.125rem;
+	}
+}
+
+.espoo-root h2 {
+	font-weight: 400;
+	font-size: 1.5625rem;
+	line-height: 2.0625rem;
+}
+
+@media all and (min-width: 60em) {
+	.espoo-root h2 {
+		font-size: 1.875rem;
+		line-height: 2.375rem;
+	}
+}
+
+.espoo-root h3 {
+	font-weight: 700;
+	font-size: 1.25rem;
+	line-height: 1.625rem;
+}
+
+.espoo-root h4 {
+	font-weight: 700;
+	font-size: 1.0625rem;
+	line-height: 1.4375rem;
+}
+
+.espoo-root a.espoo-link {
+	color: var(--typography--linkDefault);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	font-weight: 600;
+}
+
+.espoo-root a.espoo-link:hover {
+	text-decoration: none;
+}
+
+.espoo-root a.espoo-link:focus-visible {
+	outline: 0.125rem solid var(--interactives--primaryOutline);
+	outline-offset: 0.125rem;
+	border-radius: 0.125rem;
+}
