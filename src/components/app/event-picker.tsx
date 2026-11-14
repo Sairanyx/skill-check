@@ -82,7 +82,8 @@ export function EventPicker({ lang, companies }: { lang: string; companies: Even
             {justCome.length > 0 && <p className="text-sm"><span className="font-medium">Just come and talk:</span> <span className="text-muted-foreground">{justCome.join(", ")}</span></p>}
             {proofsNeeded.length > 0 && (
               <p className="text-sm">
-                <span className="font-medium">Bring the original:</span> <span className="text-muted-foreground">{proofsNeeded.join(", ")}</span>
+                <span className="font-medium">Add these proofs before you book, and bring the originals:</span> <span className="text-muted-foreground">{proofsNeeded.join(", ")}</span>{" "}
+                <Link href={`/${lang}/candidate/proofs`} className="text-primary underline">Add proofs</Link>
               </p>
             )}
             {toCheck.length > MAX_PER_VISIT && <p className="text-sm text-muted-foreground">That is more than one visit. Book the first {MAX_PER_VISIT} now, the rest afterwards.</p>}

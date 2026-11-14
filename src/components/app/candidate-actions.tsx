@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,13 @@ const day = (d: string | Date) => new Date(d).toLocaleDateString("en-GB", { week
 const time = (d: string | Date) => new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Helsinki" });
 
 /** Booking: 1) choose up to 3 needs, 2) choose a place and time. Reschedule skips step 1. */
-export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [] }: { lang: string; needs: Need[]; slots: Slot[]; rescheduleId?: string; initialNeeds?: string[] }) {
+export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [], missing = {} }: { lang: string; needs: Need[]; slots: Slot[]; rescheduleId?: string; initialNeeds?: string[]; missing?: Record<string, string[]> }) {
   const router = useRouter();
   const [picked, setPicked] = useState<string[]>(initialNeeds.filter((id) => needs.some((n) => n.id === id)).slice(0, 3));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const ready = rescheduleId || picked.length > 0;
+  const toAdd = [...new Set(picked.flatMap((id) => missing[id] ?? []))];
+  const ready = rescheduleId || (picked.length > 0 && toAdd.length === 0);
 
   // One row per place + time (first free workstation), so the list stays short.
   const options = new Map<string, Slot>();
@@ -71,12 +73,21 @@ export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [
                     {n.title}
                   </span>
                 </label>
+                {missing[n.id] && <span className="text-xs text-muted-foreground">Needs: {missing[n.id].join(", ")}</span>}
                 {n.checkMode === "off" && <span className="text-muted-foreground">No skill check needed, just come to the event</span>}
                 {n.checkMode === "optional" && <span className="text-muted-foreground">Optional</span>}
               </li>
             ))}
           </ul>
         </section>
+      )}
+
+      {!rescheduleId && toAdd.length > 0 && (
+        <div className="rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm">
+          <p className="font-medium">Add these proofs before you book</p>
+          <p className="mt-1 text-muted-foreground">{toAdd.join(", ")}. City staff check the original when you come to the EXAM room. No copies are stored.</p>
+          <Link href={`/${lang}/candidate/proofs`} className="mt-2 inline-block text-primary underline">Add proofs</Link>
+        </div>
       )}
 
       <section className={ready ? "" : "pointer-events-none opacity-40"}>
