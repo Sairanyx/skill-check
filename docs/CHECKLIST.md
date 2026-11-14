@@ -40,6 +40,7 @@ Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 S
 | 12 | **Automated tests**: unit tests (score computation, accept rule, kiosk rules, JSON fallback, pseudonymisation patterns) + API end-to-end tests (turn Claude's test scripts into a repo test suite, e.g. Vitest), run on every push | Teammate |
 | 12b | **CRACI**: run those tests + lint/typecheck/build in GitHub Actions on CRACI runners (easy tech-challenge entry) | Teammate |
 | 13 | Context.dev: draft a need from the company website (needs key) | Teammate |
+| 14b | **Handover for Espoo IT**: "try without a GPU" mode (hosted model API) and a short operations guide (backups, updates, passwords, 12-month deletion, what happens when the AI is down) | Claude / teammate |
 | 14 | Mobile layout check, accessibility (keyboard, screen reader, contrast) | Teammate |
 
 ## 🟢 Could (roadmap slide if no time)
