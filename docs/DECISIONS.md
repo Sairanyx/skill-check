@@ -96,3 +96,15 @@ Every important design choice, with the research behind it (Finland first), how 
 **Idea:** when a company accepts someone, hint "this hire may qualify for the recruitment subsidy" (young Espoo resident or unemployed foreign-language speaker).
 - **Why rejected:** the hint itself reveals age group or language background, which breaks the anonymity of D3 and can bias decisions in either direction. The Helsinki pilot shows anonymity only works when it cannot be bypassed.
 - **Instead:** the City handles the subsidy after a hire, outside the platform, exactly as today.
+
+## D13. Fail safe to a human
+**Decision:** if any automatic safety step cannot run (for example the fairness agent returns an unreadable answer), the result is **not** released to companies. It goes to the City's human review queue with the flag "automatic fairness check could not run". Bad AI output is logged (length and edges only, no candidate text) so the cause can be found.
+- **Industry / law:** "fail safe" is standard in safety engineering; the EU AI Act requires human oversight and robustness for high-risk systems.
+- **Found in testing:** while generating 30 demo checks, the fairness agent once returned broken JSON twice. Replaying all 29 stored checks gave 0 failures, so the cause was rare (most likely an answer cut off at the length limit; the limit was doubled).
+- **➕** No result ever skips the fairness check silently. Problems become visible instead of hidden.
+- **➖** A few more items for City reviewers when the AI misbehaves.
+
+## D14. One store for conversations: Postgres only
+**Decision:** conversations are stored only in Postgres (Aiven, Finland). Audio is never stored.
+- **➕** Data minimisation: one copy to secure, list in GDPR records and erase.
+- **➖** Erased data stays in Aiven's encrypted backups until they expire (14 days). This must be stated in the privacy notice.

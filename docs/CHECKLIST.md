@@ -34,7 +34,8 @@ Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 S
 | 9 | **Fairness test bench** with more answers in fi/sv/en → numbers for a slide (could run on **Modal** for that prize) | Teammate |
 | 10 | Online and hybrid events: video meetings, digital badge instead of lanyard | Teammate |
 | 11 | Company screens: review/edit anchors and question bank, accept similar needs (backend exists, no UI yet) | Teammate |
-| 12 | **CRACI**: run lint/typecheck/build in GitHub Actions on CRACI runners (10 min, easy tech-challenge entry) | Teammate |
+| 12 | **Automated tests**: unit tests (score computation, accept rule, kiosk rules, JSON fallback, pseudonymisation patterns) + API end-to-end tests (turn Claude's test scripts into a repo test suite, e.g. Vitest), run on every push | Teammate |
+| 12b | **CRACI**: run those tests + lint/typecheck/build in GitHub Actions on CRACI runners (easy tech-challenge entry) | Teammate |
 | 13 | Context.dev: draft a need from the company website (needs key) | Teammate |
 | 14 | Mobile layout check, accessibility (keyboard, screen reader, contrast) | Teammate |
 
