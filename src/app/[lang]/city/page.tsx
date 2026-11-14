@@ -11,7 +11,6 @@ import { EventPolicyToggle, ApproveCompany } from "@/components/app/event-action
 import { testingOverview } from "@/lib/services/testing";
 import { PageTitle, Section, Empty, fmtTime, eventMode } from "@/components/app/ui";
 import { EnrollHere } from "@/components/app/city-actions";
-import { VerifyProof } from "@/components/app/proof-actions";
 import { proofsToVerify } from "@/lib/services/proofs";
 
 export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
@@ -97,17 +96,13 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         )}
       </Section>
 
-      <Section title="Proofs to check at the desk">
+      <Section title="Documents to check">
         {proofQueue.length ? (
-          <PagedList className="divide-y border-y text-sm" noun="proofs to check">
-            {proofQueue.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-3">
-                <span>
-                  <strong>{p.candidate}</strong> · {p.label}
-                  {p.level ? `, ${p.level}` : ""}
-                  <span className="block text-xs text-muted-foreground">{p.howToCheck}</span>
-                </span>
-                <VerifyProof id={p.id} howToCheck={p.howToCheck ?? "Original seen"} />
+          <PagedList noun="people">
+            {[...new Map(proofQueue.map((p) => [p.candidateId, p])).values()].map((p) => (
+              <li key={p.candidateId} className="flex flex-wrap items-center justify-between gap-4 py-3">
+                <Link href={`/${lang}/city/people/${p.candidateId}`} className="font-medium text-primary hover:underline">{p.candidate}</Link>
+                <span className="text-muted-foreground">{proofQueue.filter((x) => x.candidateId === p.candidateId).map((x) => x.label).join(", ")}</span>
               </li>
             ))}
           </PagedList>
