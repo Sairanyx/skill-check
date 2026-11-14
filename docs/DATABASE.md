@@ -41,6 +41,7 @@ erDiagram
   skill_checks ||--o{ bookings : ""
   meeting_slots ||--o| bookings : ""
   user ||--o{ contact_shares : "consent"
+  user ||--o{ proofs : "licences, certificates"
   companies ||--o{ contact_shares : ""
 
   user {
@@ -64,6 +65,8 @@ erDiagram
     jsonb anchors "BARS: 1/3/5 + checklist"
     jsonb question_bank "optional, per level"
     enum check_mode "required | optional | off"
+    jsonb language_requirements "optional, CEFR"
+    jsonb proof_requirements "optional, codes"
   }
   events {
     text id PK
@@ -133,7 +136,7 @@ erDiagram
   }
 ```
 
-## Tables by area (26 tables)
+## Tables by area (27 tables)
 
 | Area | Tables | Purpose |
 |---|---|---|
@@ -141,7 +144,8 @@ erDiagram
 | **Companies** | `companies`, `needs`, `need_equivalences` | A company's needs: skills, ESCO links, BARS anchors, optional questions, skill check mode. Equivalences = "results from that need count for us too" |
 | **Events** | `events`, `event_companies`, `event_needs`, `meeting_rooms`, `meeting_slots` | City events. Companies apply → City approves → company confirms (≥ 1 week before). 10-minute meeting slots |
 | **Testing rooms** | `venues`, `test_rooms`, `workstations`, `test_slots`, `appointments` | EXAM-room model. A booking = jobseeker + 30-minute slot on one workstation + 1–3 needs |
-| **Skill checks** | `skill_checks`, `evaluations` | The conversation (raw and pseudonymised) and the AI evidence |
+| **Skill checks** | `skill_checks`, `evaluations` | The conversation (raw and pseudonymised), the AI evidence and the separate language assessment |
+| **Official proofs** | `proofs` | Licences, cards, degrees, language certificates. Declared by the jobseeker, verified by City staff in person. No document copies |
 | **Human decisions** | `decisions`, `bookings`, `contact_shares` | Accept / not this time (City or company), meeting bookings, contact-sharing consent |
 | **GDPR** | `audit_events` | Every access to or change of personal data |
 | Not used yet | `video_submissions` | Planned video-of-work path |
