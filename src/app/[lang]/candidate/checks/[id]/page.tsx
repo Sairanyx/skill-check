@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { getCheck } from "@/lib/services/checks";
-import { freeSlots } from "@/lib/services/decisions";
+import { freeSlots, outcomes } from "@/lib/services/decisions";
 import { db, bookings, meetingSlots, meetingRooms } from "@/db";
 import { CheckRunner } from "@/components/app/check-runner";
 import { BookMeeting } from "@/components/app/book-meeting";
@@ -23,7 +23,8 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
   if (!check) notFound();
   const onKiosk = !!(await cookies()).get(KIOSK_COOKIE)?.value;
 
-  const invited = check.decisions.find((d) => d.role === "company")?.decision === "invite";
+  const accepted = (await outcomes(id)).filter((o) => o.accepted);
+  const invited = accepted.length > 0;
   const [booking] = await db
     .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, companyId: bookings.companyId })
     .from(bookings)
@@ -44,7 +45,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
       </div>
 
       {invited && (
-        <Section title={`${check.need.company} wants to meet you`}>
+        <Section title={`Accepted for ${accepted.map((a) => a.company).join(", ")}`}>
           {booking ? (
             <>
             <p className="text-sm">

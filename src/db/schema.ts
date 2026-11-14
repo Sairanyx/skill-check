@@ -144,16 +144,25 @@ export const events = pgTable("events", {
   title: text("title").notNull(),
   startsAt: timestamp("starts_at").notNull(),
   rsvpDeadline: timestamp("rsvp_deadline"), // companies confirm attendance before this
+  // "per_company" = each company chooses; "none" = open event, no skill checks needed for anyone
+  checkPolicy: text("check_policy").notNull().default("per_company"),
   mode: text("mode").notNull().default("in_person"),
   location: text("location"),
   createdAt: createdAt(),
 });
 
-/** A company invited to an event. confirmedAt = the company said "we will attend". */
+/**
+ * A company at an event: applies → City approves → company confirms at least 1 week before.
+ * checkMode = does this company need a skill check at this event (required / optional / off).
+ */
 export const eventCompanies = pgTable("event_companies", {
   id: id(),
   eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
   companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+  checkMode: checkModeEnum("check_mode").notNull().default("required"),
+  appliedAt: timestamp("applied_at").notNull().defaultNow(),
+  approvedAt: timestamp("approved_at"),
+  approvedBy: text("approved_by").references(() => user.id),
   confirmedAt: timestamp("confirmed_at"),
   confirmedBy: text("confirmed_by").references(() => user.id),
 });
@@ -299,6 +308,7 @@ export const decisions = pgTable("decisions", {
   decidedBy: text("decided_by").notNull().references(() => user.id),
   role: roleEnum("role").notNull(),
   decision: decisionEnum("decision").notNull(),
+  companyId: text("company_id").references(() => companies.id), // which company this decision is about
   aiFollowed: boolean("ai_followed"), // did the human agree with the AI's suggestion?
   note: text("note"),
   createdAt: createdAt(),

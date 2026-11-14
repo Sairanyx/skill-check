@@ -12,6 +12,7 @@ import { audit } from "./audit";
 import { assertKioskTurn } from "./testing";
 import { acceptedNeedIds } from "./company";
 import { aliasFor } from "@/lib/alias";
+import { outcomes } from "./decisions";
 
 /** Below this confidence, or with any fairness flag, a person at the City reviews first. */
 export const REVIEW_CONFIDENCE = 0.6;
@@ -209,22 +210,22 @@ export async function setSharing(actor: ApiUser, checkId: string, share: boolean
 }
 
 /**
- * Stamps for the event card: one per company whose person ACCEPTED a result (latest company decision = invite).
- * No review or a rejection = no stamp. Failures never appear.
+ * Stamps for the lanyard card: one per company that accepted the result, saying who accepted
+ * (the company itself, and/or the City for that company). Declines and failures never appear.
  */
 export async function myStamps(actor: ApiUser) {
-  const rows = await db
-    .select({ checkId: skillChecks.id, showOnCard: skillChecks.showOnCard, needTitle: needs.title, decision: decisions.decision, at: decisions.createdAt, decidedBy: decisions.decidedBy })
+  const checks = await db
+    .select({ id: skillChecks.id, showOnCard: skillChecks.showOnCard, needTitle: needs.title })
     .from(skillChecks)
     .innerJoin(needs, eq(skillChecks.needId, needs.id))
-    .innerJoin(decisions, and(eq(decisions.checkId, skillChecks.id), eq(decisions.role, "company")))
-    .where(eq(skillChecks.candidateId, actor.id))
-    .orderBy(desc(decisions.createdAt));
-  const latest = new Map<string, (typeof rows)[number]>(); // per check + deciding company
-  for (const r of rows) if (!latest.has(`${r.checkId}:${r.decidedBy}`)) latest.set(`${r.checkId}:${r.decidedBy}`, r);
-  const accepted = [...latest.values()].filter((r) => r.decision === "invite");
-  const owners = accepted.length ? await db.select({ ownerId: companies.ownerId, name: companies.name }).from(companies).where(inArray(companies.ownerId, accepted.map((a) => a.decidedBy))) : [];
-  return accepted.map((a) => ({ checkId: a.checkId, company: owners.find((o) => o.ownerId === a.decidedBy)?.name ?? "Company", needTitle: a.needTitle, showOnCard: a.showOnCard }));
+    .where(and(eq(skillChecks.candidateId, actor.id), inArray(skillChecks.status, ["evaluated", "needs_review"])));
+  const out: { checkId: string; company: string; needTitle: string; byCompany: boolean; byCity: boolean; showOnCard: boolean }[] = [];
+  for (const c of checks) {
+    for (const o of (await outcomes(c.id)).filter((x) => x.accepted)) {
+      out.push({ checkId: c.id, company: o.company, needTitle: c.needTitle, byCompany: o.acceptedByCompany, byCity: o.acceptedByCity && !o.declinedByCompany, showOnCard: c.showOnCard });
+    }
+  }
+  return out;
 }
 
 /** Candidate consent: print accepted stamps on the event card (one switch for all). */
@@ -252,4 +253,32 @@ export async function reviewQueue() {
     .innerJoin(companies, eq(needs.companyId, companies.id))
     .where(eq(skillChecks.status, "needs_review"))
     .orderBy(desc(skillChecks.finishedAt));
+}
+
+/** City matching list: every released result, with the current accept/decline state per company. */
+export async function cityMatchingList() {
+  const rows = await db
+    .select({
+      checkId: skillChecks.id,
+      candidateId: skillChecks.candidateId,
+      needTitle: needs.title,
+      company: companies.name,
+      match: evaluations.match,
+      confidence: evaluations.confidence,
+      difficulty: evaluations.difficulty,
+      finishedAt: skillChecks.finishedAt,
+    })
+    .from(skillChecks)
+    .innerJoin(evaluations, eq(evaluations.checkId, skillChecks.id))
+    .innerJoin(needs, eq(skillChecks.needId, needs.id))
+    .innerJoin(companies, eq(needs.companyId, companies.id))
+    .where(eq(skillChecks.status, "evaluated"))
+    .orderBy(desc(evaluations.match));
+  return Promise.all(
+    rows.map(async ({ candidateId, ...r }) => {
+      const o = (await outcomes(r.checkId))[0];
+      const state = !o ? "open" : o.accepted ? (o.acceptedByCompany ? "accepted by company" : "accepted by City") : o.declinedByCompany ? "declined by company" : "not this time";
+      return { ...r, alias: aliasFor(candidateId), state };
+    }),
+  );
 }

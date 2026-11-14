@@ -18,19 +18,25 @@ export default async function CardPage({ params }: PageProps<"/[lang]/candidate/
     <div className="mx-auto max-w-5xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground print:hidden">← Skill checks</Link>
       <div className="mt-6 print:hidden">
-        <PageTitle title="Event card">Print it or show it at the door. Stamps appear when a company has accepted your skill check.</PageTitle>
+        <PageTitle title="Lanyard card">Printed for your badge at the event. A stamp appears when the company or the City of Espoo has accepted your skill check for that company.</PageTitle>
         {stamps.length > 0 && <ConsentToggle path="/me/card" field="show" initial={consent} label="Show my stamps on the card" />}
       </div>
 
       <div className="mt-8 max-w-md rounded-2xl border-2 border-primary p-8">
         <p className="text-sm font-medium text-primary">City of Espoo · Espoo Tech Talent Day</p>
+        <p className="mt-1 text-xs text-muted-foreground">Open event: talk to any company</p>
         <p className="mt-4 text-3xl font-semibold">{me.name}</p>
         {consent && (
           <ul className="mt-6 space-y-2">
             {stamps.map((s) => (
               <li key={s.checkId} className="flex items-center gap-3 text-sm">
                 <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">✓</span>
-                <span>Skill check accepted by <strong>{s.company}</strong></span>
+                <span>
+                  Skill check for <strong>{s.company}</strong>
+                  <span className="block text-xs text-muted-foreground">
+                    accepted by {[s.byCompany && s.company, s.byCity && "the City of Espoo"].filter(Boolean).join(" and ")}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>
