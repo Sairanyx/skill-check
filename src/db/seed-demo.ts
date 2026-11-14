@@ -120,7 +120,7 @@ const actor = (u: { id: string; name: string; email: string; role: string }): Ap
 async function main() {
   const t0 = Date.now();
   const city = (await db.query.user.findFirst({ where: eq(user.email, "events@espoo.demo") }))!;
-  const [event] = await db.select().from(events).limit(1);
+  const [event] = await db.select().from(events).where(eq(events.title, "Espoo Tech Talent Day")).limit(1);
   if (!city || !event) throw new Error("Run npm run db:seed first");
 
   // 1. Companies, needs (with ESCO + BARS anchors), event applications

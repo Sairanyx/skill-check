@@ -110,6 +110,27 @@ async function main() {
     ),
   );
 
+  // Two more events to choose from: online and hybrid. No company has applied yet.
+  const more = await db
+    .insert(events)
+    .values([
+      { title: "Espoo Online Job Fair", startsAt: new Date("2026-12-04T14:00:00+02:00"), mode: "online", location: "Online, video meetings" },
+      { title: "Espoo Hybrid Recruitment Day", startsAt: new Date("2026-12-11T10:00:00+02:00"), mode: "hybrid", location: "Espoo and online" },
+    ])
+    .returning();
+  for (const e of more) {
+    const names = e.mode === "online" ? ["Video room 1", "Video room 2"] : ["Room A", "Video room 1"];
+    const rooms = await db.insert(meetingRooms).values(names.map((name) => ({ eventId: e.id, name }))).returning();
+    await db.insert(meetingSlots).values(
+      rooms.flatMap((room) =>
+        Array.from({ length: 12 }, (_, i) => ({
+          eventId: e.id, roomId: room.id,
+          startsAt: new Date(e.startsAt.getTime() + i * MEETING_MIN * MIN), endsAt: new Date(e.startsAt.getTime() + (i + 1) * MEETING_MIN * MIN),
+        })),
+      ),
+    );
+  }
+
   // Testing rooms (EXAM-room model): venues → rooms → workstations → 30 min slots
   const [lepp, ota] = await db
     .insert(venues)
