@@ -38,3 +38,6 @@ export const fmtTime = (d: Date | string) =>
 
 /** Only the clock time in Finland, e.g. "17:00". */
 export const fmtClock = (d: Date | string) => new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Helsinki" });
+
+/** Event format, as a short label. */
+export const eventMode = (m: string) => ({ in_person: "In person", online: "Online", hybrid: "Hybrid" })[m] ?? m;

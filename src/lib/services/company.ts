@@ -82,6 +82,8 @@ export async function companyEvents(actor: ApiUser) {
       eventId: e.id,
       title: e.title,
       startsAt: e.startsAt,
+      mode: e.mode,
+      location: e.location,
       checkPolicy: e.checkPolicy,
       deadline: rsvpDeadline(e.startsAt, e.rsvpDeadline),
       status: !m ? "not_applied" : m.confirmedAt ? "confirmed" : m.approvedAt ? "approved" : "applied",

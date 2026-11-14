@@ -8,7 +8,7 @@ import { eventApplications } from "@/lib/services/company";
 import { db, events as eventsTable } from "@/db";
 import { EventPolicyToggle, ApproveCompany } from "@/components/app/event-actions";
 import { testingOverview } from "@/lib/services/testing";
-import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
+import { PageTitle, Section, Empty, fmtTime, eventMode } from "@/components/app/ui";
 import { EnrollHere } from "@/components/app/city-actions";
 import { VerifyProof } from "@/components/app/proof-actions";
 import { proofsToVerify } from "@/lib/services/proofs";
@@ -47,7 +47,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         {events.map((e, i) => (
           <div key={e.id} className="mb-6">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
-              <p className="font-medium">{e.title} <span className="font-normal text-muted-foreground">· {fmtTime(e.startsAt)}</span></p>
+              <p className="font-medium">{e.title} <span className="ml-2 rounded-full border px-2 py-0.5 text-xs font-normal">{eventMode(e.mode)}</span> <span className="font-normal text-muted-foreground">· {fmtTime(e.startsAt)}</span></p>
               <EventPolicyToggle eventId={e.id} policy={e.checkPolicy} />
             </div>
             <ul className="divide-y border-y text-sm">

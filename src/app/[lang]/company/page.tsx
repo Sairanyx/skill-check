@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/session";
 import { companyCandidates } from "@/lib/services/checks";
 import { companyEvents, latestDecisions, myMeetings, myNeeds } from "@/lib/services/company";
 import { CompanyEventRow } from "@/components/app/event-actions";
-import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
+import { PageTitle, Section, Empty, fmtTime, eventMode } from "@/components/app/ui";
 
 const DECISION: Record<string, string> = { invite: "Accepted", not_now: "Not this time", needs_review: "Sent to City" };
 
@@ -29,8 +29,8 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
           {events.map((e) => (
             <li key={e.eventId} className="flex flex-wrap items-center justify-between gap-4 py-4">
               <div>
-                <p className="font-medium">{e.title}</p>
-                <p className="text-muted-foreground">{fmtTime(e.startsAt)} · confirm by {fmtTime(e.deadline)}{e.checkPolicy === "none" ? " · open event, no skill checks" : ""}</p>
+                <p className="font-medium">{e.title} <span className="ml-2 rounded-full border px-2 py-0.5 text-xs font-normal">{eventMode(e.mode)}</span></p>
+                <p className="text-muted-foreground">{fmtTime(e.startsAt)} · {e.location} · confirm by {fmtTime(e.deadline)}{e.checkPolicy === "none" ? " · open event, no skill checks" : ""}</p>
               </div>
               <CompanyEventRow eventId={e.eventId} status={e.status} checkMode={e.checkMode} canConfirm={canConfirm(e.deadline)} />
             </li>
