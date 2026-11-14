@@ -17,6 +17,8 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
   if (!check || !check.evaluation) notFound();
   const booking = await bookingForCheck(me, id);
   const mine = check.decisions.filter((d) => d.role === "company");
+  const cityLast = check.decisions.find((d) => d.role === "city" && (d.decision === "invite" || d.decision === "not_now"));
+  const cityView = cityLast ? (cityLast.decision === "invite" ? "accepted" : "not this time") : null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
@@ -36,12 +38,13 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
           <DecisionPanel
             checkId={id}
             options={[
-              { value: "invite", label: "Invite to meet", primary: true },
-              { value: "not_now", label: "Not now" },
+              { value: "invite", label: "Accept", primary: true },
+              { value: "not_now", label: "Not this time" },
               { value: "needs_review", label: "Ask the City to review" },
             ]}
           />
         )}
+        {cityView && <p className="mt-4 text-sm text-muted-foreground">City of Espoo: {cityView}. Your own decision always applies to your company.</p>}
         {mine.length > 0 && (
           <ul className="mt-6 space-y-1 text-xs text-muted-foreground">
             {mine.map((d) => (

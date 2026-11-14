@@ -29,7 +29,7 @@ export async function loadNeed(needId: string): Promise<Need & { companyId: stri
 }
 
 export async function listNeeds() {
-  return db
+  const rows = await db
     .select({
       id: needs.id,
       title: needs.title,
@@ -37,12 +37,15 @@ export async function listNeeds() {
       skills: needs.skills,
       escoSkills: needs.escoSkills,
       level: needs.level,
-      checkMode: needs.checkMode,
+      companyId: needs.companyId,
       company: companies.name,
     })
     .from(needs)
     .innerJoin(companies, eq(needs.companyId, companies.id))
     .orderBy(desc(needs.createdAt));
+  // The company's choice for its next event (and the City's event policy) decides if a check is needed.
+  const { effectiveCheckMode } = await import("./company");
+  return Promise.all(rows.map(async (r) => ({ ...r, checkMode: await effectiveCheckMode(r.companyId) })));
 }
 
 export async function createNeed(

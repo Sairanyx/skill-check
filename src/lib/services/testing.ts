@@ -4,6 +4,7 @@ import { and, asc, eq, gt, inArray, isNull, lte, gte, notInArray } from "drizzle
 import { db, venues, testRooms, workstations, testSlots, appointments, needs, companies } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
 import { audit } from "./audit";
+import { effectiveCheckMode } from "./company";
 
 /**
  * Testing rooms, EXAM-room style: venue → room → workstation (locked kiosk) → 30 min slot.
@@ -59,9 +60,10 @@ async function validNeeds(needIds: string[]) {
   const ids = [...new Set(needIds ?? [])];
   if (!ids.length) throw new ApiError(400, "Choose at least one company need");
   if (ids.length > MAX_NEEDS_PER_APPOINTMENT) throw new ApiError(400, `At most ${MAX_NEEDS_PER_APPOINTMENT} needs per booking`);
-  const rows = await db.select({ id: needs.id, checkMode: needs.checkMode }).from(needs).where(inArray(needs.id, ids));
+  const rows = await db.select({ id: needs.id, companyId: needs.companyId }).from(needs).where(inArray(needs.id, ids));
   if (rows.length !== ids.length) throw new ApiError(400, "Unknown need");
-  if (rows.some((r) => r.checkMode === "off")) throw new ApiError(400, "One of these companies does not need a skill check");
+  for (const r of rows)
+    if ((await effectiveCheckMode(r.companyId)) === "off") throw new ApiError(400, "One of these companies does not need a skill check, just come to the event");
   return ids;
 }
 

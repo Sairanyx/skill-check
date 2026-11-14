@@ -6,7 +6,7 @@ import { loadNeed } from "./needs";
 import { audit } from "./audit";
 import { aliasFor } from "@/lib/alias";
 import { sharedContact } from "./privacy";
-import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, events, eventCompanies, needEquivalences, type QuestionBank } from "@/db";
+import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, events, eventNeeds, eventCompanies, needEquivalences, type QuestionBank } from "@/db";
 import type { ApiUser } from "@/lib/api";
 
 /** The company's own needs with how many candidates are ready for review. */
@@ -68,16 +68,26 @@ export async function bookingForCheck(actor: ApiUser, checkId: string) {
 
 export const RSVP_MIN_DAYS_BEFORE = 7;
 
+type CheckMode = "required" | "optional" | "off";
+
+/** Upcoming City events and this company's status at each (not applied / applied / approved / confirmed). */
 export async function companyEvents(actor: ApiUser) {
   const co = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
   if (!co) return [];
-  const rows = await db
-    .select({ eventId: events.id, title: events.title, startsAt: events.startsAt, rsvpDeadline: events.rsvpDeadline, confirmedAt: eventCompanies.confirmedAt })
-    .from(eventCompanies)
-    .innerJoin(events, eq(eventCompanies.eventId, events.id))
-    .where(eq(eventCompanies.companyId, co.id))
-    .orderBy(events.startsAt);
-  return rows.map((r) => ({ ...r, deadline: rsvpDeadline(r.startsAt, r.rsvpDeadline) }));
+  const all = await db.select().from(events).orderBy(events.startsAt);
+  const mine = await db.select().from(eventCompanies).where(eq(eventCompanies.companyId, co.id));
+  return all.map((e) => {
+    const m = mine.find((x) => x.eventId === e.id);
+    return {
+      eventId: e.id,
+      title: e.title,
+      startsAt: e.startsAt,
+      checkPolicy: e.checkPolicy,
+      deadline: rsvpDeadline(e.startsAt, e.rsvpDeadline),
+      status: !m ? "not_applied" : m.confirmedAt ? "confirmed" : m.approvedAt ? "approved" : "applied",
+      checkMode: m?.checkMode ?? null,
+    };
+  });
 }
 
 const rsvpDeadline = (startsAt: Date, set: Date | null) => {
@@ -85,16 +95,79 @@ const rsvpDeadline = (startsAt: Date, set: Date | null) => {
   return set && set < weekBefore ? set : weekBefore;
 };
 
-export async function confirmAttendance(actor: ApiUser, eventId: string) {
+async function myCompany(actor: ApiUser) {
   const co = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
-  const invite = co && (await db.query.eventCompanies.findFirst({ where: and(eq(eventCompanies.eventId, eventId), eq(eventCompanies.companyId, co.id)) }));
+  if (!co) throw new ApiError(400, "Create your company profile first");
+  return co;
+}
+
+/** One click: apply to an event, and say whether you need a skill check there. */
+export async function applyToEvent(actor: ApiUser, eventId: string, checkMode: CheckMode = "required") {
+  const co = await myCompany(actor);
   const event = await db.query.events.findFirst({ where: eq(events.id, eventId) });
-  if (!co || !invite || !event) throw new ApiError(404, "Event not found");
+  if (!event) throw new ApiError(404, "Event not found");
+  const existing = await db.query.eventCompanies.findFirst({ where: and(eq(eventCompanies.eventId, eventId), eq(eventCompanies.companyId, co.id)) });
+  if (existing) {
+    await db.update(eventCompanies).set({ checkMode }).where(eq(eventCompanies.id, existing.id));
+  } else {
+    await db.insert(eventCompanies).values({ eventId, companyId: co.id, checkMode });
+    const myNeeds = await db.select({ id: needs.id }).from(needs).where(eq(needs.companyId, co.id));
+    if (myNeeds.length) await db.insert(eventNeeds).values(myNeeds.map((n) => ({ eventId, needId: n.id })));
+  }
+  await audit(actor, existing ? "event.check_mode_changed" : "event.applied", { targetType: "event", targetId: eventId, meta: { checkMode } });
+  return { applied: true, checkMode };
+}
+
+/** Confirm attendance: only after the City approved, and at least 1 week before the event. */
+export async function confirmAttendance(actor: ApiUser, eventId: string) {
+  const co = await myCompany(actor);
+  const row = await db.query.eventCompanies.findFirst({ where: and(eq(eventCompanies.eventId, eventId), eq(eventCompanies.companyId, co.id)) });
+  const event = await db.query.events.findFirst({ where: eq(events.id, eventId) });
+  if (!row || !event) throw new ApiError(404, "Apply to the event first");
+  if (!row.approvedAt) throw new ApiError(409, "The City has not approved your participation yet");
   if (Date.now() > rsvpDeadline(event.startsAt, event.rsvpDeadline).getTime())
     throw new ApiError(409, `Attendance must be confirmed at least ${RSVP_MIN_DAYS_BEFORE} days before the event`);
-  await db.update(eventCompanies).set({ confirmedAt: new Date(), confirmedBy: actor.id }).where(eq(eventCompanies.id, invite.id));
+  await db.update(eventCompanies).set({ confirmedAt: new Date(), confirmedBy: actor.id }).where(eq(eventCompanies.id, row.id));
   await audit(actor, "event.attendance_confirmed", { targetType: "event", targetId: eventId });
   return { confirmed: true };
+}
+
+/** City: companies that applied to an event. */
+export async function eventApplications(eventId: string) {
+  return db
+    .select({ id: eventCompanies.id, company: companies.name, checkMode: eventCompanies.checkMode, appliedAt: eventCompanies.appliedAt, approvedAt: eventCompanies.approvedAt, confirmedAt: eventCompanies.confirmedAt })
+    .from(eventCompanies)
+    .innerJoin(companies, eq(eventCompanies.companyId, companies.id))
+    .where(eq(eventCompanies.eventId, eventId))
+    .orderBy(eventCompanies.appliedAt);
+}
+
+export async function approveCompany(actor: ApiUser, eventCompanyId: string) {
+  const [row] = await db.update(eventCompanies).set({ approvedAt: new Date(), approvedBy: actor.id }).where(eq(eventCompanies.id, eventCompanyId)).returning();
+  if (!row) throw new ApiError(404, "Application not found");
+  await audit(actor, "event.company_approved", { targetType: "event", targetId: row.eventId, meta: { companyId: row.companyId } });
+  return row;
+}
+
+/** City: "per_company" (each company decides) or "none" (open event, no skill checks for anyone). */
+export async function setEventPolicy(actor: ApiUser, eventId: string, checkPolicy: "per_company" | "none") {
+  const [row] = await db.update(events).set({ checkPolicy }).where(eq(events.id, eventId)).returning();
+  if (!row) throw new ApiError(404, "Event not found");
+  await audit(actor, "event.policy_changed", { targetType: "event", targetId: eventId, meta: { checkPolicy } });
+  return row;
+}
+
+/** Does this company need a skill check at its next event? (event policy wins, then the company's choice) */
+export async function effectiveCheckMode(companyId: string): Promise<CheckMode> {
+  const [row] = await db
+    .select({ policy: events.checkPolicy, mode: eventCompanies.checkMode })
+    .from(eventCompanies)
+    .innerJoin(events, eq(eventCompanies.eventId, events.id))
+    .where(eq(eventCompanies.companyId, companyId))
+    .orderBy(events.startsAt)
+    .limit(1);
+  if (!row) return "required";
+  return row.policy === "none" ? "off" : row.mode;
 }
 
 /* ---------- need settings: check mode + optional question bank (screened) ---------- */

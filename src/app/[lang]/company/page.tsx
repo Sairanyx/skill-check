@@ -3,16 +3,19 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { companyCandidates } from "@/lib/services/checks";
-import { latestDecisions, myMeetings, myNeeds } from "@/lib/services/company";
+import { companyEvents, latestDecisions, myMeetings, myNeeds } from "@/lib/services/company";
+import { CompanyEventRow } from "@/components/app/event-actions";
 import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
 
-const DECISION: Record<string, string> = { invite: "Invited", not_now: "Not now", needs_review: "Sent to City" };
+const DECISION: Record<string, string> = { invite: "Accepted", not_now: "Not this time", needs_review: "Sent to City" };
+
+const canConfirm = (deadline: Date) => Date.now() < new Date(deadline).getTime();
 
 export default async function CompanyPage({ params }: PageProps<"/[lang]/company">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const me = await requireRole(lang, "company");
-  const [needs, candidates, meetings] = await Promise.all([myNeeds(me), companyCandidates(me), myMeetings(me)]);
+  const [needs, candidates, meetings, events] = await Promise.all([myNeeds(me), companyCandidates(me), myMeetings(me), companyEvents(me)]);
   const decided = await latestDecisions(candidates.map((c) => c.checkId));
 
   return (
@@ -21,7 +24,21 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
         People who took a skill check for your needs, best match first. Names and contact details stay with the City of Espoo. Candidates can choose to share their contact with you.
       </PageTitle>
 
-      <Section title="Ready to review">
+      <Section title="City of Espoo events">
+        <ul className="divide-y border-y text-sm">
+          {events.map((e) => (
+            <li key={e.eventId} className="flex flex-wrap items-center justify-between gap-4 py-4">
+              <div>
+                <p className="font-medium">{e.title}</p>
+                <p className="text-muted-foreground">{fmtTime(e.startsAt)} · confirm by {fmtTime(e.deadline)}{e.checkPolicy === "none" ? " · open event, no skill checks" : ""}</p>
+              </div>
+              <CompanyEventRow eventId={e.eventId} status={e.status} checkMode={e.checkMode} canConfirm={canConfirm(e.deadline)} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Ready to review (optional, the City reviews too)">
         {candidates.length ? (
           <table className="w-full text-sm">
             <thead className="text-left text-muted-foreground">
