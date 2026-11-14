@@ -14,7 +14,7 @@ Every important design choice, with the research behind it (Finland first), how 
 ## D2. Pseudonymise every answer before any AI scores it
 **Decision:** a privacy guard (patterns + Gemma on our server) replaces names, employers, schools, places and contact details with tags before the agents see the text.
 - **Finland:** the **City of Helsinki anonymous recruitment pilot** (VATT/LABORE 2023) increased hiring of applicants with foreign names.
-- **Industry:** studies keep finding that LLMs rank identical CVs differently by name (CUHK 2026 audit of 14 LLMs, AIES 2024). Layered PII detection (rules + NER + LLM) beats rules alone (REDACT benchmark).
+- **Industry:** studies keep finding that LLMs rank identical CVs differently by name (CUHK 2026 audit of 14 LLMs, AIES 2024), judge dialect and non-native writing more harshly (Nature 2024, Patterns 2023) and favour by age and gender. Full table: RESEARCH.md, "Why the AI only ever sees pseudonymised answers". Layered PII detection (rules + NER + LLM) beats rules alone (REDACT benchmark).
 - **➕** Fairness (the scorer cannot be swayed by a name or a famous employer) and privacy (raw text never leaves Finland).
 - **➖** A redaction can miss something (we show the candidate exactly what the AI saw). Tags can remove useful context ("worked at a large logistics company"). It is pseudonymisation, not anonymisation: still personal data under GDPR.
 
@@ -108,3 +108,19 @@ Every important design choice, with the research behind it (Finland first), how 
 **Decision:** conversations are stored only in Postgres (Aiven, Finland). Audio is never stored.
 - **➕** Data minimisation: one copy to secure, list in GDPR records and erase.
 - **➖** Erased data stays in Aiven's encrypted backups until they expire (14 days). This must be stated in the privacy notice.
+
+## D15. The privacy guard follows the Non-Discrimination Act, and hides revealing dates
+**Decision:** the guard removes everything on the grounds protected by the **Non-Discrimination Act (1325/2014)** and the **Equality Act (609/1986)**: age, origin, nationality, mother tongue, religion, belief, opinion, political and union activity, family, health, disability, sexual orientation, gender. Calendar years that reveal age or life events ("born 1985", "graduated 1998", "moved here in 2022") become `[YEAR]`. **Durations stay** ("3 years of SQL", "a 6-month project"), and so do tools and versions ("Python 3.12").
+- **Finland:** the Act lists exactly these grounds. A graduation year is a well-known proxy for age, an arrival year for origin.
+- **Research:** LLMs change scores by name, dialect, age and gender (RESEARCH.md table). Removing the signal is more reliable than asking the model to ignore it.
+- **Tested:** Finnish, Swedish and English sentences, about 0.3–0.5 s each on our own server.
+- **➕** The categories are the law's, not our own invention. Easy to explain to the City's lawyers.
+- **➖** Some context is lost ("experience since 2010" becomes "since [YEAR]"). Durations keep most of the value.
+
+## D16. Optional language requirement per need, scored separately
+**Decision:** a company may mark a language as a real requirement of the job, with a CEFR level (for example Swedish B2). Then the interviewer asks **one question in that language** (placed in code, always the third question), and a separate assessment gives a CEFR level with verified quotes: "Swedish, B2 required: B2, meets". **It is never part of the skill match.** All other scores keep ignoring grammar and fluency. Without a requirement, nothing changes.
+- **Finland / law:** the Non-Discrimination Act allows different treatment when it is based on a **genuine and determining requirement of the work** and is proportionate. A blanket "fluent Finnish" demand for work that does not need it can be discrimination, so the requirement is per need, optional, and shown openly. CEFR is the scale Finland already uses: the national language certificate **YKI** has levels 1–6 that match A1–C2.
+- **Industry:** job ads in Finland commonly name a language level. The usual problem is that it is checked by gut feeling in the interview, mixed with everything else.
+- **Tested:** a strong answer in Swedish was rated B2 (meets), a broken one A1 (below). The skill match came from the content only.
+- **➕** Honest about what the job needs. Keeps the language judgement visible and separate instead of hidden inside every score. Swedish-speaking Espoo customers are a real need (Espoo is bilingual).
+- **➖** One question is a small sample, so it is evidence for a person, not a certificate. Companies could over-ask: the City sees which needs set a requirement and can question it.
