@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp, type FormState } from "@/app/actions/auth";
+import { LogoIcon } from "./logo";
 
 export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(mode === "login" ? signIn : signUp, {});
 
   return (
     <form action={action} className="mx-auto mt-16 max-w-sm space-y-5 px-4">
+      <LogoIcon className="size-10" />
       <h1 className="text-2xl font-semibold">{mode === "login" ? "Log in" : "Create an account"}</h1>
       <input type="hidden" name="lang" value={lang} />
 

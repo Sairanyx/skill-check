@@ -5,6 +5,7 @@ import { requireRole } from "@/lib/session";
 import { myStamps } from "@/lib/services/checks";
 import { PageTitle } from "@/components/app/ui";
 import { ConsentToggle } from "@/components/app/consent-toggle";
+import { Logo } from "@/components/site/logo";
 
 /** The card printed for the event. Only stamps from companies whose person accepted the result. */
 export default async function CardPage({ params }: PageProps<"/[lang]/candidate/card">) {
@@ -23,6 +24,7 @@ export default async function CardPage({ params }: PageProps<"/[lang]/candidate/
       </div>
 
       <div className="mt-8 max-w-md rounded-2xl border-2 border-primary p-8">
+        <Logo size="sm" className="mb-4" />
         <p className="text-sm font-medium text-primary">City of Espoo · Espoo Tech Talent Day</p>
         <p className="mt-1 text-xs text-muted-foreground">Open event: talk to any company</p>
         <p className="mt-4 text-3xl font-semibold">{me.name}</p>

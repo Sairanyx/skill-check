@@ -1,5 +1,5 @@
 {
-  "meta": { "title": "Skill Check", "description": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi." },
+  "meta": { "title": "SkillCheck", "description": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi." },
   "nav": { "candidate": "Työnhakijoille", "company": "Yrityksille", "city": "Espoon kaupunki", "login": "Kirjaudu", "signup": "Aloita", "language": "Kieli" },
   "landing": {
     "eyebrow": "Espoon rekrytointitapahtumat uudella tavalla",

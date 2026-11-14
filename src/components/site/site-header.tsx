@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { currentUser } from "@/lib/session";
 import { signOut } from "@/app/actions/auth";
 import { LanguageSwitcher } from "./language-switcher";
+import { Logo } from "./logo";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
@@ -10,8 +11,8 @@ export async function SiteHeader({ lang, nav }: { lang: Locale; nav: Dictionary[
   return (
     <header className="border-b">
       <div className="mx-auto flex h-14 max-w-5xl items-center px-4">
-        <Link href={`/${lang}`} className="font-semibold tracking-tight text-primary">
-          Skill Check
+        <Link href={`/${lang}`} aria-label="SkillCheck home">
+          <Logo />
         </Link>
         <div className="ml-auto flex items-center gap-6 text-sm">
           <Suspense fallback={null}>

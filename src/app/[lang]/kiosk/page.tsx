@@ -10,6 +10,7 @@ import { AuthForm } from "@/components/site/auth-form";
 import { KioskGuard } from "@/components/app/kiosk-guard";
 import { KioskStart } from "@/components/app/kiosk-start";
 import { fmtTime } from "@/components/app/ui";
+import { Logo } from "@/components/site/logo";
 
 /** What a City testing-room computer shows. */
 export default async function KioskPage({ params }: PageProps<"/[lang]/kiosk">) {
@@ -32,6 +33,7 @@ export default async function KioskPage({ params }: PageProps<"/[lang]/kiosk">) 
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
+      <Logo size="lg" className="mb-10" />
       <p className="text-sm text-muted-foreground">{status.venue} · {status.room}</p>
       <h1 className="mt-1 text-3xl font-semibold">{status.workstation}</h1>
       <p className="mt-2 text-sm text-muted-foreground">
