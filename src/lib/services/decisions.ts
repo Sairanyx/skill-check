@@ -1,9 +1,9 @@
 import "server-only";
 import { and, count, desc, eq, isNull, sql } from "drizzle-orm";
-import { db, skillChecks, evaluations, decisions, bookings, slots, rooms, user, needs, companies } from "@/db";
+import { db, skillChecks, evaluations, decisions, bookings, meetingSlots, meetingRooms, user, needs, companies } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
-import { loadNeed } from "./needs";
 import { audit } from "./audit";
+import { companyMaySee } from "./checks";
 
 type Decision = "invite" | "not_now" | "needs_review" | "approve" | "reject";
 const COMPANY_DECISIONS: Decision[] = ["invite", "not_now", "needs_review"];
@@ -17,10 +17,8 @@ const CITY_DECISIONS: Decision[] = ["approve", "reject"];
 export async function decide(actor: ApiUser, checkId: string, decision: Decision, note?: string) {
   const check = await db.query.skillChecks.findFirst({ where: eq(skillChecks.id, checkId) });
   if (!check) throw new ApiError(404, "Skill check not found");
-  const need = await loadNeed(check.needId);
-
   if (actor.role === "company") {
-    if (need.ownerId !== actor.id) throw new ApiError(404, "Skill check not found");
+    if (!(await companyMaySee(actor, check))) throw new ApiError(404, "Skill check not found");
     if (!COMPANY_DECISIONS.includes(decision)) throw new ApiError(400, `Companies can: ${COMPANY_DECISIONS.join(", ")}`);
   } else if (actor.role === "city") {
     if (!CITY_DECISIONS.includes(decision)) throw new ApiError(400, `The City can: ${CITY_DECISIONS.join(", ")}`);
@@ -45,18 +43,18 @@ export async function decide(actor: ApiUser, checkId: string, decision: Decision
   return row;
 }
 
-/** Free slots for an event (not yet booked). */
+/** Free meetingSlots for an event (not yet booked). */
 export async function freeSlots(eventId: string) {
   return db
-    .select({ id: slots.id, startsAt: slots.startsAt, endsAt: slots.endsAt, room: rooms.name })
-    .from(slots)
-    .innerJoin(rooms, eq(slots.roomId, rooms.id))
-    .leftJoin(bookings, eq(bookings.slotId, slots.id))
-    .where(and(eq(slots.eventId, eventId), isNull(bookings.id)))
-    .orderBy(slots.startsAt);
+    .select({ id: meetingSlots.id, startsAt: meetingSlots.startsAt, endsAt: meetingSlots.endsAt, room: meetingRooms.name })
+    .from(meetingSlots)
+    .innerJoin(meetingRooms, eq(meetingSlots.roomId, meetingRooms.id))
+    .leftJoin(bookings, eq(bookings.slotId, meetingSlots.id))
+    .where(and(eq(meetingSlots.eventId, eventId), isNull(bookings.id)))
+    .orderBy(meetingSlots.startsAt);
 }
 
-/** Candidate books a meeting slot, only after the company invited them for this check. */
+/** Candidate books a meeting with a company that ACCEPTED their result (a person decided "invite"). */
 export async function book(actor: ApiUser, checkId: string, slotId: string) {
   const check = await db.query.skillChecks.findFirst({ where: eq(skillChecks.id, checkId) });
   if (!check || check.candidateId !== actor.id) throw new ApiError(404, "Skill check not found");
@@ -66,19 +64,17 @@ export async function book(actor: ApiUser, checkId: string, slotId: string) {
     .where(and(eq(decisions.checkId, checkId), eq(decisions.role, "company")))
     .orderBy(desc(decisions.createdAt))
     .limit(1);
-  if (latest?.decision !== "invite") throw new ApiError(403, "The company has not invited you yet");
+  if (latest?.decision !== "invite") throw new ApiError(403, "The company has not accepted your result yet");
+  const company = await db.query.companies.findFirst({ where: eq(companies.ownerId, latest.decidedBy) });
+  if (!company) throw new ApiError(404, "Company not found");
 
   const taken = await db.query.bookings.findFirst({ where: eq(bookings.slotId, slotId) });
   if (taken) throw new ApiError(409, "That time is already taken");
-  const already = await db.query.bookings.findFirst({ where: eq(bookings.checkId, checkId) });
-  if (already) throw new ApiError(409, "You already booked a time for this company");
+  const already = await db.query.bookings.findFirst({ where: and(eq(bookings.checkId, checkId), eq(bookings.companyId, company.id)) });
+  if (already) throw new ApiError(409, "You already booked a time with this company");
 
-  const need = await loadNeed(check.needId);
-  const [row] = await db
-    .insert(bookings)
-    .values({ slotId, checkId, candidateId: actor.id, companyId: need.companyId })
-    .returning();
-  await audit(actor, "booking.created", { subjectId: actor.id, targetType: "booking", targetId: row.id, meta: { companyId: need.companyId } });
+  const [row] = await db.insert(bookings).values({ slotId, checkId, candidateId: actor.id, companyId: company.id }).returning();
+  await audit(actor, "booking.created", { subjectId: actor.id, targetType: "booking", targetId: row.id, meta: { companyId: company.id } });
   return row;
 }
 
