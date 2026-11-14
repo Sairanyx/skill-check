@@ -1,5 +1,5 @@
 # Skill Check – services on the Verda A100 in Helsinki (FIN-01)
-# Gemma 4 12B = privacy guard (pseudonymisation). Whisper = speech-to-text.
+# Gemma 4 26B-A4B = privacy guard + agents. Whisper = speech-to-text.
 # Only bound to 127.0.0.1: reachable by the app on this box or via SSH tunnel, never from the internet.
 services:
   gemma:
@@ -20,11 +20,11 @@ services:
               count: all
               capabilities: [gpu]
     command:
-      - --model=google/gemma-4-12B-it
-      - --served-model-name=gemma-4-12b
-      - --max-model-len=32768
-      - --gpu-memory-utilization=0.70
-      - --limit-mm-per-prompt={"audio":1,"image":0}
+      - --model=google/gemma-4-26B-A4B-it # 26B mixture-of-experts, ~4B active per token: smarter, about as fast
+      - --served-model-name=gemma
+      - --max-model-len=16384
+      - --gpu-memory-utilization=0.80
+      - --limit-mm-per-prompt={"image":0}
       - --api-key=${VLLM_API_KEY}
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
@@ -67,7 +67,7 @@ services:
     environment:
       - GUARD_BASE_URL=http://gemma:8000/v1
       - ASR_BASE_URL=http://whisper:8000/v1
-      - GUARD_MODEL=gemma-4-12b
+      - GUARD_MODEL=gemma
       - ASR_MODEL=whisper
     depends_on: [gemma, whisper]
 

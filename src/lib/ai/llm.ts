@@ -23,7 +23,7 @@ export async function think(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: process.env.GUARD_MODEL ?? "gemma-4-12b",
+        model: process.env.GUARD_MODEL ?? "gemma",
         messages,
         max_tokens: opts.maxTokens ?? 800,
         temperature: 0.3,
@@ -37,4 +37,4 @@ export async function think(
 }
 
 export const modelLabel = () =>
-  (process.env.INTERVIEW_PROVIDER ?? "gemma") === "gemini" ? "Gemini Pro" : "Gemma 4 12B on Verda, Finland";
+  (process.env.INTERVIEW_PROVIDER ?? "gemma") === "gemini" ? "Gemini Pro" : "Gemma 4 26B on Verda, Finland";

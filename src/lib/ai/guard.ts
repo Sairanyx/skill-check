@@ -37,7 +37,7 @@ export async function pseudonymise(text: string): Promise<string> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: process.env.GUARD_MODEL ?? "gemma-4-12b",
+        model: process.env.GUARD_MODEL ?? "gemma",
         temperature: 0,
         max_tokens: 1024,
         messages: [
