@@ -7,7 +7,7 @@ import { PROOF_TYPES, proofType } from "@/lib/proofs";
 import { PageTitle, Section, Empty } from "@/components/app/ui";
 import { AddProof, RemoveProof } from "@/components/app/proof-actions";
 
-const STATUS = { declared: "Bring the original to your visit", verified: "Verified by the City", rejected: "Not accepted" } as const;
+const STATUS = { declared: "Waiting for the City's check: bring the original to an Espoo service point", verified: "Verified by the City, you can book", rejected: "Not accepted" } as const;
 
 export default async function ProofsPage({ params }: PageProps<"/[lang]/candidate/proofs">) {
   const { lang } = await params;
@@ -20,7 +20,7 @@ export default async function ProofsPage({ params }: PageProps<"/[lang]/candidat
       <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title="Proofs">
-          No CV, no cover letter. Add only official proofs that a job asks for, like a hygiene passport, a nurse licence or a language certificate. City staff check the original when you come to the EXAM room. Companies only see that it is verified.
+          No CV, no cover letter. Add only official proofs that a job asks for, like a hygiene passport, a nurse licence or a language certificate. City staff check the original (or the public register) before you can book a skill check that needs it. Companies only see that it is verified.
         </PageTitle>
       </div>
 

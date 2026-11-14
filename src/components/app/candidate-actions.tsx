@@ -84,9 +84,14 @@ export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [
 
       {!rescheduleId && toAdd.length > 0 && (
         <div className="rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm">
-          <p className="font-medium">Add these proofs before you book</p>
-          <p className="mt-1 text-muted-foreground">{toAdd.join(", ")}. City staff check the original when you come to the EXAM room. No copies are stored.</p>
-          <Link href={`/${lang}/candidate/proofs`} className="mt-2 inline-block text-primary underline">Add proofs</Link>
+          <p className="font-medium">City staff must check these documents before you can book</p>
+          <ul className="mt-1 list-disc pl-5 text-muted-foreground">
+            {toAdd.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+          <p className="mt-2 text-muted-foreground">Add them under Proofs. City staff then check the original at an Espoo service point, or the public register for health licences. No copies are stored. Jobs that ask for no documents can be booked right away.</p>
+          <Link href={`/${lang}/candidate/proofs`} className="mt-2 inline-block text-primary underline">Go to Proofs</Link>
         </div>
       )}
 

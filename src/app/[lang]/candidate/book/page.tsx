@@ -24,16 +24,20 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
     myProofs(me),
     db.select({ id: needsTable.id, proofs: needsTable.proofRequirements, languages: needsTable.languageRequirements }).from(needsTable),
   ]);
-  // Proofs a job requires that this jobseeker has not added yet: they must be added before booking.
-  const usable = mine.filter((p) => p.status !== "rejected");
-  const has = (code: string, level?: string) => usable.some((p) => p.code === code && (!level || (!!p.level && cefrAtLeast(p.level, level))));
+  // Documents a job REQUIRES must be verified by City staff before booking. Optional ones never block.
+  const matches = (p: (typeof mine)[number], code: string, level?: string) => p.code === code && (!level || (!!p.level && cefrAtLeast(p.level, level)));
+  const status = (code: string, level?: string) =>
+    mine.some((p) => p.status === "verified" && matches(p, code, level)) ? "verified" : mine.some((p) => p.status === "declared" && matches(p, code, level)) ? "waiting" : "missing";
   const missing: Record<string, string[]> = {};
   for (const r of reqs) {
     const asked = [
       ...(r.proofs ?? []).filter((x) => x.required).map((x) => ({ code: x.code, level: undefined as string | undefined })),
       ...(r.languages ?? []).filter((l) => l.proof === "required").map((l) => ({ code: `language-${l.language}`, level: l.level as string })),
     ];
-    const gaps = asked.filter((a) => !has(a.code, a.level)).map((a) => `${proofType(a.code)?.label.en ?? a.code}${a.level ? ` ${a.level}` : ""}`);
+    const gaps = asked
+      .map((a) => ({ a, st: status(a.code, a.level) }))
+      .filter((x) => x.st !== "verified")
+      .map(({ a, st }) => `${proofType(a.code)?.label.en ?? a.code}${a.level ? ` ${a.level}` : ""} (${st === "waiting" ? "added, waiting for the City's check" : "not added yet"})`);
     if (gaps.length) missing[r.id] = gaps;
   }
   return (
