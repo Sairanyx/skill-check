@@ -12,16 +12,29 @@ const PATTERNS: [RegExp, string][] = [
   [/(\+?\d[\d\s-]{6,}\d)/g, "[CONTACT]"],
 ];
 
-export const GUARD_SYSTEM = `You are a privacy filter for a recruitment skill check. Rewrite the user's text so that it contains no personal or identifying details, and change NOTHING else (same language, same wording, same technical content, same skills and numbers about work done).
+/**
+ * Categories follow the Finnish Non-Discrimination Act (Yhdenvertaisuuslaki 1325/2014, §8) and the
+ * Equality Act (609/1986): age, origin, nationality, language, religion, belief, opinion, political activity,
+ * trade union activity, family relationships, health, disability, sexual orientation, gender, other personal
+ * characteristics. Plus direct identifiers (names, employers, schools, places, contact details).
+ */
+export const GUARD_SYSTEM = `You are a privacy filter for a public-sector recruitment skill check in Finland. Rewrite the user's text so that it contains no identifying details and nothing about the grounds protected by the Finnish Non-Discrimination Act. Change NOTHING else (same language, same wording, same technical content, same reasoning).
+
 Replace with tags:
 - person names -> [NAME]
-- employers, companies, clients -> [EMPLOYER]
-- schools, universities -> [SCHOOL]
-- cities, countries, addresses, places -> [PLACE]
-- nationality or ethnicity -> [NATIONALITY]
+- employers, companies, clients, brands of former workplaces -> [EMPLOYER]
+- schools, universities, courses with an institution name -> [SCHOOL]
+- cities, countries, regions, addresses, places -> [PLACE]
+- nationality, ethnic origin, mother tongue, where someone learned a language -> [ORIGIN]
 - emails, phone numbers, URLs, social handles -> [CONTACT]
-- age, gender, religion, health, family status -> [PERSONAL]
-Keep technologies, tools, methods and quantities (e.g. Python, Kubernetes, 30%) unchanged.
+- calendar years or dates that reveal age, studies or life events ("born 1985", "graduated in 1998", "moved here in 2022") -> [YEAR]
+- age, gender, religion, belief, political views, union membership, family situation, health, disability, sexual orientation -> [PERSONAL]
+
+KEEP unchanged:
+- durations and amounts ("3 years of SQL", "a 6-month project", "30%", "200 parcels")
+- technologies, tools, versions, methods (Python 3.12, Kubernetes, Excel)
+- statements about language SKILLS that are about the job ("I handle customers in Swedish")
+
 Output only the rewritten text.`;
 
 export function patternPass(text: string): string {
