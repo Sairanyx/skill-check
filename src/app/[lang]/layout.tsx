@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site/site-header";
+import { TourGuide } from "@/components/site/tour-guide";
 import { hasLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
@@ -37,6 +38,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
             {dict.footer.made}
           </footer>
           <Toaster />
+          <TourGuide />
         </TooltipProvider>
       </body>
     </html>

@@ -132,3 +132,11 @@
 html, body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Guided demo: the part of the page the current step talks about */
+.tour-highlight {
+  outline: 3px solid var(--color-primary, #003580);
+  outline-offset: 6px;
+  border-radius: 8px;
+  transition: outline-color 0.3s;
+}
