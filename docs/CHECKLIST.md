@@ -1,60 +1,57 @@
 # Skill Check: checklist
 
-Tick items off as we finish and check them together. Deadline: **Sun 15 Nov, 10:00** (submission).
+Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 Saturday, then video + presentation (Eduard). Teammate continues building in the night/morning.
 
-## What we have so far
+## ✅ Done
+- Server in Finland (Verda A100): Gemma 4 26B (privacy guard + 3 agents), Whisper, app, HTTPS
+- Database in Finland (Aiven Postgres), 26 tables, demo data generator (`npm run db:demo`)
+- Login with 3 roles, JWT/bearer, platform API `/api/v1`
+- Testing rooms (EXAM model): venues, rooms, workstations, 30-min slots, booking up to 3 needs, reschedule ≥ 2 h (max 2), cancel
+- Kiosk: City enrolls a computer, only the booked person can log in, check only runs there, auto logout
+- Adaptive interview (difficulty, company question bank, easy filter mode, covers every skill)
+- BARS scoring: anchors, verified quotes, two runs, computed match/level/confidence. Fairness: fluent vs non-native 7.0 vs 6.7
+- Privacy: pseudonymised answers, companies see alias only, contact sharing by consent, City reveals identity only with a reason
+- Decisions: City and company can both accept, company "no" only for itself. Stamps on the lanyard card (consent)
+- Events: companies apply → City approves → confirm ≥ 1 week before; required/optional/not needed per company; City can make an event open
+- GDPR: append-only audit (UPDATE/DELETE/TRUNCATE blocked), export, erasure, "who used my data"
+- ESCO skills, robust JSON retry, docs (handover, repository, database, architecture, decisions, research, Espoo questions)
 
-### ✅ Working and committed
-| Area | What works |
-|---|---|
-| Server (Verda, Finland) | A100 GPU running **Gemma 4 12B** (privacy guard + agents) and **Whisper** (speech to text), app in Docker, automatic HTTPS |
-| Database (Aiven, Finland) | Postgres with pgvector, backups in Finland |
-| Login | Email + password, roles candidate / company / city set only by the server, JWT + bearer tokens for other systems |
-| AI | Speech to text fi/sv/en, privacy guard fi/sv/en (~1 s), 3 agents: interviewer, evaluator (0–10, level, confidence, quotes), fairness auditor |
-| GDPR | Access log, audit records the database refuses to change or delete, data export, account erasure, "who used my data" page |
-| Open data | Company skills linked to **ESCO** with fi/sv names |
-| Company view | Ranked anonymous candidates, evidence page with pseudonymised transcript, human decisions |
-| City view | Numbers, human review queue, audit log |
+## 🔴 Must (before the video)
+| # | Item | Who |
+|---|---|---|
+| 1 | Tour stop 5: click through every screen together, list what to remove or simplify | Eduard + Claude |
+| 2 | UI clean-up from that list (one clear action per screen, no filler) | Claude |
+| 3 | Finnish and Swedish texts in the portals (landing already done) | Claude / teammate |
+| 4 | 15-minute meetings (match TalentMatch) | Claude |
+| 5 | Security before going public: reset Aiven password, IP allowlist, different demo password on the live site | **Eduard (Aiven)** + Claude |
+| 6 | Rate limits on login and AI endpoints (cost and abuse) | Claude / teammate |
+| 7 | README for the repo | Claude |
 
-### 🟡 In progress (backend written, not committed, pages not updated yet)
-- **Testing rooms (EXAM-room model):** venues → rooms → workstations → 30 min slots, booking up to 3 needs, reschedule ≥ 2 h before (max 2), cancel, no no-show penalty
-- **Kiosk:** City staff enroll a computer, only the booked person can log in there during their slot, the check only runs on that computer
-- **Adaptive difficulty** (low / medium / high), company **question bank** per level (screened for unfair questions), **easy filter mode** when the company sets nothing up
-- **Companies:** confirm attendance (≥ 1 week before), skill check required / optional / off, accept similar needs as equivalent
-- **Consent:** candidate shares a result with equivalent companies, candidate shows accepted stamps on the event card
+## 🟠 Should (prizes and polish)
+| # | Item | Who |
+|---|---|---|
+| 8 | **Gemini**: second judge (jury) + interviewer option, then re-run demo data. Needs the key | Claude / teammate |
+| 9 | **Fairness test bench** with more answers in fi/sv/en → numbers for a slide (could run on **Modal** for that prize) | Teammate |
+| 10 | Online and hybrid events: video meetings, digital badge instead of lanyard | Teammate |
+| 11 | Company screens: review/edit anchors and question bank, accept similar needs (backend exists, no UI yet) | Teammate |
+| 12 | **CRACI**: run lint/typecheck/build in GitHub Actions on CRACI runners (10 min, easy tech-challenge entry) | Teammate |
+| 13 | Context.dev: draft a need from the company website (needs key) | Teammate |
+| 14 | Mobile layout check, accessibility (keyboard, screen reader, contrast) | Teammate |
 
-⚠️ The shared database already uses the new design, so the **live site is broken** until item 1 is done and deployed.
+## 🟢 Could (roadmap slide if no time)
+- Modal sandbox code task for tech roles
+- Finnish-tuned Whisper, GLiNER2-PII extra privacy layer
+- Safe Exam Browser header check on kiosks
+- Restricted DB user (no ALTER/TRUNCATE), scheduled deletion after 12 months
+- Video-of-work path for hands-on roles
+- Stamps as European Digital Credentials
 
-## The list
-
-### A. Finish the current change (makes the site work again)
-- [ ] 1. Candidate pages: book a testing time (choose up to 3 needs → place → time), reschedule, cancel, see results
-- [ ] 2. Kiosk pages: workstation screen ("reserved 13:00–13:30"), login, skill check, automatic logout
-- [ ] 3. Company pages: **Accept / Not now / Ask the City**, confirm attendance, need settings + optional questions, similar needs
-- [ ] 4. City pages: testing rooms and computers, enroll a computer, review queue, audit log
-- [ ] 5. Event card page: accepted stamps only, candidate consent, no QR
-- [ ] 6. Test everything (API + browser), commit, deploy
-
-### A2. Event types
-- [ ] Online and hybrid events: company meetings as video calls (online) or room + video (hybrid). Skill checks stay in City testing rooms. Online events show the stamp as a digital badge on the profile instead of the printed lanyard
-
-### B. UI
-- [ ] 7. Go through every screen together: remove anything that is not needed, keep it minimal
-- [ ] 8. Finnish and Swedish texts in the portals (landing is already done)
-
-### C. Partner prizes
-- [ ] 9. Gemini Pro as the thinking model (**needs GEMINI_API_KEY**)
-- [ ] 10. Context.dev: company pastes website → AI drafts the need → company confirms (**needs CONTEXT_DEV_API_KEY**)
-- [ ] 11. Modal: small code task for tech roles (optional, first to cut)
-
-### D. Security and demo prep
-- [ ] 12. Reset the Aiven password + IP allowlist (**Eduard, Aiven console**)
-- [ ] 13. Different demo password on the live site, fresh demo data right before judging
-
-### E. Submission (Sunday morning)
-- [ ] 14. README for the repo
-- [ ] 15. Verda process summary posted in their Discord channel (required for the Verda prize)
-- [ ] 16. Pitch video, max 2:00
-- [ ] 17. Pitch deck PDF (Prezi export tool)
-- [ ] 18. Repo public
-- [ ] 19. Submission form: main challenge + tech challenges (Verda, Gemma, Gemini, Modal, Context.dev, Aiven), set to FINAL before 10:00
+## 🎬 Submission (Sunday morning, Eduard)
+- [ ] Fresh demo data: `npm run db:reset -- --yes && npm run db:seed && npm run db:demo`
+- [ ] Pitch video, max 2:00 (record a backup screen recording of the demo too)
+- [ ] Pitch deck PDF (Prezi export tool)
+- [ ] Verda process summary posted in their Discord (required for the Verda prize)
+- [ ] Repo public (check no secrets: `.env.local` is git-ignored)
+- [ ] Submission form: Espoo + tech challenges (Verda, Gemma, Gemini, Modal, Context.dev, Aiven, CRACI), set to **FINAL** before 10:00
+- [ ] All team members at peer review 10:30–14:00
+- [ ] After the final ceremony: delete the Verda instance and the Aiven service
