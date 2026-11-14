@@ -1,5 +1,5 @@
 /**
- * Demo helper: book Aino on Leppävaara, Testing room 2, Workstation 1 in the slot running RIGHT NOW,
+ * Demo helper: book Aino on Leppävaara, EXAM room 2, Workstation 1 in the slot running RIGHT NOW,
  * so a live demo can start immediately. Her earlier unused bookings are cancelled. Run: npm run demo:now
  */
 import { and, eq, gt, inArray, lte } from "drizzle-orm";
@@ -12,7 +12,7 @@ async function main() {
     .select({ id: workstations.id })
     .from(workstations)
     .innerJoin(testRooms, eq(workstations.roomId, testRooms.id))
-    .where(and(eq(testRooms.name, "Testing room 2"), eq(workstations.label, "Workstation 1")));
+    .where(and(eq(testRooms.name, "EXAM room 2"), eq(workstations.label, "Workstation 1")));
   const now = new Date();
   // The slot running now, or the next one if fewer than 10 minutes are left (login opens 10 minutes before a slot).
   const at = new Date(now.getTime() + 10 * 60_000);
@@ -22,7 +22,7 @@ async function main() {
   await db.update(appointments).set({ status: "cancelled" }).where(and(eq(appointments.candidateId, aino.id), inArray(appointments.status, ["booked", "in_progress"])));
   await db.update(appointments).set({ status: "cancelled" }).where(and(eq(appointments.slotId, slot.id), inArray(appointments.status, ["booked", "in_progress"]))); // free the slot
   await db.insert(appointments).values({ candidateId: aino.id, slotId: slot.id, needIds: ["nordic-logistics-data", "espoo-cloud-platform"] });
-  console.log(`Aino is booked now (${slot.startsAt.toLocaleTimeString("fi-FI", { timeZone: "Europe/Helsinki" })} to ${slot.endsAt.toLocaleTimeString("fi-FI", { timeZone: "Europe/Helsinki" })}) on Leppävaara, Testing room 2, Workstation 1.`);
+  console.log(`Aino is booked now (${slot.startsAt.toLocaleTimeString("fi-FI", { timeZone: "Europe/Helsinki" })} to ${slot.endsAt.toLocaleTimeString("fi-FI", { timeZone: "Europe/Helsinki" })}) on Leppävaara, EXAM room 2, Workstation 1.`);
   process.exit(0);
 }
 main();
