@@ -1,17 +1,18 @@
 # Judge server (second Verda GPU, FIN-01, Spot): Mistral Small 3.2 24B = judge 2 on the scoring panel.
 # It only receives pseudonymised quotes + anchors from the main server, never audio or raw answers.
-# vLLM listens on 127.0.0.1 only. Caddy adds HTTPS, and every request needs the API key.
+# Reachable only from the main server over Verda's network (firewall rule in setup.sh) and only with the API key.
+# The model is downloaded once (see setup.sh), then vLLM runs offline: the judge needs no internet.
 services:
   mistral:
     image: vllm/vllm-openai:v0.33.0
     restart: unless-stopped
     ipc: host
     ports:
-      - "127.0.0.1:8000:8000"
+      - "8000:8000"
     volumes:
       - hf-cache:/root/.cache/huggingface
     environment:
-      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - HF_HUB_OFFLINE=1
     deploy:
       resources:
         reservations:
@@ -36,16 +37,5 @@ services:
       timeout: 5s
       retries: 60
 
-  caddy:
-    image: caddy:2
-    restart: unless-stopped
-    network_mode: host # reaches vLLM on 127.0.0.1:8000
-    environment:
-      - SITE_HOST=${SITE_HOST}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-
 volumes:
   hf-cache:
-  caddy-data:
