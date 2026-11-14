@@ -1,13 +1,14 @@
 # Servers: how to get in and look around
 
-We run two things, both in Finland:
+We run three things, all in Finland:
 
 | | What | Where | How you get in |
 |---|---|---|---|
-| **Verda GPU server** | A computer we control: AI models, the web app, HTTPS | Helsinki (FIN-01), `65.108.32.183` | **SSH** (a terminal on that machine) |
-| **Aiven Postgres** | A managed database (no machine to log into) | Google Cloud Hamina (`europe-north1`) | A **database connection** (Drizzle Studio, psql or a DB tool) |
+| **Main server** (Verda A100 80GB) | Gemma, Whisper, the web app, HTTPS | FIN-01, `65.108.32.183` | **SSH** |
+| **Judge server** (Verda A100 40GB Spot) | Mistral Small, judge 2. No internet of its own | FIN-01, `135.181.63.165` | SSH through the main server: `ssh -J root@65.108.32.183 root@135.181.63.165` |
+| **Aiven Postgres** | Managed database | Google Cloud Hamina (`europe-north1`) | A database connection (Drizzle Studio, psql) |
 
-Live site: **https://65.108.32.183.compute.verda.run**
+Live site: **https://skillcheck.fi**
 
 ---
 
@@ -119,3 +120,19 @@ docker compose up -d     # first start downloads the models (~25 GB)
 - Gemma 4 12B audio refused Finnish/Swedish (synthetic voice), so Whisper does speech.
 - Privacy guard on text: fi/sv/en correct in ~1 s.
 - Whisper: fi/sv/en in under 2 s.
+
+
+## 7. Operations (for the City's IT)
+
+| Task | How |
+|---|---|
+| **Backups** | Aiven keeps daily backups and point-in-time recovery for 14 days. Restore from the Aiven console |
+| **Update the app** | `./infra/deploy.sh` ships the committed code and restarts only the app |
+| **Update a model** | Change the model name in `infra/docker-compose.yml`, then `docker compose up -d gemma`. Re-run `npm run bench:panel` before going live |
+| **Change secrets** | Edit `/opt/skill-check/.env` on the server, then `docker compose up -d --force-recreate app`. Rotate the database password in Aiven |
+| **Switch judges or interviewer** | Settings `JUDGES` (e.g. `gemma,mistral`) and `INTERVIEWER` (`gemma` or `gemini`) in `.env`. No code change |
+| **AI is down** | Interviews fall back from Gemini to Gemma. A failed judge is skipped and logged. If the fairness check fails, the result goes to a City reviewer. If Gemma itself is down, new checks cannot start: restart with `docker compose restart gemma` |
+| **Judge server taken back** (Spot) | The panel continues without Mistral. Recreate with `JUMP=root@65.108.32.183 ./infra/judge/setup.sh <new ip>` |
+| **Deletion after 12 months** | Every result has `expires_at`. A scheduled job that deletes expired checks is still to be built (see `docs/DATABASE.md`) |
+| **Logs** | `docker compose logs app --since 1h`. AI problems are logged as `ai.bad_json`, `ai.judge_failed`, `ai.interviewer_fallback` (no answer text in logs) |
+| **Who did what** | City portal → Audit log, or the `audit_events` table (append-only) |

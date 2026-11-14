@@ -1,7 +1,7 @@
 # SkillCheck: checklist
 
 Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00 to 24:00 Saturday, then video + presentation (Eduard). Teammate continues building in the night/morning.
-Status: **Sat 14 Nov, 17:00**. Live: https://skillcheck.fi
+Status: **Sat 14 Nov, 19:30**. Live: https://skillcheck.fi
 
 ## ✅ Done
 - Servers in Finland: Verda A100 80GB (Gemma 4 26B-A4B for the privacy guard + agents, Whisper large-v3-turbo, app, HTTPS) and a Verda A100 40GB Spot for the Mistral judge (being set up)
@@ -23,10 +23,11 @@ Status: **Sat 14 Nov, 17:00**. Live: https://skillcheck.fi
 - ESCO skills, robust JSON retry, retries on rate limits
 - Docs: handover (for the teammate), repository, database, architecture + capacity estimate, decisions D1 to D18, research, Espoo questions
 
-## ⏳ In progress
-| Item | State | Who |
-|---|---|---|
-| **Mistral judge** on the Spot server (135.181.63.165) | Verda Spot has no internet, so the model is downloaded through the main server. Then: start, connect, `JUDGES=gemma,mistral` | Claude |
+- **Judge panel live:** Gemma + Mistral + Gemini, median. Gemini interviews (Gemma fallback). Benchmark D20: agreement 0.82, no penalty for second-language answers
+- **Company "Edit need" page:** language, proofs, questions and anchors (screened for bias), similar needs
+- **Context.dev:** draft a need from the company website
+- **Three event types:** in person, online, hybrid
+- Rate limits on login and AI, 15-minute meetings, `npm run demo:now`, README, operations guide (`infra/README.md` §7)
 
 ## 🔴 Must (before the video)
 | # | Item | Who |
