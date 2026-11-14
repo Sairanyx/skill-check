@@ -148,17 +148,24 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const strengths = rubric.filter((r) => r.score >= 8).map((r) => `${r.criterion}: ${r.reason}`);
   const gaps = rubric.filter((r) => r.score <= 4).map((r) => (r.evidence.length ? `${r.criterion}: ${r.reason}` : `${r.criterion}: not shown in the answers yet`));
 
-  const fairnessRaw = await thinkJsonRaw(
-    [
-      {
-        role: "system",
-        content: `You audit an AI evaluation of a job candidate ONLY for bias. Flag a problem only if a score or reason depends on grammar, fluency, accent, writing style, language choice, nationality, age, gender, education prestige, career gaps or anything unrelated to the job.
-Do NOT flag weak or missing evidence: that is not bias. Return flags (empty if none) and a one-sentence note.`,
-      },
-      { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nSCORES AND REASONS:\n${rubric.map((r) => `${r.criterion}: ${r.score}/10, ${r.reason}`).join("\n")}` },
-    ],
-    { json: { type: "object", properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } }, required: ["flags", "note"] }, maxTokens: 400, temperature: 0 },
-  );
+  // If the automatic fairness check cannot run, a human looks at it instead (flag → City review queue).
+  let fairness: { flags: string[]; note: string };
+  try {
+    const fairnessRaw = await thinkJsonRaw(
+      [
+        {
+          role: "system",
+          content: `You audit an AI evaluation of a job candidate ONLY for bias. Flag a problem only if a score or reason depends on grammar, fluency, accent, writing style, language choice, nationality, age, gender, education prestige, career gaps or anything unrelated to the job.
+  Do NOT flag weak or missing evidence: that is not bias. Return flags (empty if none) and a one-sentence note.`,
+        },
+        { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nSCORES AND REASONS:\n${rubric.map((r) => `${r.criterion}: ${r.score}/10, ${r.reason}`).join("\n")}` },
+      ],
+      { json: { type: "object", properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } }, required: ["flags", "note"] }, maxTokens: 400, temperature: 0 },
+    );
+    fairness = JSON.parse(fairnessRaw);
+  } catch {
+    fairness = { flags: ["automatic fairness check could not run"], note: "Sent to a City reviewer because the automatic fairness check failed." };
+  }
 
   return {
     match: c.match,
@@ -167,7 +174,7 @@ Do NOT flag weak or missing evidence: that is not bias. Return flags (empty if n
     rubric,
     strengths,
     gaps,
-    fairness: JSON.parse(fairnessRaw),
+    fairness,
     model: modelLabel(),
     method: { coverage: c.coverage, agreement: c.agreement, runs: runs.map((r) => r.map((x) => x.score)) },
   };
