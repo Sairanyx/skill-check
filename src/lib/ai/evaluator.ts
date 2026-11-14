@@ -160,7 +160,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
         },
         { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nSCORES AND REASONS:\n${rubric.map((r) => `${r.criterion}: ${r.score}/10, ${r.reason}`).join("\n")}` },
       ],
-      { json: { type: "object", properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } }, required: ["flags", "note"] }, maxTokens: 400, temperature: 0 },
+      { json: { type: "object", properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } }, required: ["flags", "note"] }, maxTokens: 800, temperature: 0 },
     );
     fairness = JSON.parse(fairnessRaw);
   } catch {

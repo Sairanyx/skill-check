@@ -59,9 +59,22 @@ export async function thinkJsonRaw(messages: ChatMessage[], opts: { json?: objec
   try {
     JSON.parse(first);
     return first;
-  } catch {
+  } catch (e) {
+    logBadJson("first try", first, e);
     const retry = await think(messages, { ...opts, temperature: 0, maxTokens: Math.round((opts.maxTokens ?? 800) * 1.5) });
-    JSON.parse(retry);
-    return retry;
+    try {
+      JSON.parse(retry);
+      return retry;
+    } catch (e2) {
+      logBadJson("retry", retry, e2);
+      throw e2;
+    }
   }
+}
+
+/** Observability: record what the model returned when JSON breaks (no candidate text: only length and edges). */
+function logBadJson(stage: string, text: string, err: unknown) {
+  console.error(
+    JSON.stringify({ event: "ai.bad_json", stage, model: process.env.GUARD_MODEL, length: text.length, start: text.slice(0, 40), end: text.slice(-40), error: (err as Error).message }),
+  );
 }
