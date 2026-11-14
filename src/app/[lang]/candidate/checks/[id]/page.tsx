@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { KIOSK_COOKIE } from "@/lib/services/testing";
 import { ConsentToggle } from "@/components/app/consent-toggle";
+import { sharedContact as sharedContactFor } from "@/lib/services/privacy";
 import { eq } from "drizzle-orm";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
@@ -24,11 +25,12 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
 
   const invited = check.decisions.find((d) => d.role === "company")?.decision === "invite";
   const [booking] = await db
-    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, qr: bookings.qrToken })
+    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, companyId: bookings.companyId })
     .from(bookings)
     .innerJoin(meetingSlots, eq(bookings.slotId, meetingSlots.id))
     .innerJoin(meetingRooms, eq(meetingSlots.roomId, meetingRooms.id))
     .where(eq(bookings.checkId, id));
+  const contactShared = booking ? !!(await sharedContactFor(me.id, booking.companyId)) : false;
   const event = invited && !booking ? await db.query.events.findFirst() : null;
   const open = event ? await freeSlots(event.id) : [];
 
@@ -44,9 +46,20 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
       {invited && (
         <Section title={`${check.need.company} wants to meet you`}>
           {booking ? (
+            <>
             <p className="text-sm">
-              Your meeting: <strong>{fmtTime(booking.startsAt)}</strong>, {booking.room}. Show ticket code <span className="font-mono">{booking.qr.slice(0, 8).toUpperCase()}</span> at the door.
+              Your meeting: <strong>{fmtTime(booking.startsAt)}</strong>, {booking.room}.
             </p>
+            <div className="mt-4">
+              <ConsentToggle
+                path="/me/contact-shares"
+                field="share"
+                extra={{ companyId: booking.companyId }}
+                initial={contactShared}
+                label={`Share my email with ${check.need.company}. Without this, they only see your alias until you meet.`}
+              />
+            </div>
+            </>
           ) : (
             <>
               <p className="mb-4 text-sm text-muted-foreground">Pick a 10 minute slot at Espoo Tech Talent Day. Your name is shared with the company only after you book.</p>

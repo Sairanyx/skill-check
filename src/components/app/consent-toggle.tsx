@@ -5,7 +5,7 @@ import { useState } from "react";
 import { apiCall } from "./api-client";
 
 /** A plain checkbox that records a consent through the API (and the audit log). */
-export function ConsentToggle({ path, field, initial, label }: { path: string; field: string; initial: boolean; label: string }) {
+export function ConsentToggle({ path, field, initial, label, extra }: { path: string; field: string; initial: boolean; label: string; extra?: Record<string, string> }) {
   const router = useRouter();
   const [on, setOn] = useState(initial);
   return (
@@ -17,7 +17,7 @@ export function ConsentToggle({ path, field, initial, label }: { path: string; f
         onChange={async (e) => {
           const v = e.target.checked;
           setOn(v);
-          await apiCall(path, { json: { [field]: v } });
+          await apiCall(path, { json: { ...extra, [field]: v } });
           router.refresh();
         }}
       />

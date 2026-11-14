@@ -337,6 +337,15 @@ export const bookings = pgTable("bookings", {
   createdAt: createdAt(),
 });
 
+/** Candidate chose to share their contact details with one company (consent, can be withdrawn). */
+export const contactShares = pgTable("contact_shares", {
+  id: id(),
+  candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+  createdAt: createdAt(),
+  revokedAt: timestamp("revoked_at"),
+});
+
 export const videoSubmissions = pgTable("video_submissions", {
   id: id(),
   candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
