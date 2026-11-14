@@ -12,14 +12,14 @@ import { KioskStart } from "@/components/app/kiosk-start";
 import { fmtTime } from "@/components/app/ui";
 import { Logo } from "@/components/site/logo";
 
-/** What a City testing-room computer shows. */
+/** What a City EXAM room computer shows. */
 export default async function KioskPage({ params }: PageProps<"/[lang]/kiosk">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const token = (await cookies()).get(KIOSK_COOKIE)?.value;
   const status = await kioskStatus(token);
   if (!status)
-    return <p className="mx-auto max-w-xl px-4 py-24 text-center text-muted-foreground">This is not a City testing-room computer.</p>;
+    return <p className="mx-auto max-w-xl px-4 py-24 text-center text-muted-foreground">This is not a City EXAM room computer.</p>;
 
   const me = await currentUser();
   const ws = await workstationFromToken(token);

@@ -115,7 +115,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         )}
       </Section>
 
-      <Section title="Testing rooms">
+      <Section title="EXAM rooms">
         {venues.map((v) => (
           <div key={v} className="mb-6">
             <p className="mb-2 text-sm font-medium">{v}</p>

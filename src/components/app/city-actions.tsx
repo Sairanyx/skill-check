@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { apiCall } from "./api-client";
 
-/** City staff, sitting at a testing-room computer, make it that workstation (it becomes a locked kiosk). */
+/** City staff, sitting at a EXAM room computer, make it that workstation (it becomes a locked kiosk). */
 export function EnrollHere({ workstationId, label, lang }: { workstationId: string; label: string; lang: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

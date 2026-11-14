@@ -7,7 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 
 /**
  * DEMO: start the booked skill check from the jobseeker's own page.
- * In real use the check only runs on the City computer in the testing room (EXAM-room model).
+ * In real use the check only runs on the City computer in the EXAM room (EXAM-room model).
  * The pop-up says so, then asks the server (demo mode) to treat this browser as that computer.
  */
 export function ExamRoomStart({ appointmentId, place, lang }: { appointmentId: string; place: string; lang: string }) {
@@ -34,9 +34,9 @@ export function ExamRoomStart({ appointmentId, place, lang }: { appointmentId: s
         <div role="dialog" aria-modal="true" aria-labelledby="exam-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={() => !busy && setOpen(false)}>
           <div className="w-full max-w-md space-y-4 rounded-xl bg-background p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <p className="text-xs font-medium uppercase tracking-wide text-primary">Demo</p>
-            <h2 id="exam-title" className="text-xl font-semibold">You are in the testing room</h2>
+            <h2 id="exam-title" className="text-xl font-semibold">You are in the EXAM room</h2>
             <p className="text-sm text-muted-foreground">
-              Normally you can only take the skill check on the City computer you booked, in the testing room, during your time. You cannot start it from home or from your own laptop.
+              Normally you can only take the skill check on the City computer you booked, in the EXAM room, during your time. You cannot start it from home or from your own laptop.
             </p>
             <p className="text-sm">
               For this demo, imagine you are now sitting at <strong>{place}</strong>, logged in on the City computer.

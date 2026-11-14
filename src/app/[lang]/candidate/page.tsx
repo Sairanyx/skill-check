@@ -26,7 +26,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <PageTitle kicker="City of Espoo" title="Skill checks">
-        A short conversation about real problems from the companies you want to meet, on a City computer in a testing room.
+        A short conversation about real problems from the companies you want to meet, on a City computer in an EXAM room, like the ones Finnish universities use for exams.
       </PageTitle>
 
       <Section title="Your testing time" action={!upcoming.length ? <Link href={`/${lang}/candidate/book`} className={buttonVariants({ size: "sm" })}>Book a time</Link> : undefined}>
@@ -46,7 +46,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
                     {hasStarted(a.startsAt) ? (
                       <ExamRoomStart appointmentId={a.id} place={`${a.venue}, ${a.room}, ${a.workstation}`} lang={lang} />
                     ) : (
-                      !canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the testing room and log in on {a.workstation}.</span>
+                      !canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the EXAM room and log in on {a.workstation}.</span>
                     )}
                   </div>
                 </li>

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
  * DEMO ONLY (front end). Opens a jobseeker's booked skill check in this browser in one click.
  * It does the same steps a person would do by hand, with the existing APIs:
  * 1. log in as the jobseeker and find the booking running now,
- * 2. log in as City staff and set up that testing-room computer ("Use this computer"),
+ * 2. log in as City staff and set up that EXAM room computer ("Use this computer"),
  * 3. log in as the jobseeker again and open the kiosk.
  * The server rules do not change: the check still only runs on the booked computer, in the booked time.
  */

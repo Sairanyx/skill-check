@@ -65,7 +65,7 @@ export function RemoveProof({ id }: { id: string }) {
   );
 }
 
-/** City staff at the testing-room desk: record what you checked. No copy of the document is kept. */
+/** City staff at the EXAM room desk: record what you checked. No copy of the document is kept. */
 export function VerifyProof({ id, howToCheck }: { id: string; howToCheck: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

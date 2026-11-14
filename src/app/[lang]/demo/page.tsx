@@ -10,7 +10,7 @@ export default async function DemoPage({ params }: PageProps<"/[lang]/demo">) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <PageTitle kicker="Demo" title="Try a skill check">
-        In real life the check only runs on a City computer in a testing room, set up by City staff. This page does those steps for you in this browser. The demo passwords are in the submission.
+        In real life the check only runs on a City computer in an EXAM room, set up by City staff. This page does those steps for you in this browser. The demo passwords are in the submission.
       </PageTitle>
       <DemoKiosk lang={lang} />
     </div>

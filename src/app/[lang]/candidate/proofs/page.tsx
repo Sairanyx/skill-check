@@ -20,7 +20,7 @@ export default async function ProofsPage({ params }: PageProps<"/[lang]/candidat
       <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title="Proofs">
-          No CV, no cover letter. Add only official proofs that a job asks for, like a hygiene passport, a nurse licence or a language certificate. City staff check the original when you come to the testing room. Companies only see that it is verified.
+          No CV, no cover letter. Add only official proofs that a job asks for, like a hygiene passport, a nurse licence or a language certificate. City staff check the original when you come to the EXAM room. Companies only see that it is verified.
         </PageTitle>
       </div>
 
