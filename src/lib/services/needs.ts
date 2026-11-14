@@ -1,4 +1,5 @@
 import "server-only";
+import { proofType } from "@/lib/proofs";
 import { desc, eq } from "drizzle-orm";
 import { db, companies, needs } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
@@ -28,6 +29,7 @@ export async function loadNeed(needId: string): Promise<Need & { companyId: stri
     companyDescription: row.company.description,
     anchors: row.need.anchors,
     languageRequirements: row.need.languageRequirements,
+    proofRequirements: row.need.proofRequirements,
   };
 }
 
@@ -53,7 +55,7 @@ export async function listNeeds() {
 
 export async function createNeed(
   actor: ApiUser,
-  input: { title: string; summary: string; skills: string[]; level?: "junior" | "mid" | "senior"; source?: string; languageRequirements?: { language: "fi" | "sv" | "en"; level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" }[] },
+  input: { title: string; summary: string; skills: string[]; level?: "junior" | "mid" | "senior"; source?: string; languageRequirements?: { language: "fi" | "sv" | "en"; level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; proof?: "required" | "optional" }[]; proofRequirements?: { code: string; required: boolean }[] },
 ) {
   const company = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
   if (!company) throw new ApiError(400, "Create your company profile first");
@@ -73,7 +75,8 @@ export async function createNeed(
       skills,
       escoSkills,
       anchors,
-      languageRequirements: input.languageRequirements?.filter((r) => ["fi", "sv", "en"].includes(r.language) && ["A1", "A2", "B1", "B2", "C1", "C2"].includes(r.level)) ?? null,
+      languageRequirements: input.languageRequirements?.filter((r) => ["fi", "sv", "en"].includes(r.language) && ["A1", "A2", "B1", "B2", "C1", "C2"].includes(r.level)).map((r) => ({ language: r.language, level: r.level, proof: r.proof === "required" ? ("required" as const) : ("optional" as const) })) ?? null,
+      proofRequirements: input.proofRequirements?.filter((r) => proofType(r.code) && proofType(r.code)!.kind !== "language").map((r) => ({ code: r.code, required: !!r.required })) ?? null,
       level: input.level ?? "mid",
       source: input.source === "ai_drafted" ? "ai_drafted" : "written",
       confirmedBy: actor.id, // a human submitted it, so it is confirmed

@@ -1,6 +1,6 @@
 import "server-only";
 import { and, eq, isNull } from "drizzle-orm";
-import { db, user, session, account, skillChecks, evaluations, bookings, decisions, contactShares, companies } from "@/db";
+import { db, user, session, account, skillChecks, evaluations, bookings, decisions, contactShares, companies, proofs } from "@/db";
 import { ApiError } from "@/lib/api";
 import { aliasFor } from "@/lib/alias";
 import type { ApiUser } from "@/lib/api";
@@ -20,6 +20,7 @@ export async function exportMyData(actor: ApiUser) {
     account: { id: me?.id, name: me?.name, email: me?.email, role: me?.role, createdAt: me?.createdAt },
     skillChecks: checks.map((c, i) => ({ ...c, evaluation: evals[i] ?? null, humanDecisions: decs[i] })),
     bookings: myBookings,
+    proofs: await db.select().from(proofs).where(eq(proofs.candidateId, actor.id)),
     accessLog: await auditTrail({ subjectId: actor.id }),
   };
 }
@@ -40,6 +41,7 @@ export async function eraseMe(actor: ApiUser) {
       await tx.update(evaluations).set({ rubric: [], strengths: [], gaps: [] }).where(eq(evaluations.checkId, c.id)); // quotes contained their words
     }
     await tx.delete(bookings).where(eq(bookings.candidateId, actor.id));
+    await tx.delete(proofs).where(eq(proofs.candidateId, actor.id));
     await tx.delete(session).where(eq(session.userId, actor.id));
     await tx.delete(account).where(eq(account.userId, actor.id)); // password hash
     await tx.update(user).set({ name: "Erased user", email: `${tag}@erased.invalid`, image: null }).where(eq(user.id, actor.id));

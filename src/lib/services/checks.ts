@@ -1,4 +1,5 @@
 import "server-only";
+import { proofStatusForNeed } from "./proofs";
 import { and, desc, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db, skillChecks, evaluations, decisions, companies, needs, user, appointments, type StoredTurn } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
@@ -135,6 +136,7 @@ export async function getCheck(actor: ApiUser, checkId: string) {
     turns: check.turns.map((t) => (isOwner ? t : { question: t.question, seen: t.seen })),
     pendingQuestion: isOwner ? check.pendingQuestion : undefined,
     evaluation: evaluation ?? null,
+    proofs: await proofStatusForNeed(check.candidateId, need), // status only, never the document
     shareWithEquivalent: check.shareWithEquivalent,
     showOnCard: check.showOnCard,
     sharedFromOtherCompany: isCompany && need.ownerId !== actor.id,

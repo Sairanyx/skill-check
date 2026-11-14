@@ -112,7 +112,9 @@ export type QuestionBank = { junior?: string[]; mid?: string[]; senior?: string[
 export const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 export type Cefr = (typeof CEFR)[number];
 /** Optional: a language that is a genuine requirement of the job (allowed when justified and proportionate). */
-export type LanguageRequirement = { language: "fi" | "sv" | "en"; level: Cefr };
+export type LanguageRequirement = { language: "fi" | "sv" | "en"; level: Cefr; proof?: "required" | "optional" }; // proof = official certificate
+/** Other official proofs the job needs (codes from lib/proofs.ts), e.g. a nurse licence. */
+export type ProofRequirement = { code: string; required: boolean };
 export type LanguageResult = { language: string; required: Cefr; assessed: Cefr | null; meets: boolean; score: number; evidence: string[]; reason: string };
 
 export const needs = pgTable("needs", {
@@ -126,6 +128,7 @@ export const needs = pgTable("needs", {
   level: levelEnum("level").notNull().default("mid"),
   checkMode: checkModeEnum("check_mode").notNull().default("required"), // required | optional | off (anyone can come)
   languageRequirements: jsonb("language_requirements").$type<LanguageRequirement[]>(), // optional, e.g. Swedish B2
+  proofRequirements: jsonb("proof_requirements").$type<ProofRequirement[]>(), // optional, e.g. nurse licence
   questionBank: jsonb("question_bank").$type<QuestionBank>(), // null = AI builds easy filter questions itself
   questionBankReview: jsonb("question_bank_review").$type<{ ok: boolean; problems: string[] }>(), // fairness screening
   // BARS: what a 1 / 3 / 5 answer looks like per skill, written before anyone is scored (see lib/ai/rubric.ts)
@@ -356,6 +359,27 @@ export const bookings = pgTable("bookings", {
   companyId: text("company_id").notNull().references(() => companies.id),
   status: text("status").notNull().default("booked"),
   qrToken: text("qr_token").notNull().$defaultFn(() => crypto.randomUUID()),
+  createdAt: createdAt(),
+});
+
+export const proofStatusEnum = pgEnum("proof_status", ["declared", "verified", "rejected"]);
+
+/**
+ * An official proof the jobseeker has (licence, card, degree, language certificate).
+ * No document is uploaded or stored: City staff see the original in person, or check a public register,
+ * and record only the result. Companies see only "verified by the City", never the document.
+ */
+export const proofs = pgTable("proofs", {
+  id: id(),
+  candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  code: text("code").notNull(), // lib/proofs.ts
+  level: text("level"), // CEFR level for language certificates
+  status: proofStatusEnum("status").notNull().default("declared"),
+  verifiedBy: text("verified_by").references(() => user.id),
+  verifiedAt: timestamp("verified_at"),
+  method: text("method"), // e.g. "original seen", "JulkiTerhikki register"
+  validUntil: timestamp("valid_until"),
+  note: text("note"),
   createdAt: createdAt(),
 });
 
