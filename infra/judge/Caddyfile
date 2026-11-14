@@ -1,0 +1,4 @@
+# HTTPS for the judge API. vLLM itself checks the API key on every request.
+{$SITE_HOST} {
+	reverse_proxy 127.0.0.1:8000
+}

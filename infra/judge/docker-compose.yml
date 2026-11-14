@@ -1,0 +1,51 @@
+# Judge server (second Verda GPU, FIN-01, Spot): Mistral Small 3.2 24B = judge 2 on the scoring panel.
+# It only receives pseudonymised quotes + anchors from the main server, never audio or raw answers.
+# vLLM listens on 127.0.0.1 only. Caddy adds HTTPS, and every request needs the API key.
+services:
+  mistral:
+    image: vllm/vllm-openai:v0.33.0
+    restart: unless-stopped
+    ipc: host
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    environment:
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command:
+      - --model=mistralai/Mistral-Small-3.2-24B-Instruct-2506 # Mistral AI (France), open weights, Apache 2.0
+      - --served-model-name=mistral
+      - --tokenizer-mode=mistral
+      - --config-format=mistral
+      - --load-format=mistral
+      - --quantization=fp8 # 24B in ~25 GB, fits the 40 GB A100
+      - --max-model-len=16384
+      - --gpu-memory-utilization=0.90
+      - --limit-mm-per-prompt={"image":0}
+      - --api-key=${VLLM_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 60
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    network_mode: host # reaches vLLM on 127.0.0.1:8000
+    environment:
+      - SITE_HOST=${SITE_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+
+volumes:
+  hf-cache:
+  caddy-data:
