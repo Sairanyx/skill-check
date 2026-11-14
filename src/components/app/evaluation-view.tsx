@@ -1,4 +1,6 @@
 // Evidence view used by candidates (own result), companies and the City. Same facts for everyone.
+import { Redacted } from "./redacted";
+
 export type EvaluationData = {
   match: number;
   level: string;
@@ -39,8 +41,8 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
         <section>
           <h2 className="font-semibold">Feedback per skill</h2>
           <div className="mt-4 space-y-5">
-            {rubric.map((r) => (
-              <div key={r.criterion}>
+            {rubric.map((r, i) => (
+              <div key={r.criterion} data-tour={i === 0 ? "feedback" : undefined}>
                 <div className="flex justify-between text-sm">
                   <span className="capitalize">{r.criterion}</span>
                   <span className="text-muted-foreground">{r.evidence.length ? `${r.score}/10` : "not shown"}</span>
@@ -59,7 +61,7 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
                     <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{audience === "candidate" ? "From your answers" : "From the answers"}</dt>
                     {r.evidence.length ? (
                       r.evidence.map((q) => (
-                        <dd key={q} className="italic text-muted-foreground">“{q}”</dd>
+                        <dd key={q} className="italic text-muted-foreground">“<Redacted text={q} />”</dd>
                       ))
                     ) : (
                       <dd className="text-muted-foreground">Not shown in the answers. Lowers confidence, not the score.</dd>

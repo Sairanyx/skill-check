@@ -48,7 +48,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
       </div>
 
       {invited && (
-        <Section title={`Accepted for ${accepted.map((a) => a.company).join(", ")}`}>
+        <Section title={`Accepted for ${accepted.map((a) => a.company).join(", ")}`} demo="extra">
           {booking ? (
             <>
             <p className="text-sm">
@@ -73,17 +73,6 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
         </Section>
       )}
 
-      {check.status !== "in_progress" && !onKiosk && (
-        <Section title="Sharing">
-          <ConsentToggle
-            path={`/checks/${id}/share`}
-            field="share"
-            initial={check.shareWithEquivalent}
-            label="Share this result with other companies that accept it for a similar role, so I do not need to take the same check again."
-          />
-        </Section>
-      )}
-
       <CheckRunner
         anchors={(need?.anchors ?? []) as SkillAnchor[]}
         kiosk={onKiosk}
@@ -93,6 +82,19 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
         pendingQuestion={check.pendingQuestion ?? null}
         evaluation={check.evaluation as EvaluationData | null}
       />
+
+      {check.status !== "in_progress" && !onKiosk && (
+        <div className="mt-12">
+          <Section title="Sharing" demo="extra">
+            <ConsentToggle
+              path={`/checks/${id}/share`}
+              field="share"
+              initial={check.shareWithEquivalent}
+              label="Share this result with other companies that accept it for a similar role, so I do not need to take the same check again."
+            />
+          </Section>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { ArrowUp, Loader2, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiCall } from "./api-client";
 import { EvaluationView, type EvaluationData, type SkillAnchor } from "./evaluation-view";
+import { Redacted } from "./redacted";
 
 type Turn = { question: string; said?: string; seen: string };
 type AnswerResult = { done: boolean; said: string; seen: string; question?: string; turn?: number; max?: number; evaluation?: EvaluationData };
@@ -83,7 +84,7 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
 
       <div className="mt-8 space-y-6">
         {turns.map((t, i) => (
-          <div key={i} className="space-y-3">
+          <div key={i} data-tour="turn" className="space-y-3">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-primary">Question {i + 1}</p>
               <p className="mt-1 font-medium">{t.question}</p>
@@ -94,9 +95,12 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
                 <div className="rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground">{t.said}</div>
               </div>
             )}
-            <p className="ml-auto max-w-[85%] rounded-lg bg-muted px-3 py-2 text-right text-xs text-muted-foreground">
-              <span className="font-medium">What the AI saw</span> (personal details removed): {t.seen}
-            </p>
+            <div data-tour="ai-saw" className="ml-auto max-w-[85%] rounded-lg bg-surface px-4 py-3 text-sm">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">What the AI saw</p>
+              <p className="leading-relaxed text-foreground/80">
+                <Redacted text={t.seen} />
+              </p>
+            </div>
           </div>
         ))}
         {question && <p className="font-medium">{question}</p>}

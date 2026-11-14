@@ -23,7 +23,7 @@ export default async function CardPage({ params }: PageProps<"/[lang]/candidate/
         {stamps.length > 0 && <ConsentToggle path="/me/card" field="show" initial={consent} label="Show my stamps on the card" />}
       </div>
 
-      <div className="mt-8 max-w-md rounded-2xl border-2 border-primary p-8">
+      <div data-tour="card" className="mt-8 max-w-md rounded-2xl border-2 border-primary p-8">
         <Logo size="sm" className="mb-4" />
         <p className="text-sm font-medium text-primary">City of Espoo · Espoo Tech Talent Day</p>
         <p className="mt-1 text-xs text-muted-foreground">Open event: talk to any company</p>

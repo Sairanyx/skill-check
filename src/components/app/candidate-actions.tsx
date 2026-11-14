@@ -95,10 +95,10 @@ export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [
         </div>
       )}
 
-      <section className={ready ? "" : "pointer-events-none opacity-40"}>
+      <section data-tour="slots" className={ready ? "" : "pointer-events-none opacity-40"}>
         <h2 className="font-semibold">{rescheduleId ? "Choose a new time" : "2. Where and when?"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">30 minutes on a City computer in an EXAM room, like the ones Finnish universities use for exams. You can change the time until 2 hours before.</p>
-        <ul className="mt-4 divide-y border-y">
+        <ul data-demo="few" className="mt-4 divide-y border-y">
           {[...options.values()].slice(0, 30).map((s) => (
             <li key={s.slotId} className="flex items-center justify-between gap-6 py-3 text-sm">
               <span>

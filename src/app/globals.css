@@ -7,9 +7,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-work-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-lato);
+  --color-surface: var(--surface);
+  --color-tint: var(--tint);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -72,7 +74,10 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.75rem;
+  --radius: 0.5rem;
+  /* Two helpers next to Finnish blue: a light grey for sections and a lighter blue for chips and highlights */
+  --surface: #f3f4f6;
+  --tint: #dce8f8;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -128,9 +133,20 @@
     @apply font-sans;
   }
 }
-/* Geist everywhere (direct rule; the generated --font-sans theme token is not emitted) */
+/* Type like espoo.fi: Work Sans for text, Lato for headings (direct rules, the theme token is not emitted) */
 html, body {
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-work-sans), Helvetica, Arial, sans-serif;
+}
+h1, h2, h3, .font-heading {
+  font-family: var(--font-lato), Helvetica, Arial, sans-serif;
+}
+
+/* Guided demo: show only a few items per page so each step stays clean. Exploring alone shows everything. */
+html.tour-on [data-demo="extra"] {
+  display: none !important;
+}
+html.tour-on [data-demo="few"] > :nth-child(n + 4) {
+  display: none !important;
 }
 
 /* Guided demo: the part of the page the current step talks about */
@@ -139,4 +155,7 @@ html, body {
   outline-offset: 6px;
   border-radius: 8px;
   transition: outline-color 0.3s;
+}
+.bg-primary .tour-highlight {
+  outline-color: var(--tint);
 }

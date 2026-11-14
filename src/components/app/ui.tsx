@@ -3,15 +3,16 @@ export function PageTitle({ kicker, title, children }: { kicker?: string; title:
   return (
     <div className="mb-10">
       {kicker && <p className="text-sm font-medium text-primary">{kicker}</p>}
-      <h1 className="mt-1 text-3xl font-semibold">{title}</h1>
+      <h1 className="mt-1 text-4xl tracking-tight">{title}</h1>
       {children && <div className="mt-2 max-w-2xl text-sm text-muted-foreground">{children}</div>}
     </div>
   );
 }
 
-export function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+/** `demo="extra"` hides the section during the guided demo, so each step stays short. */
+export function Section({ title, children, action, tour, demo }: { title: string; children: React.ReactNode; action?: React.ReactNode; tour?: string; demo?: "extra" }) {
   return (
-    <section className="border-t py-8">
+    <section data-tour={tour} data-demo={demo} className="border-t py-8">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 className="font-semibold">{title}</h2>
         {action}

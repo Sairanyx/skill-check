@@ -24,6 +24,9 @@ const snapshot = () => {
 };
 const post = (path: string, body?: unknown) => fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body ?? {}) });
 
+/** Height kept free above the guide bar, so the highlighted part is never under it. */
+const BAR = 190;
+
 /** Go to a step: log in as the right demo account if needed, then open the page. */
 export async function goToStep(s: TourState, i: number) {
   const step = s.steps[i];
@@ -48,7 +51,7 @@ async function endTour(lang: string) {
   window.location.href = `/${lang}`;
 }
 
-/** The floating guide shown on every page while the tour runs. */
+/** The guide bar shown at the bottom of every page while the tour runs. */
 export function TourGuide() {
   const pathname = usePathname();
   const raw = useSyncExternalStore(subscribe, snapshot, () => null);
@@ -58,75 +61,80 @@ export function TourGuide() {
   const step = tour?.steps[tour.step];
   const onPage = !!step && pathname === `/${tour!.lang}${step.path.split("?")[0]}`.replace(/\/$/, "");
 
-  // Highlight and scroll to the part of the page this step is about.
+  // Demo mode: short lists (see globals.css) and room under the page so its last part can scroll above the bar.
+  useEffect(() => {
+    document.documentElement.classList.toggle("tour-on", !!tour);
+    document.body.style.paddingBottom = tour ? `${BAR}px` : "";
+    return () => void (document.body.style.paddingBottom = "");
+  }, [tour]);
+
+  // Highlight the part of the page this step is about and bring it into view above the bar.
   useEffect(() => {
     lit.current?.classList.remove("tour-highlight");
     if (!onPage || !step?.highlight) return;
-    window.scrollTo({ top: 0 });
-    const t = setTimeout(() => {
+    // The page may still be streaming in: look for the part a few times before giving up.
+    let tries = 0;
+    const t = setInterval(() => {
       const el = document.querySelector(step.highlight!);
+      if (!el && ++tries < 30) return;
+      clearInterval(t);
       if (!el) return;
       el.classList.add("tour-highlight");
-      const r = el.getBoundingClientRect();
-      if (r.top > window.innerHeight * 0.6) el.scrollIntoView({ behavior: "smooth", block: "center" });
       lit.current = el;
-    }, 400);
-    return () => clearTimeout(t);
+      const r = el.getBoundingClientRect();
+      const fits = r.top >= 16 && r.bottom <= window.innerHeight - BAR;
+      if (!fits) window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 112), behavior: "smooth" });
+    }, 200);
+    return () => clearInterval(t);
   }, [onPage, step]);
 
   const next = useCallback(() => {
     if (!tour) return;
     if (tour.step >= tour.steps.length - 1) return void endTour(tour.lang);
-    const s = { ...tour };
     const n = tour.step + 1;
     // Same page, next part (e.g. conversation, then feedback): no reload needed.
-    if (tour.steps[n].path === tour.steps[tour.step].path && tour.steps[n].as === tour.steps[tour.step].as) {
-      save({ ...s, step: n });
-      return;
-    }
-    goToStep({ ...s, step: tour.step }, n);
+    if (tour.steps[n].path === tour.steps[tour.step].path && tour.steps[n].as === tour.steps[tour.step].as) return save({ ...tour, step: n });
+    goToStep(tour, n);
   }, [tour]);
-
 
   if (!tour || !step) return null;
   const n = tour.step;
+  const last = n === tour.steps.length - 1;
 
   return (
-    <div role="dialog" aria-label="Guided demo" className="fixed bottom-6 left-1/2 z-50 w-[min(94vw,820px)] -translate-x-1/2 rounded-2xl border-2 border-primary bg-background p-6 shadow-2xl md:p-8">
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-2">
-          <span className="font-medium uppercase tracking-wide text-primary">Demo {n + 1} / {tour.steps.length}</span>
-          {step.tag && <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">{step.tag}</span>}
-        </span>
-        <button onClick={() => endTour(tour.lang)} className="hover:text-foreground">Exit</button>
+    <div role="dialog" aria-label="Guided demo" className="fixed inset-x-0 bottom-0 z-50 border-t-4 border-primary bg-background shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
+      <div className="h-1 bg-tint">
+        <div className="h-1 bg-primary transition-all" style={{ width: `${((n + 1) / tour.steps.length) * 100}%` }} />
       </div>
-      <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{step.title}</h2>
-      <p className="mt-2 text-base leading-relaxed text-foreground/80 md:text-lg">{onPage ? step.text : "Opening the next page…"}</p>
-      {onPage && step.evidence && (
-        <p className="mt-3 border-l-2 border-primary pl-3 text-sm text-muted-foreground">
-          <span className="font-medium text-primary">Research: </span>
-          {step.evidence}
-        </p>
-      )}
-      {n === tour.steps.length - 1 && (
-        <div className="mt-5 grid gap-2 sm:grid-cols-4">
-          <a href={`/${tour.lang}/demo`} onClick={() => save(null)} className="rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground hover:opacity-90">
-            Take a skill check
-          </a>
-          {(["candidate", "company", "city"] as const).map((r) => (
-            <a key={r} href={`/${tour.lang}/login?as=${r}`} onClick={() => save(null)} className="rounded-lg border-2 border-primary px-3 py-2 text-center text-sm font-medium text-primary hover:bg-primary/5">
-              {r === "candidate" ? "Aino, jobseeker" : r === "company" ? "Kauklahti Parcel" : "City of Espoo"}
-            </a>
-          ))}
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 md:flex-row md:items-center md:gap-10">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-primary">
+            {n + 1} / {tour.steps.length}
+          </p>
+          <h2 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">{step.title}</h2>
+          <p className="mt-1 text-base text-foreground/80 md:text-lg">{onPage ? step.text : "Opening the next page…"}</p>
         </div>
-      )}
-
-      <div className="mt-4 flex items-center gap-2">
-        <button disabled={n === 0} onClick={() => goToStep(tour, n - 1)} className="rounded-lg border px-4 py-2 disabled:opacity-40">Back</button>
-
-        <button onClick={next} className="ml-auto rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground">
-          {n >= tour.steps.length - 1 ? "Close" : onPage ? "Next" : "Open"}
-        </button>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {last ? (
+            <>
+              <a href={`/${tour.lang}/demo`} onClick={() => save(null)} className="rounded-lg bg-primary px-5 py-2.5 font-medium text-primary-foreground hover:opacity-90">
+                Take a skill check
+              </a>
+              {(["candidate", "company", "city"] as const).map((r) => (
+                <a key={r} href={`/${tour.lang}/login?as=${r}`} onClick={() => save(null)} className="rounded-lg border-2 border-primary px-4 py-2 font-medium text-primary hover:bg-tint">
+                  {r === "candidate" ? "Aino" : r === "company" ? "Company" : "City"}
+                </a>
+              ))}
+              <button onClick={() => endTour(tour.lang)} className="px-3 py-2 text-muted-foreground hover:text-foreground">Close</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => endTour(tour.lang)} className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">Exit</button>
+              <button disabled={n === 0} onClick={() => goToStep(tour, n - 1)} className="rounded-lg border-2 px-5 py-2.5 font-medium disabled:opacity-40">Back</button>
+              <button onClick={next} className="rounded-lg bg-primary px-6 py-2.5 font-medium text-primary-foreground hover:opacity-90">{onPage ? "Next" : "Open"}</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
