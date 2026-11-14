@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db, user, companies, needs, events, rooms, slots, eventCompanies, checkSessions, sessionBookings } from "@/db";
 import { DEMO_NEEDS } from "@/lib/demo-data";
+import { mapToEsco } from "@/lib/esco";
 
 const DEMO_PASSWORD = process.env.SEED_PASSWORD ?? "junction2026"; // set SEED_PASSWORD for the live demo
 
@@ -37,6 +38,7 @@ async function main() {
     if (!has) {
       await db.insert(needs).values({
         id: n.id, companyId: company.id, title: n.title, summary: n.summary, skills: n.skills,
+        escoSkills: await mapToEsco(n.skills, `${n.title}: ${n.summary}`),
         level: n.level, source: "written", confirmedBy: owners[n.company], confirmedAt: new Date(),
       });
     }

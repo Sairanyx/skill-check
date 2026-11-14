@@ -101,12 +101,16 @@ export const companies = pgTable("companies", {
 
 export const levelEnum = pgEnum("level", ["junior", "mid", "senior"]);
 
+export type EscoSkill = { input: string; uri: string; label: { en: string; fi?: string; sv?: string } };
+
 export const needs = pgTable("needs", {
   id: id(),
   companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   summary: text("summary").notNull(),
   skills: jsonb("skills").$type<string[]>().notNull(),
+  // Each skill linked to the EU ESCO taxonomy (labels in en/fi/sv) so needs are comparable across companies and languages.
+  escoSkills: jsonb("esco_skills").$type<EscoSkill[]>(),
   level: levelEnum("level").notNull().default("mid"),
   source: text("source").notNull().default("written"), // "written" | "ai_drafted"
   confirmedBy: text("confirmed_by").references(() => user.id), // a human confirmed the AI draft

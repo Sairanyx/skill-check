@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, companies, needs } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
 import type { Need } from "@/lib/demo-data";
+import { mapToEsco } from "@/lib/esco";
 
 /** A need together with its company name, in the shape the AI agents expect. */
 export async function loadNeed(needId: string): Promise<Need & { companyId: string; ownerId: string }> {
@@ -31,6 +32,7 @@ export async function listNeeds() {
       title: needs.title,
       summary: needs.summary,
       skills: needs.skills,
+      escoSkills: needs.escoSkills,
       level: needs.level,
       company: companies.name,
     })
@@ -47,13 +49,16 @@ export async function createNeed(
   if (!company) throw new ApiError(400, "Create your company profile first");
   if (!input.title?.trim() || !input.summary?.trim() || !input.skills?.length)
     throw new ApiError(400, "title, summary and at least one skill are required");
+  const skills = input.skills.map((s) => s.trim()).filter(Boolean);
+  const escoSkills = await mapToEsco(skills, `${input.title}: ${input.summary}`);
   const [need] = await db
     .insert(needs)
     .values({
       companyId: company.id,
       title: input.title.trim(),
       summary: input.summary.trim(),
-      skills: input.skills.map((s) => s.trim()).filter(Boolean),
+      skills,
+      escoSkills,
       level: input.level ?? "mid",
       source: input.source === "ai_drafted" ? "ai_drafted" : "written",
       confirmedBy: actor.id, // a human submitted it, so it is confirmed

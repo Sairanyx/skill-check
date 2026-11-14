@@ -6,7 +6,7 @@ import type { ApiUser } from "@/lib/api";
 /** The company's own needs with how many candidates are ready for review. */
 export async function myNeeds(actor: ApiUser) {
   return db
-    .select({ id: needs.id, title: needs.title, level: needs.level, skills: needs.skills, ready: count(skillChecks.id) })
+    .select({ id: needs.id, title: needs.title, level: needs.level, skills: needs.skills, escoSkills: needs.escoSkills, ready: count(skillChecks.id) })
     .from(needs)
     .innerJoin(companies, eq(needs.companyId, companies.id))
     .leftJoin(skillChecks, and(eq(skillChecks.needId, needs.id), eq(skillChecks.status, "evaluated")))
