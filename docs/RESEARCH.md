@@ -63,3 +63,32 @@ Comparison table of platforms (for the Q&A): Sapia.ai, HireVue, TestGorilla, Ver
 ## 5. Kiosk lock
 - **Safe Exam Browser (SEB):** locks the computer to one site, blocks shortcuts, uses a config file with an access key. Windows version is Chromium-based. [SEB](https://www.safeexambrowser.org/about_overview_en.html) · [manual](https://www.safeexambrowser.org/windows/win_usermanual_en.html)
 - **Plan:** City computers run SEB (or ChromeOS / Chromium kiosk) pointed at Skill Check. Our server can additionally check SEB's request header so checks only run from the official SEB setup.
+
+---
+
+# How the City of Espoo does it today (Nov 2026)
+
+## Who is responsible
+- Since **1 Jan 2025 (TE24 reform)** public employment services moved from the state to municipalities. **Espoo + Kauniainen form one employment area; the City of Espoo is the employment authority**, responsible for about **30,000 jobseekers**. [Kauniainen](https://kauniainen.fi/en/news/te-services-will-become-municipal-services-on-1-january-2025) · [Työmarkkinatori](https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle) · [Espoo: TE reform for employers](https://www.espoo.fi/en/working-life/business-espoo-helping-companies-thrive/apua-rekrytointiin/te-reform-what-do-businesses-and-employers-need-know)
+
+## Services for employers
+- **Free tailored candidate search:** Espoo Employment Services finds jobseekers who meet the employer's needs and **presents the best options; the employer makes the final selection**. [Espoo employer services](https://www.espoo.fi/en/ty%C3%B6nantajalle) · [Recruitment assistance](https://www.espoo.fi/en/business-espoo-helping-companies-thrive/recruitment-assistance-0)
+- **Company visits ("Invite us for a visit"):** staff visit companies, learn their needs in conversation and uncover hidden openings. Employers were "delighted by how many talents are available". No numbers or screening method published. [Espoo news 2025/10](https://www.espoo.fi/en/news/2025/10/free-recruitment-help-sparks-interest-entrepreneurs-espoo-are-delighted-about-level-talent) · [2026/05](https://www.espoo.fi/en/news/2026/05/how-your-business-doing-invite-us-visit)
+- **Recruitment subsidy:** €5,000 to employers who hire a young Espoo resident or an unemployed person who speaks a foreign language (from 3 Feb 2026). [Espoo](https://www.espoo.fi/en/rekrytointituki)
+- **Business Espoo** network of six organisations (City, Enter Espoo, Federation of Espoo Enterprises, Helsinki Region Chamber of Commerce, Omnia, Espoo Regional Enterprise Agency).
+
+## Events today
+| Event | Format | How matching works |
+|---|---|---|
+| **TalentMatch** | Online or in person, English, free | Event platform with matching algorithms, **pre-screened profiles**, **15-minute 1:1 meetings only on mutual interest**. 200–1,000 jobseekers, 5–50 employers per event. [Espoo](https://www.espoo.fi/en/talentmatch-events) |
+| **Työnantajatreffit** (employer meet-ups) | In person, sector-specific, e.g. construction at **Sello library** 9 Apr 2026, also Lippulaiva | Walk-in meetings with employers, free [Työmarkkinatori](https://tyomarkkinatori.fi/tapahtumat/tyonantajatreffit-maanrakennusala) |
+| **Employer Speed Dating** | On-site, Espoo Talent Hub or online | International students and employers, with universities [Espoo](https://www.espoo.fi/en/working-life/espoo-talent-hub/employer-speed-dating) |
+| Espoo Talent Hub | Tekniikantie 4 C, Otaniemi | Services for international professionals, Competence Centre for Highly Educated Immigrants |
+
+## What this means for Skill Check
+- **Our model already matches how Espoo works:** the City finds and presents candidates, the employer decides (D11). We add **evidence of real skills** instead of self-written profiles, and **scale** it beyond manual visits (30,000 jobseekers).
+- **The gap we fill:** today's profiles are pre-screened but self-reported, and needs are gathered by hand during visits. Skill Check gives companies a 2-minute way to describe needs and gives staff comparable evidence.
+- **Testing rooms can use existing City places:** Espoo already runs events in **libraries (Sello, Lippulaiva)** and **Espoo Talent Hub**. Library computer spaces + EXAM-style booking = testing rooms without new buildings.
+- **Fits existing events:** TalentMatch already uses 15-min 1:1 meetings on mutual interest. Our stamps and evidence plug into that flow (and into whatever platform they use, via our API).
+- **Link to the €5,000 subsidy:** the platform can tell a company when a candidate they accepted may make them eligible (young Espoo resident or foreign-language speaker), without showing the reason to anyone else.
+- **Open questions for the Espoo mentors:** How do staff screen candidates today? Which event platform runs TalentMatch? How many staff hours does one event take? Would libraries or Talent Hub host testing rooms?
