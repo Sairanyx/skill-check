@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { apiCall } from "./api-client";
+import { formProblem } from "./form-check";
 
 type ProofType = { code: string; kind: string; label: { en: string } };
 const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -15,10 +16,12 @@ export function AddProof({ types }: { types: ProofType[] }) {
   const [error, setError] = useState<string | null>(null);
   const isLanguage = types.find((t) => t.code === code)?.kind === "language";
   return (
-    <form
+    <form noValidate
       className="flex flex-wrap items-end gap-3"
       onSubmit={async (e) => {
         e.preventDefault();
+        const problem = formProblem(e.currentTarget);
+        if (problem) return setError(problem);
         const f = new FormData(e.currentTarget);
         try {
           await apiCall("/me/proofs", { json: { code, level: f.get("level") || undefined } });
@@ -30,14 +33,14 @@ export function AddProof({ types }: { types: ProofType[] }) {
         }
       }}
     >
-      <select value={code} onChange={(e) => setCode(e.target.value)} required className="h-9 rounded-md border bg-background px-2 text-sm">
+      <select aria-label="Proof" value={code} onChange={(e) => setCode(e.target.value)} required className="h-9 rounded-md border bg-background px-2 text-sm">
         <option value="">Choose a proof</option>
         {types.map((t) => (
           <option key={t.code} value={t.code}>{t.label.en}</option>
         ))}
       </select>
       {isLanguage && (
-        <select name="level" required defaultValue="" className="h-9 rounded-md border bg-background px-2 text-sm">
+        <select aria-label="Level" name="level" required defaultValue="" className="h-9 rounded-md border bg-background px-2 text-sm">
           <option value="" disabled>Level</option>
           {CEFR.map((l) => (
             <option key={l} value={l}>{l}</option>

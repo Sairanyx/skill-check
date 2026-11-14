@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiCall } from "./api-client";
+import { formProblem } from "./form-check";
 
 const LANGS = [["fi", "Finnish"], ["sv", "Swedish"], ["en", "English"]] as const;
 const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -20,10 +21,12 @@ export function NeedForm({ lang }: { lang: string }) {
   const [reading, setReading] = useState(false);
   return (
     <div className="max-w-2xl space-y-8">
-    <form
+    <form noValidate
       className="flex flex-wrap items-end gap-3 rounded-md border p-4"
       onSubmit={async (e) => {
         e.preventDefault();
+        const problem = formProblem(e.currentTarget);
+        if (problem) return setError(problem);
         const url = String(new FormData(e.currentTarget).get("url"));
         setReading(true);
         setError(null);
@@ -43,11 +46,13 @@ export function NeedForm({ lang }: { lang: string }) {
       <Button type="submit" variant="outline" disabled={reading}>{reading ? "Reading…" : "Fill in"}</Button>
       <p className="w-full text-xs text-muted-foreground">Read with Context.dev. Check and edit the draft before saving.</p>
     </form>
-    <form
+    <form noValidate
       key={draft?.source ?? "empty"}
       className="max-w-2xl space-y-5"
       onSubmit={async (e) => {
         e.preventDefault();
+        const problem = formProblem(e.currentTarget);
+        if (problem) return setError(problem);
         const f = new FormData(e.currentTarget);
         try {
           await apiCall("/needs", {

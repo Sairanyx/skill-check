@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formProblem } from "./form-check";
 
 /**
  * DEMO ONLY (front end). Opens a jobseeker's booked skill check in this browser in one click.
@@ -64,9 +65,12 @@ export function DemoKiosk({ lang }: { lang: string }) {
 
   return (
     <form
+      noValidate
       className="max-w-md space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
+        const problem = formProblem(e.currentTarget);
+        if (problem) return setError(problem);
         run(new FormData(e.currentTarget));
       }}
     >

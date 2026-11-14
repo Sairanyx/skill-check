@@ -7,13 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp, type FormState } from "@/app/actions/auth";
 import { LogoIcon } from "./logo";
+import { formProblem } from "@/components/app/form-check";
 
 export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(mode === "login" ? signIn : signUp, {});
   const [role, setRole] = useState<"candidate" | "company">("candidate");
+  const [problem, setProblem] = useState<string | null>(null);
 
   return (
-    <form action={action} className="mx-auto mt-16 max-w-sm space-y-5 px-4">
+    <form
+      action={action}
+      noValidate
+      onSubmit={(e) => {
+        const p = formProblem(e.currentTarget);
+        setProblem(p);
+        if (p) e.preventDefault();
+      }}
+      className="mx-auto mt-16 max-w-sm space-y-5 px-4"
+    >
       <LogoIcon className="size-10" />
       <h1 className="text-2xl font-semibold">{mode === "login" ? "Log in" : "Create an account"}</h1>
       <input type="hidden" name="lang" value={lang} />
@@ -39,7 +50,7 @@ export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: strin
         <Label htmlFor="password">Password</Label>
         <Input id="password" name="password" type="password" required minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} />
       </div>
-      {state.error && <p className="text-sm text-destructive">{state.error}</p>}
+      {(problem ?? state.error) && <p className="text-sm text-destructive">{problem ?? state.error}</p>}
       <Button type="submit" size="lg" className="h-11 w-full text-base" disabled={pending}>
         {mode === "login" ? "Log in" : "Create account"}
       </Button>
