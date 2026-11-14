@@ -1,4 +1,4 @@
-# Skill Check: build spec
+# SkillCheck: build spec
 
 **Challenge:** City of Espoo, "Rethinking Recruitment" (+ tech challenges: Verda, Gemma, Gemini API, Modal, Context.dev, Aiven)
 **One-liner:** Show what you can do, not what an AI wrote for you. An AI-led skill check in English, Finnish or Swedish gives companies evidence; **people make every decision**.
@@ -139,7 +139,7 @@ Every AI output stores the model name + version for the audit trail.
 
 **Cut line if late:** drop 7 (Modal), then video path, then `/city/audit` (keep the decision log). Never cut 3 or 4.
 
-## 8. Decisions (14 Nov, Team Zero)
+## 8. Decisions (14 Nov, Team SkillCheck)
 - **Exam-room model:** all skill checks in person at City testing rooms (like university EXAM rooms). Booking = venue → room → workstation → 30-min slot. The workstation is a kiosk that only lets the booked person log in during their slot (10 min grace) and logs out at the end.
 - **Up to 3 company needs per booking.**
 - **Reschedule** until 2 h before start, max 2 times. **No penalty for no-shows** (for now).

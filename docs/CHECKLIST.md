@@ -1,4 +1,4 @@
-# Skill Check: checklist
+# SkillCheck: checklist
 
 Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 Saturday, then video + presentation (Eduard). Teammate continues building in the night/morning.
 

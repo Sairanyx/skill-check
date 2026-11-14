@@ -4,7 +4,7 @@ Collected 14 Nov 2026. Vendor numbers are marked as such. Use the wording below 
 
 ## Headline facts for the pitch and the video
 - **Since 1 Jan 2025 (TE24 reform), the City of Espoo is the employment authority for Espoo and Kauniainen, responsible for about 30,000 jobseekers.** Matching people to jobs is literally the City's job now. [Kauniainen](https://kauniainen.fi/en/news/te-services-will-become-municipal-services-on-1-january-2025) · [Työmarkkinatori](https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle)
-- Espoo already finds candidates and lets employers choose. **Skill Check gives that work evidence, scale and fairness.**
+- Espoo already finds candidates and lets employers choose. **SkillCheck gives that work evidence, scale and fairness.**
 - "EXAM rooms for reasoning", using existing City spaces (libraries, Espoo Talent Hub).
 - **Our own fairness test:** the same answers written in fluent and in non-native English scored **7.0 vs 6.7**. The scorer judges reasoning, not language.
 
@@ -68,7 +68,7 @@ Comparison table of platforms (for the Q&A): Sapia.ai, HireVue, TestGorilla, Ver
 
 ## 5. Kiosk lock
 - **Safe Exam Browser (SEB):** locks the computer to one site, blocks shortcuts, uses a config file with an access key. Windows version is Chromium-based. [SEB](https://www.safeexambrowser.org/about_overview_en.html) · [manual](https://www.safeexambrowser.org/windows/win_usermanual_en.html)
-- **Plan:** City computers run SEB (or ChromeOS / Chromium kiosk) pointed at Skill Check. Our server can additionally check SEB's request header so checks only run from the official SEB setup.
+- **Plan:** City computers run SEB (or ChromeOS / Chromium kiosk) pointed at SkillCheck. Our server can additionally check SEB's request header so checks only run from the official SEB setup.
 
 ---
 
@@ -91,9 +91,9 @@ Comparison table of platforms (for the Q&A): Sapia.ai, HireVue, TestGorilla, Ver
 | **Employer Speed Dating** | On-site, Espoo Talent Hub or online | International students and employers, with universities [Espoo](https://www.espoo.fi/en/working-life/espoo-talent-hub/employer-speed-dating) |
 | Espoo Talent Hub | Tekniikantie 4 C, Otaniemi | Services for international professionals, Competence Centre for Highly Educated Immigrants |
 
-## What this means for Skill Check
+## What this means for SkillCheck
 - **Our model already matches how Espoo works:** the City finds and presents candidates, the employer decides (D11). We add **evidence of real skills** instead of self-written profiles, and **scale** it beyond manual visits (30,000 jobseekers).
-- **The gap we fill:** today's profiles are pre-screened but self-reported, and needs are gathered by hand during visits. Skill Check gives companies a 2-minute way to describe needs and gives staff comparable evidence.
+- **The gap we fill:** today's profiles are pre-screened but self-reported, and needs are gathered by hand during visits. SkillCheck gives companies a 2-minute way to describe needs and gives staff comparable evidence.
 - **Testing rooms can use existing City places:** Espoo already runs events in **libraries (Sello, Lippulaiva)** and **Espoo Talent Hub**. Library computer spaces + EXAM-style booking = testing rooms without new buildings.
 - **Fits existing events:** TalentMatch already uses 15-min 1:1 meetings on mutual interest. Our stamps and evidence plug into that flow (and into whatever platform they use, via our API).
 - **Link to the €5,000 subsidy:** the platform can tell a company when a candidate they accepted may make them eligible (young Espoo resident or foreign-language speaker), without showing the reason to anyone else.

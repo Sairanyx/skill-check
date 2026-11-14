@@ -1,6 +1,6 @@
-# Skill Check: architecture and status
+# SkillCheck: architecture and status
 
-Skill Check is a platform for the **City of Espoo**'s recruitment events. Jobseekers show how they think in a short AI-led conversation, held **at a venue or online room run by the City**. Companies get evidence instead of AI-written CVs, and **a person makes every decision**.
+SkillCheck is a platform for the **City of Espoo**'s recruitment events. Jobseekers show how they think in a short AI-led conversation, held **at a venue or online room run by the City**. Companies get evidence instead of AI-written CVs, and **a person makes every decision**.
 
 ## 1. System
 

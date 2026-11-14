@@ -3,7 +3,7 @@
 Welcome. This page gets you from zero to productive. Read it top to bottom once (about 10 minutes).
 
 ## 1. The project in one minute
-**Skill Check** is a platform for the **City of Espoo**'s recruitment events (Junction 2026 challenge "Rethinking Recruitment").
+**SkillCheck** is a platform for the **City of Espoo**'s recruitment events (Junction 2026 challenge "Rethinking Recruitment").
 - Jobseekers book a 30-minute slot on a **City computer in a testing room** (like university EXAM rooms).
 - On that locked computer, an AI interviewer asks ~6 questions about a real company need (fi / sv / en, voice or text).
 - A **privacy guard** removes names, employers, schools and places **before** any AI scores the answers.
@@ -27,7 +27,7 @@ Judging (Espoo): impact 45%, innovation & UX 35%, responsible & feasible 20%. No
 | GitHub `Sairanyx/skill-check` | Eduard adds you as collaborator. Work on branch **`dev`** |
 | `.env.local` values | Eduard sends them **privately** (not via GitHub or public chat) |
 | SSH to the Verda server | Send Eduard your `~/.ssh/id_ed25519.pub`, he adds it (see `infra/README.md`) |
-| Verda console (optional) | Eduard invites you to project **Skill Check**. Also redeem your own €200 coupon **inside that project** |
+| Verda console (optional) | Eduard invites you to project **SkillCheck**. Also redeem your own €200 coupon **inside that project** |
 | Aiven console (optional) | Eduard invites you to project `skill-check-db` |
 
 ## 4. Run it locally

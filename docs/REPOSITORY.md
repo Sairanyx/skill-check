@@ -69,7 +69,7 @@ flowchart TB
 | `src/lib/esco.ts` | AI / open data | Maps company skills to the EU ESCO taxonomy |
 | `src/db/` | Data | `schema.ts` (all tables), `seed.ts`, `reset.ts`, `sql/` (audit triggers) |
 | `src/components/ui/` | Clients | Base UI components (shadcn/ui) |
-| `src/components/app/` | Clients | Skill Check components: check runner, evidence view, decision panel, kiosk guard |
+| `src/components/app/` | Clients | SkillCheck components: check runner, evidence view, decision panel, kiosk guard |
 | `src/i18n/` | Clients | Texts in English, Finnish and Swedish |
 | `infra/` | Operations | `docker-compose.yml` (Gemma, Whisper, app, Caddy), `Caddyfile`, `deploy.sh`, `tunnel.sh`, server guide |
 | `Dockerfile` | Operations | Production image of the web app |
