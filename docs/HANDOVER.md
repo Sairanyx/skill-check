@@ -1,89 +1,127 @@
 # Handover: start here
 
-Welcome. This page gets you from zero to productive. Read it top to bottom once (about 10 minutes).
+Welcome! This page gets you from zero to productive in about 15 minutes. Status: **Saturday 14 Nov, 16:00**.
+Submission: **Sunday 15 Nov, 10:00** (video ≤ 2 min, deck PDF, public repo, form set to FINAL). Peer review Sun 10:30–14:00, everyone attends.
+
+**Live site:** https://skillcheck.fi (password for every demo account: `junction2026`)
 
 ## 1. The project in one minute
-**SkillCheck** is a platform for the **City of Espoo**'s recruitment events (Junction 2026 challenge "Rethinking Recruitment").
-- Jobseekers book a 30-minute slot on a **City computer in a testing room** (like university EXAM rooms).
-- On that locked computer, an AI interviewer asks ~6 questions about a real company need (fi / sv / en, voice or text).
-- A **privacy guard** removes names, employers, schools and places **before** any AI scores the answers.
-- An evaluator gives **match 0–10, confidence, level and question difficulty**, with quotes as evidence. A fairness agent checks for bias.
-- **A person decides**: the company accepts (stamp on the event card, meeting at the event) or not. The AI never decides.
-- Everything runs **in Finland**: Verda GPU server (Helsinki) + Aiven Postgres (Hamina).
+**SkillCheck** is a platform for the **City of Espoo**'s recruitment events (Junction challenge "Rethinking Recruitment"). Since 2025 Espoo is the employment authority for ~30,000 jobseekers.
+- Jobseekers book a 30-minute slot on a **City computer in a testing room** (like university EXAM rooms). The check only runs there: no cheating with ChatGPT, no impersonation.
+- An **AI interviewer** asks ~6 questions about a real company need (Finnish, Swedish or English, voice or text).
+- A **privacy guard** removes names, employers, schools, places, dates that reveal age, and everything the Non-Discrimination Act protects, **before** any AI scores the answers.
+- A **panel of AI judges** scores the answers against written anchors (BARS) with verified quotes. A fairness agent checks for bias. Low confidence or a flag sends it to a City person.
+- **No CV, no cover letter.** Only official proofs the job needs (licence, hygiene passport, language certificate), checked in person by City staff.
+- **People decide.** City and company accept or not. Companies see an alias, never a name. The AI never decides.
+- Everything runs **in Finland**: two Verda GPU servers + Aiven Postgres.
 
-Judging (Espoo): impact 45%, innovation & UX 35%, responsible & feasible 20%. No automated decisions about people.
+Judging: impact 45%, innovation and UX 35%, responsible and feasible 20%.
 
-## 2. Read these (in this order)
-1. `docs/CHECKLIST.md`: **what is done and what is next** (we tick items off together)
-2. `docs/REPOSITORY.md`: how the code is organised (layer diagram)
-3. `docs/DATABASE.md`: the database, Postgres vs Aiven vs Drizzle, diagram of all tables
-4. `docs/ARCHITECTURE.md`: diagrams, how the agents interact, where everything is in the repo, full API
-5. `docs/SPEC.md` §8: product decisions we agreed on (exam rooms, consent, stamps, etc.)
-6. `infra/README.md`: SSH, the database, deploy
+## 2. Exact models (say these exactly in the deck and video)
+| Job | Model | Made by | Runs on |
+|---|---|---|---|
+| Speech to text | **Whisper large-v3-turbo** | OpenAI (open weights) | Verda A100 80GB, FIN-01 |
+| Privacy guard, interviewer, evaluator, fairness check, judge 1 | **Gemma 4 26B-A4B-it** | Google (open weights) | Verda A100 80GB, FIN-01 |
+| Judge 2 | **Mistral Small 3.2 24B Instruct** | Mistral AI, France (open, Apache 2.0) | Verda A100 40GB Spot, FIN-01 (**not running yet**, see §6) |
+| Judge 3 (optional) | **Gemini 3.8 Flash** (or Gemini 4) | Google | Google cloud, hackathon key |
+| Serving | **vLLM** v0.33.0 | open source | both Verda servers |
 
-## 3. Access you need (ask Eduard)
+## 3. Read these (in this order)
+1. `docs/CHECKLIST.md`: what is done and what is next. **Your items are marked "Teammate".**
+2. `docs/DECISIONS.md`: every design choice with the research behind it (D1–D18). Good pitch material.
+3. `docs/REPOSITORY.md`: how the code is organised (layers diagram).
+4. `docs/ARCHITECTURE.md`: diagrams, agents, full API, capacity estimate.
+5. `docs/DATABASE.md`: all 27 tables.
+6. `docs/RESEARCH.md`: facts for the pitch (with sources).
+7. `infra/README.md`: SSH, database, deploy.
+
+## 4. Access (ask Eduard)
 | What | How |
 |---|---|
-| GitHub `Sairanyx/skill-check` | Eduard adds you as collaborator. Work on branch **`dev`** |
-| `.env.local` values | Eduard sends them **privately** (not via GitHub or public chat) |
-| SSH to the Verda server | Send Eduard your `~/.ssh/id_ed25519.pub`, he adds it (see `infra/README.md`) |
-| Verda console (optional) | Eduard invites you to project **SkillCheck**. Also redeem your own €200 coupon **inside that project** |
-| Aiven console (optional) | Eduard invites you to project `skill-check-db` |
+| GitHub `Sairanyx/skill-check` | Collaborator. Work on branch **`dev`** |
+| `.env.local` values | Eduard sends them **privately**, never in GitHub or public chat |
+| SSH to the Verda server | Send Eduard your `~/.ssh/id_ed25519.pub` |
+| Verda console | Project **Skill Check** (the credits live in that project) |
+| Aiven console | Project `skill-check-db` |
 
-## 4. Run it locally
+## 5. Run it locally
 ```bash
 git clone https://github.com/Sairanyx/skill-check.git && cd skill-check
 git checkout dev
 cp .env.example .env.local      # paste the values from Eduard
 npm install
-./infra/tunnel.sh               # AI models from the Verda server to localhost
+./infra/tunnel.sh               # brings the AI models from the Verda server to localhost
 npm run dev -- -p 3100          # http://localhost:3100
 ```
+Laptop and live site share **the same database**, so be careful with `db:reset`.
 
-## 5. Try the whole flow (demo script)
-Password for all demo accounts: `junction2026`
+## 6. What is new today, and what is blocked
+| Feature | State | Where |
+|---|---|---|
+| Privacy guard aligned with the Non-Discrimination Act, dates → `[YEAR]`, durations kept | ✅ live | `src/lib/ai/guard.ts`, D15 |
+| Language requirement per job (CEFR), one question in that language, own score, never in the match | ✅ live | `interviewer.ts`, `evaluator.ts` (`assessLanguages`), D16 |
+| Official proofs: jobseeker adds, City desk verifies, company sees "Verified by the City" | ✅ live | `src/lib/proofs.ts`, `services/proofs.ts`, `/candidate/proofs`, City page, D17 |
+| Panel of judges, median per skill, disagreement lowers confidence | ✅ code done, **live uses Gemma only** | `evaluator.ts` (`scorePanel`), `llm.ts`, setting `JUDGES` |
+| Benchmark: judges compared, native vs non-native gap | ✅ script, **not run yet** | `npm run bench:panel` |
+| Mistral judge server | ⛔ **blocked**: the Verda Spot instance has no internet (Verda support contacted) | `infra/judge/` (`setup.sh <ip>`) |
+| Domain `skillcheck.fi` | ✅ live, www and the old verda.run address redirect | `infra/Caddyfile` |
 
+**Gemini credits are limited.** Do not run `bench:panel` or set `JUDGES=…,gemini` without asking Eduard first. The hackathon Google account is deleted the day after the event.
+
+## 7. Try the whole flow
 | Who | Email |
 |---|---|
-| Jobseeker | `aino@demo.skillcheck.fi` |
-| Company (has its own questions) | `recruiter@kauklahtiparcel.demo` |
-| Company (no questions, AI easy mode) | `recruiter@tapiolacloud.demo` |
-| Company (no skill check needed) | `hello@kivenlahtibakery.demo` |
+| Jobseeker | `aino@demo.skillcheck.fi` (30 more: `jobseeker01…30@demo.skillcheck.fi`) |
+| Company with its own questions | `recruiter@kauklahtiparcel.demo` |
+| Company, Finnish + Swedish B2 required | `recruiter@health.demo` |
+| Company, no skill check, hygiene passport required | `hello@kivenlahtibakery.demo` |
 | City of Espoo | `events@espoo.demo` |
 
-1. Fresh data with Aino booked **right now**: `npm run db:fresh` (about 15 min, includes 30 AI-scored jobseekers) or quick: `npm run db:reset -- --yes && npm run db:seed`
-2. Log in as **City** → Testing rooms → *Leppävaara, Workstation 1* → **Use this computer** (your browser becomes that kiosk) → Log out.
-3. Log in as **Aino** on the kiosk page → Start → answer 6 questions (type, or the mic) → result.
-4. Log in as **Kauklahti Parcel** → candidate list → open the result → **Invite to meet** (= accept).
-5. Log in as **Aino** → the result shows the invite → book a meeting → **Event card** → consent → stamp.
-6. Log in as **City** → numbers, review queue, **Audit log** (every access and decision, append-only).
+1. **City** → Testing rooms → *Leppävaara, Workstation 1* → **Use this computer** (your browser becomes the kiosk) → log out.
+2. **Aino** on the kiosk → Start → answer 6 questions → result.
+3. **Kauklahti Parcel** → candidate list → open the result → **Invite to meet**.
+4. **Aino** → book a meeting → **Event card** → consent → stamp. Also **Proofs** → add a hygiene passport.
+5. **City** → "Proofs to check at the desk" → **Verified**. Numbers, review queue, **Audit log**.
+6. **Matinkylä Health** → open a candidate → see "Language for this job" and "Official proofs".
 
-Try breaking it: log in as another jobseeker on the kiosk (refused), log in on a normal browser and try to start a check (refused).
+Try breaking it: another jobseeker on the kiosk (refused), starting a check in a normal browser (refused).
 
-## 6. Where things are
+Fresh demo data: `npm run db:fresh` (~5 min, runs 30 AI interviews on the GPU). **Ask Eduard first**, it wipes the shared database.
+
+## 8. Where things are
 | I want to change… | Look in |
 |---|---|
-| Tables | `src/db/schema.ts` then `npm run db:push` |
-| Business rules (booking, kiosk, decisions, consent) | `src/lib/services/*.ts` |
-| AI prompts | `src/lib/ai/interviewer.ts`, `evaluator.ts`, `guard.ts` |
-| API | `src/app/api/v1/**/route.ts` (thin, call the services) |
+| Tables | `src/db/schema.ts`, then `npm run db:push` |
+| Business rules | `src/lib/services/*.ts` |
+| AI prompts and scoring | `src/lib/ai/interviewer.ts`, `evaluator.ts`, `guard.ts`, `rubric.ts` |
+| Model providers, judges | `src/lib/ai/llm.ts` (settings `JUDGES`, `GEMINI_MODEL`, `MISTRAL_BASE_URL`) |
+| API | `src/app/api/v1/**/route.ts` (thin, they call services) |
 | Pages | `src/app/[lang]/candidate`, `company`, `city`, `kiosk` |
-| Shared UI pieces | `src/components/app/*` |
+| Shared UI | `src/components/app/*` |
 | Texts (en/fi/sv) | `src/i18n/dictionaries/*.json` |
+| Demo data | `src/db/seed.ts` (base), `src/db/seed-demo.ts` (30 jobseekers through the real AI) |
 
-This is **Next.js 16**: some APIs changed. Read `AGENTS.md` and `node_modules/next/dist/docs/` before guessing.
+This is **Next.js 16**: some APIs changed. Read `AGENTS.md` and `node_modules/next/dist/docs/` before guessing. After adding a page, run `npx next typegen`.
 
-## 7. Team rules
-- **Small commits, plain-English messages** ("Let companies confirm attendance…"), push to `dev`.
-- **UI: very simple.** White + Finnish blue (`#003580`), one clear action per screen, no extra buttons.
-- **Texts:** no em dashes or semicolons. Say data is processed **"in Finland"**, not "in Helsinki".
-- **Never** say the AI "passes" or "rejects" someone. People decide. Stamps only after a company accepts.
+## 9. Good tasks for tonight (from the checklist)
+1. **Automated tests** (item 12): Vitest unit tests (score computation, accept rule, kiosk rules, pseudonymisation patterns) and API tests. Example API test scripts exist, ask Eduard.
+2. **CRACI** (12b): run tests + lint + typecheck + build in GitHub Actions on CRACI runners (tech-challenge prize).
+3. **Company screens** (11): edit anchors and question bank, accept similar needs (backend exists).
+4. **Mobile and accessibility** check (14).
+5. **Mistral judge**: when Eduard has a working Verda instance, `JUMP=root@65.108.32.183 ./infra/judge/setup.sh <ip>`, then add the printed settings to the server `.env`.
+
+## 10. Team rules
+- **Small commits, plain-English messages** ("Let City staff verify proofs at the desk"), push to `dev`. No AI co-author lines.
+- **UI: very simple.** White + Finnish blue `#003580`, one clear action per screen, no filler.
+- **Texts:** no em dashes or semicolons. Data is processed **"in Finland"**.
+- **Never** say the AI "passes" or "rejects" someone. People decide.
+- **Every decision needs research behind it.** Add it to `docs/DECISIONS.md` (Finland, industry, pros and cons).
 - **Never commit secrets.** `.env.local` is ignored, `.env.example` is the template.
-- Deploy with `./infra/deploy.sh` (ships only committed code).
+- Deploy: `./infra/deploy.sh` (ships only committed code to https://skillcheck.fi).
 
-## 8. Known issues
-- Gemma 12B scores harshly and reports 100% confidence. Gemini Pro should fix it (waiting for the API key).
+## 11. Known issues
+- The Mistral judge server has no internet (Verda side). If not fixed, delete it and deploy a new Spot instance.
+- **Aiven password** was exposed in a screenshot earlier: must be reset before the repo goes public.
 - One ESCO skill match is wrong ("root-cause analysis" → "present a cause").
+- Portals are English only (the landing page is translated). fi/sv texts are on the checklist.
 - Dev console warns "uncached data during navigation" on some pages (pages still work).
-- Portals are English only for now (landing page is translated).
-- Aiven password appeared in a screenshot: reset it (Aiven console) and update `.env.local` + the server `.env`.
