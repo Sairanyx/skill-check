@@ -38,3 +38,30 @@ export async function think(
 
 export const modelLabel = () =>
   (process.env.INTERVIEW_PROVIDER ?? "gemma") === "gemini" ? "Gemini Pro" : "Gemma 4 26B on Verda, Finland";
+
+/**
+ * Structured answer with a safety net: if the model returns JSON that does not parse
+ * (for example cut off at the token limit), retry once deterministically with more room.
+ */
+export async function thinkJson<T>(messages: ChatMessage[], opts: { json: object; maxTokens?: number; temperature?: number }): Promise<T> {
+  const first = await think(messages, opts);
+  try {
+    return JSON.parse(first) as T;
+  } catch {
+    const retry = await think(messages, { ...opts, temperature: 0, maxTokens: Math.round((opts.maxTokens ?? 800) * 1.5) });
+    return JSON.parse(retry) as T; // still broken → the caller's error handling decides
+  }
+}
+
+/** Like think(), but the returned text is guaranteed to be valid JSON (one deterministic retry), or it throws. */
+export async function thinkJsonRaw(messages: ChatMessage[], opts: { json?: object; maxTokens?: number; temperature?: number }): Promise<string> {
+  const first = await think(messages, opts);
+  try {
+    JSON.parse(first);
+    return first;
+  } catch {
+    const retry = await think(messages, { ...opts, temperature: 0, maxTokens: Math.round((opts.maxTokens ?? 800) * 1.5) });
+    JSON.parse(retry);
+    return retry;
+  }
+}

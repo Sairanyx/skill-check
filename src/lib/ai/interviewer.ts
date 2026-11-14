@@ -1,5 +1,5 @@
 import "server-only";
-import { think, type ChatMessage } from "./llm";
+import { thinkJsonRaw, type ChatMessage } from "./llm";
 import type { Need } from "@/lib/demo-data";
 import type { Difficulty } from "@/db/schema";
 import { localeNames, type Locale } from "@/i18n/config";
@@ -66,7 +66,7 @@ export async function nextQuestion(need: Need, lang: Locale, turns: Turn[]): Pro
     messages.push({ role: "assistant", content: JSON.stringify({ question: t.question, difficulty: t.difficulty ?? plan(need).start }) });
     messages.push({ role: "user", content: t.answer });
   }
-  const out = JSON.parse(await think(messages, { json: SCHEMA, maxTokens: 400 })) as NextQuestion;
+  const out = JSON.parse(await thinkJsonRaw(messages, { json: SCHEMA, maxTokens: 400 })) as NextQuestion;
   // Enforce the ceiling and the one-step rule in code, not only in the prompt.
   const p = plan(need);
   const prev = turns.at(-1)?.difficulty ?? p.start;

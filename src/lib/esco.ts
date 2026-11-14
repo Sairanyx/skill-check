@@ -1,5 +1,5 @@
 import "server-only";
-import { think } from "@/lib/ai/llm";
+import { thinkJsonRaw } from "@/lib/ai/llm";
 import type { EscoSkill } from "@/db/schema";
 
 /**
@@ -26,7 +26,7 @@ async function labels(uri: string): Promise<EscoSkill["label"]> {
 
 async function pick(skill: string, context: string, hits: Hit[]): Promise<Hit | null> {
   if (!hits.length) return null;
-  const raw = await think(
+  const raw = await thinkJsonRaw(
     [
       {
         role: "system",

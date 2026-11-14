@@ -1,5 +1,5 @@
 import "server-only";
-import { think } from "./llm";
+import { thinkJsonRaw } from "./llm";
 
 /**
  * BARS (Behaviourally Anchored Rating Scales): for each skill of a need, describe in advance what an answer
@@ -36,7 +36,7 @@ const SCHEMA = {
 };
 
 export async function generateAnchors(need: { title: string; summary: string; skills: string[]; level: string }): Promise<SkillAnchors[]> {
-  const raw = await think(
+  const raw = await thinkJsonRaw(
     [
       {
         role: "system",

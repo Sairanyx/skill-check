@@ -1,5 +1,5 @@
 import "server-only";
-import { think, modelLabel } from "./llm";
+import { thinkJsonRaw, modelLabel } from "./llm";
 import { generateAnchors, type SkillAnchors } from "./rubric";
 import type { Need } from "@/lib/demo-data";
 import type { Turn } from "./interviewer";
@@ -32,7 +32,7 @@ const norm = (s: string) => s.toLowerCase().replace(/[“”"'.,!?;:()]/g, "").r
 
 /** Step 1: quotes per skill. Any quote that is not really in the answers is thrown away. */
 async function extractEvidence(anchors: SkillAnchors[], turns: Turn[]) {
-  const raw = await think(
+  const raw = await thinkJsonRaw(
     [
       {
         role: "system",
@@ -64,7 +64,7 @@ Ignore grammar and language quality.`,
 
 /** Step 2: score every skill against its anchors, using only the verified quotes. */
 async function scoreRun(anchors: SkillAnchors[], evidence: { skill: string; quotes: string[] }[], temperature: number) {
-  const raw = await think(
+  const raw = await thinkJsonRaw(
     [
       {
         role: "system",
@@ -148,7 +148,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const strengths = rubric.filter((r) => r.score >= 8).map((r) => `${r.criterion}: ${r.reason}`);
   const gaps = rubric.filter((r) => r.score <= 4).map((r) => (r.evidence.length ? `${r.criterion}: ${r.reason}` : `${r.criterion}: not shown in the answers yet`));
 
-  const fairnessRaw = await think(
+  const fairnessRaw = await thinkJsonRaw(
     [
       {
         role: "system",

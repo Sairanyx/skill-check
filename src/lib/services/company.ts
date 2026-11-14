@@ -1,6 +1,6 @@
 import "server-only";
 import { and, count, desc, eq, inArray } from "drizzle-orm";
-import { think } from "@/lib/ai/llm";
+import { thinkJsonRaw } from "@/lib/ai/llm";
 import { ApiError } from "@/lib/api";
 import { loadNeed } from "./needs";
 import { audit } from "./audit";
@@ -194,7 +194,7 @@ export async function updateNeedSettings(actor: ApiUser, needId: string, input: 
 
 /** Fairness agent screens company questions before they are used. */
 async function screenQuestions(questions: string[]) {
-  const raw = await think(
+  const raw = await thinkJsonRaw(
     [
       {
         role: "system",
