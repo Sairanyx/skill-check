@@ -1,11 +1,13 @@
 # Every push and pull request: lint, typecheck, unit tests, production build.
-# Runs on GitHub's runners by default. To use CRACI runners, set the repository variable RUNNER
+# Runs on CRACI runners (repository variable RUNNER=craci). Without the variable it falls back to GitHub runners.
+# To change it, set the repository variable RUNNER
 # (Settings → Secrets and variables → Actions → Variables) to the runner label CRACI gives you.
 name: CI
 on:
   push:
     branches: [dev, main]
   pull_request:
+  workflow_dispatch: # run by hand from the Actions tab
 
 jobs:
   check:
