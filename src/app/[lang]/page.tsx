@@ -16,9 +16,14 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
         <p className="text-sm font-medium text-primary">{t.eyebrow}</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">{t.title}</h1>
         <p className="mt-6 max-w-2xl text-lg text-muted-foreground">{t.subtitle}</p>
-        <Link href={`/${lang}/candidate`} className={`${buttonVariants({ size: "lg" })} mt-10 h-11 px-6 text-base`}>
-          {t.ctaCandidate}
-        </Link>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Link href={`/${lang}/candidate`} className={`${buttonVariants({ size: "lg" })} h-11 px-6 text-base`}>
+            {t.ctaCandidate}
+          </Link>
+          <Link href={`/${lang}/signup`} className={`${buttonVariants({ size: "lg", variant: "outline" })} h-11 px-6 text-base`}>
+            {t.ctaCompany}
+          </Link>
+        </div>
       </section>
 
       <section className="border-t py-16">
