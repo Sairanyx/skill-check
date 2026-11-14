@@ -98,3 +98,21 @@ Comparison table of platforms (for the Q&A): Sapia.ai, HireVue, TestGorilla, Ver
 - **Fits existing events:** TalentMatch already uses 15-min 1:1 meetings on mutual interest. Our stamps and evidence plug into that flow (and into whatever platform they use, via our API).
 - **Link to the €5,000 subsidy:** the platform can tell a company when a candidate they accepted may make them eligible (young Espoo resident or foreign-language speaker), without showing the reason to anyone else.
 - **Open questions for the Espoo mentors:** How do staff screen candidates today? Which event platform runs TalentMatch? How many staff hours does one event take? Would libraries or Talent Hub host testing rooms?
+
+---
+
+# Why the AI only ever sees pseudonymised answers: LLMs are biased
+
+Large language models learn from human text, so they carry human prejudices, sometimes in stronger and more hidden forms. Evidence:
+
+| Bias | Evidence | What SkillCheck does |
+|---|---|---|
+| **Names → race and gender** | LLMs rank identical CVs differently by name; direction differs by model generation. [CUHK 2026 audit of 14 LLMs](https://arxiv.org/pdf/2606.28978) · [AIES 2024](https://getcoai.com/news/ai-models-prefer-white-and-male-job-candidates-new-study-finds) | Names, employers, schools, places removed before any agent reads the answer |
+| **Dialect → "employability"** | Same content in a stigmatised dialect made models suggest less prestigious jobs; larger models showed **more** hidden prejudice, and human-feedback training did not remove it. [Hofmann et al., Nature 2024](https://arxiv.org/abs/2403.00742) | Scoring prompts ignore grammar and style; fairness agent checks for it; our non-native test: 7.0 vs 6.7 |
+| **Non-native writing** | AI detectors flagged **over half** of non-native English (TOEFL) essays as AI-written, one detector 98%. [Liang et al., Patterns 2023](https://arxiv.org/html/2304.02819v3) | We never use AI-text detectors. Integrity comes from the supervised testing room instead |
+| **Age and gender** | Models assume women are younger and less experienced and rate older male applicants higher (Nature, Oct 2025); age bias persists even under corrective instructions. [PMLR 2026](https://proceedings.mlr.press/v350/grenzebach26a.html) · [arXiv 2603.11736](https://arxiv.org/html/2603.11736v1) | Age signals (birth years, graduation years) removed; gender not collected |
+| **Judge biases** | LLM judges favour the first answer (position), longer answers (verbosity) and their own outputs (self-preference). [Zheng et al., NeurIPS 2023](https://arxiv.org/abs/2306.05685) | Each candidate scored alone against fixed anchors (no position effect), quotes not length, a second judge from another model family (planned with Gemini) |
+
+**Takeaway for the pitch:** "We do not trust the AI to be fair. We design so it cannot see what it could be unfair about, and we check it anyway."
+
+**Legal basis in Finland:** the **Non-Discrimination Act (Yhdenvertaisuuslaki 1325/2014)** forbids discrimination based on age, origin, nationality, language, religion, belief, opinion, political activity, trade union activity, family relationships, state of health, disability, sexual orientation or other personal characteristics. The **Equality Act (609/1986)** covers gender. The privacy guard removes exactly these.
