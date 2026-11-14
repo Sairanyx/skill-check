@@ -42,15 +42,15 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
         {candidates.length ? (
           <table className="w-full text-sm">
             <thead className="text-left text-muted-foreground">
-              <tr className="border-b"><th className="py-2 font-normal">Candidate</th><th className="font-normal">Need</th><th className="font-normal">Match</th><th className="font-normal">Level</th><th className="font-normal">Confidence</th><th className="font-normal">Your decision</th></tr>
+              <tr className="border-b"><th className="py-2 font-normal">Candidate</th><th className="hidden font-normal sm:table-cell">Need</th><th className="font-normal">Match</th><th className="hidden font-normal sm:table-cell">Level</th><th className="font-normal">Confidence</th><th className="font-normal">Decision</th></tr>
             </thead>
             <tbody>
               {candidates.map((c) => (
                 <tr key={c.checkId} className="border-b hover:bg-muted/50">
                   <td className="py-3"><Link href={`/${lang}/company/candidates/${c.checkId}`} className="font-medium text-primary hover:underline">{c.alias}</Link></td>
-                  <td>{c.needTitle}</td>
+                  <td className="hidden sm:table-cell">{c.needTitle}</td>
                   <td className="font-semibold">{c.match}/10</td>
-                  <td className="capitalize">{c.level}</td>
+                  <td className="hidden capitalize sm:table-cell">{c.level}</td>
                   <td>{Math.round(c.confidence * 100)}%</td>
                   <td className="text-muted-foreground">{DECISION[decided.get(c.checkId) ?? ""] ?? "Open"}</td>
                 </tr>

@@ -32,8 +32,8 @@ async function Account({ lang }: { lang: Locale }) {
   if (!u) return <Link href={`/${lang}/login`} className="text-muted-foreground hover:text-foreground">Log in</Link>;
   return (
     <form action={signOut.bind(null, lang)} className="flex items-center gap-4">
-      <Link href={`/${lang}/${u.role}`} className="text-muted-foreground hover:text-foreground">{u.name}</Link>
-      <button className="text-muted-foreground hover:text-foreground">Log out</button>
+      <Link href={`/${lang}/${u.role}`} className="hidden text-muted-foreground hover:text-foreground sm:inline">{u.name}</Link>
+      <button className="whitespace-nowrap text-muted-foreground hover:text-foreground">Log out</button>
     </form>
   );
 }
