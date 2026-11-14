@@ -16,7 +16,9 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
   if (!hasLocale(lang)) notFound();
   const me = await requireRole(lang, "candidate");
   const [appts, checks] = await Promise.all([myAppointments(me), myChecks(me)]);
-  const upcoming = appts.filter((a) => a.status === "booked" || a.status === "in_progress");
+  // A time that has passed without a check is simply missed: no penalty, the jobseeker can book again.
+  const now = Date.now();
+  const upcoming = appts.filter((a) => (a.status === "booked" || a.status === "in_progress") && a.endsAt.getTime() > now);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
