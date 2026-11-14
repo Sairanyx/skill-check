@@ -41,7 +41,7 @@ async function extractEvidence(anchors: SkillAnchors[], turns: Turn[]) {
       {
         role: "system",
         content: `For each skill, copy the parts of the candidate's ANSWERS (lines starting with A) that show this skill.
-Copy them EXACTLY, word for word, short (max 25 words each). Do not paraphrase. If nothing shows the skill, return an empty list.
+Copy them EXACTLY, word for word, short (max 25 words each), in the SAME LANGUAGE as the answer. Never translate (a Finnish or Swedish answer gives a Finnish or Swedish quote). Do not paraphrase. If nothing shows the skill, return an empty list.
 Ignore grammar and language quality.`,
       },
       { role: "user", content: `Skills: ${anchors.map((a) => a.skill).join("; ")}\n\n${transcript(turns)}` },
