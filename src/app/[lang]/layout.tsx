@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,7 +39,9 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
             {dict.footer.made}
           </footer>
           <Toaster />
-          <TourGuide />
+          <Suspense fallback={null}>
+            <TourGuide />
+          </Suspense>
         </TooltipProvider>
       </body>
     </html>
