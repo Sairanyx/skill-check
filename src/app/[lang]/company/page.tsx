@@ -83,7 +83,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
             <li key={n.id} className="py-3">
               <div className="flex justify-between gap-6">
                 <span><span className="font-medium">{n.title}</span> <span className="text-muted-foreground">· {n.skills.join(", ")}</span></span>
-                <span className="shrink-0 text-muted-foreground">{n.ready} ready</span>
+                <span className="flex shrink-0 gap-4 text-muted-foreground">{n.ready} ready <Link href={`/${lang}/company/needs/${n.id}`} className="text-primary hover:underline">Edit</Link></span>
               </div>
               {!!n.escoSkills?.length && (
                 <p className="mt-1 text-xs text-muted-foreground">
