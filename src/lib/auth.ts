@@ -13,6 +13,13 @@ import { db, user, session, account, verification, jwks } from "@/db";
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema: { user, session, account, verification, jwks } }),
   emailAndPassword: { enabled: true, minPasswordLength: 8 },
+  // Same idea for the login API itself (/api/auth/*), in production. The forms have their own limits (lib/rate-limit.ts).
+  rateLimit: {
+    enabled: process.env.NODE_ENV === "production",
+    window: 60,
+    max: 200,
+    customRules: { "/sign-in/email": { window: 600, max: 60 }, "/sign-up/email": { window: 3600, max: 30 } },
+  },
   user: {
     additionalFields: {
       role: { type: "string", required: false, defaultValue: "candidate", input: false },

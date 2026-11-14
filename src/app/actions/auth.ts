@@ -7,11 +7,16 @@ import { db, user } from "@/db";
 import { auth, type Role } from "@/lib/auth";
 import { assertKioskTurn, KIOSK_COOKIE } from "@/lib/services/testing";
 import { ApiError } from "@/lib/api";
+import { allow, clientIp, LIMITS } from "@/lib/rate-limit";
+
+const TOO_MANY = "Too many attempts. Please wait a few minutes and try again.";
 
 export type FormState = { error?: string };
 
 export async function signIn(_: FormState, form: FormData): Promise<FormState> {
   const lang = String(form.get("lang"));
+  const ip = clientIp(await headers());
+  if (!allow(`login:ip:${ip}`, ...LIMITS.loginPerIp) || !allow(`login:email:${String(form.get("email")).toLowerCase()}`, ...LIMITS.loginPerEmail)) return { error: TOO_MANY };
   try {
     await auth.api.signInEmail({
       body: { email: String(form.get("email")), password: String(form.get("password")) },
@@ -42,6 +47,7 @@ export async function signUp(_: FormState, form: FormData): Promise<FormState> {
   const requested = String(form.get("role"));
   const role: Role = requested === "company" ? "company" : "candidate"; // "city" is never allowed here
   const email = String(form.get("email")).toLowerCase();
+  if (!allow(`signup:ip:${clientIp(await headers())}`, ...LIMITS.signupPerIp)) return { error: TOO_MANY };
 
   try {
     await auth.api.signUpEmail({
