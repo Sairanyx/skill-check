@@ -15,7 +15,9 @@
     "db:demo": "tsx --env-file=.env.local --conditions=react-server src/db/seed-demo.ts",
     "db:fresh": "npm run db:reset -- --yes && npm run db:seed && npm run db:demo",
     "bench:panel": "tsx --conditions=react-server --env-file=.env.local src/db/bench-panel.ts",
-    "demo:now": "tsx --conditions=react-server --env-file=.env.local src/db/demo-now.ts"
+    "demo:now": "tsx --conditions=react-server --env-file=.env.local src/db/demo-now.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -45,6 +47,7 @@
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
