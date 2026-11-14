@@ -46,3 +46,6 @@ __pycache__/
 
 # drizzle generated migrations (we use db:push)
 /drizzle
+
+# Template is safe to share (no values)
+!.env.example
