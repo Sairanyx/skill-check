@@ -80,7 +80,7 @@ export function TourGuide() {
 
   // Watch mode: move on by itself.
   useEffect(() => {
-    if (!tour || tour.mode !== "watch" || paused || !onPage) return;
+    if (!tour || tour.mode !== "watch" || paused || !onPage || !(step?.seconds ?? 10)) return;
     const total = (step?.seconds ?? 10) * 1000;
     const start = Date.now();
     const id = setInterval(() => {
@@ -99,25 +99,37 @@ export function TourGuide() {
   const n = tour.step;
 
   return (
-    <div role="dialog" aria-label="Guided demo" className="fixed bottom-4 right-4 z-50 w-[min(92vw,380px)] rounded-xl border bg-background p-5 shadow-2xl">
+    <div role="dialog" aria-label="Guided demo" className="fixed bottom-6 left-1/2 z-50 w-[min(94vw,640px)] -translate-x-1/2 rounded-2xl border-2 border-primary bg-background p-6 shadow-2xl md:p-8">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="font-medium uppercase tracking-wide text-primary">Guided demo · {n + 1} of {tour.steps.length}</span>
+        <span className="flex items-center gap-2">
+          <span className="font-medium uppercase tracking-wide text-primary">Demo {n + 1} / {tour.steps.length}</span>
+          {step.tag && <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">{step.tag}</span>}
+        </span>
         <button onClick={() => setTour(null)} className="hover:text-foreground">Exit</button>
       </div>
-      <h2 className="mt-2 text-lg font-semibold">{step.title}</h2>
-      <p className="mt-1 text-sm text-muted-foreground">{onPage ? step.text : "Opening the next page…"}</p>
-      {tour.mode === "watch" && (
+      <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{step.title}</h2>
+      <p className="mt-2 text-base leading-relaxed text-foreground/80 md:text-lg">{onPage ? step.text : "Opening the next page…"}</p>
+      {n === tour.steps.length - 1 && (
+        <div className="mt-5 grid gap-2 sm:grid-cols-3">
+          {(["candidate", "company", "city"] as const).map((r) => (
+            <a key={r} href={`/${tour.lang}/login?as=${r}`} onClick={() => save(null)} className="rounded-lg border-2 border-primary px-3 py-2 text-center text-sm font-medium text-primary hover:bg-primary/5">
+              {r === "candidate" ? "Aino, jobseeker" : r === "company" ? "Kauklahti Parcel" : "City of Espoo"}
+            </a>
+          ))}
+        </div>
+      )}
+      {tour.mode === "watch" && (step.seconds ?? 10) > 0 && (
         <div className="mt-4 h-1 rounded-full bg-muted">
           <div className="h-1 rounded-full bg-primary transition-[width] duration-100" style={{ width: `${elapsed * 100}%` }} />
         </div>
       )}
       <div className="mt-4 flex items-center gap-2">
-        <button disabled={n === 0} onClick={() => goToStep(tour, n - 1)} className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-40">Back</button>
+        <button disabled={n === 0} onClick={() => goToStep(tour, n - 1)} className="rounded-lg border px-4 py-2 disabled:opacity-40">Back</button>
         {tour.mode === "watch" && (
-          <button onClick={() => setPaused((p) => !p)} className="rounded-md border px-3 py-1.5 text-sm">{paused ? "Play" : "Pause"}</button>
+          <button onClick={() => setPaused((p) => !p)} className="rounded-lg border px-4 py-2">{paused ? "Play" : "Pause"}</button>
         )}
-        <button onClick={next} className="ml-auto rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground">
-          {n >= tour.steps.length - 1 ? "Finish" : onPage ? "Next" : "Open"}
+        <button onClick={next} className="ml-auto rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground">
+          {n >= tour.steps.length - 1 ? "Close" : onPage ? "Next" : "Open"}
         </button>
       </div>
     </div>

@@ -16,17 +16,17 @@ Record the guided demo ("Watch the story") and talk over it. Pause where needed.
 
 | Time | Screen | Say |
 |---|---|---|
-| 0:00 | Home page | "Espoo helps 30,000 jobseekers find work. Today CVs are written by AI and say little about real skills. SkillCheck: no CV, no cover letter, just show your skills." |
+| 0:00 | Home page | "Espoo helps 30,000 jobseekers find work. Today CVs are written by AI and say little about real skills. SkillCheck: no CV, no cover letter, just talk about your skills." |
 | 0:15 | Aino's dashboard, then an event | "Aino picks a City of Espoo recruitment event and the companies she wants to meet. Each company says what it needs. A bus company needs a licence, checked by City staff first. A data job can be booked right away." |
 | 0:35 | Booking, EXAM room | "She books 30 minutes in a City EXAM room. In person, so nobody can use ChatGPT or answer for her." |
 | 0:45 | The conversation | "Three Gemini 4 models interview her about a real problem from the company. Under every answer you see what the AI actually saw: her name, employer and age were removed first by Gemma, running on our own GPU server in Finland." |
 | 1:05 | Feedback per skill | "The AI gives feedback per skill: what a strong answer shows, her own words as evidence, and the reasoning. It shows whether she has the basics. It is not a decision." |
 | 1:20 | Company view | "The company sees an alias, never her name, and the evidence. They accept, and a 15-minute meeting is booked." |
 | 1:35 | City view, documents, audit log | "The City of Espoo stays in control: it approves companies for events, checks documents in person, reviews unclear results, and every access is logged." |
-| 1:50 | Event card with badge, then logo | "Aino gets a badge and a meeting. Skills first, people decide. SkillCheck." |
+| 1:50 | Event card with badge, then logo | "Aino gets a badge and a meeting. Talk about your skills, people decide. SkillCheck." |
 
 ## 3. Deck outline (8 slides)
-1. **SkillCheck.** No CV. No cover letter. Just show your skills. (logo, skillcheck.fi)
+1. **SkillCheck.** No CV. No cover letter. Just talk about your skills. (logo, skillcheck.fi)
 2. **The problem.** 30,000 jobseekers in Espoo since TE24. AI-written CVs. Screening by CV favours names and fluent writing over skill.
 3. **The idea.** Short in-person skill checks in City EXAM rooms, linked to City of Espoo recruitment events.
 4. **How it works.** Event → companies → required documents checked by the City → EXAM room → AI interview → feedback → company decides → badge and meeting.

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "SkillCheck",
-    "description": "No CV, no cover letter. Show your skills in a short in-person skill check and meet companies at City of Espoo events."
+    "description": "No CV, no cover letter. Talk about your skills in a short in-person skill check and meet companies at City of Espoo events."
   },
   "nav": {
     "candidate": "For jobseekers",
@@ -14,7 +14,7 @@
   },
   "landing": {
     "eyebrow": "City of Espoo recruitment events",
-    "title": "No CV. No cover letter. Just show your skills.",
+    "title": "No CV. No cover letter. Just talk about your skills.",
     "subtitle": "Take a short skill check in person, in a City EXAM room. Earn SkillCheck badges and meet the companies you want to work for at City of Espoo recruitment events.",
     "ctaCandidate": "Find an event",
     "ctaCompany": "Join as a company",

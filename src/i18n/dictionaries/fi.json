@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "SkillCheck",
-    "description": "Ei CV:tä eikä hakemuskirjettä. Näytä osaamisesi lyhyessä osaamistestissä paikan päällä ja tapaa yrityksiä Espoon kaupungin tapahtumissa."
+    "description": "Ei CV:tä eikä hakemuskirjettä. Kerro osaamisestasi lyhyessä osaamistestissä paikan päällä ja tapaa yrityksiä Espoon kaupungin tapahtumissa."
   },
   "nav": {
     "candidate": "Työnhakijoille",
@@ -14,7 +14,7 @@
   },
   "landing": {
     "eyebrow": "Espoon kaupungin rekrytointitapahtumat",
-    "title": "Ei CV:tä. Ei hakemuskirjettä. Näytä mitä osaat.",
+    "title": "Ei CV:tä. Ei hakemuskirjettä. Kerro osaamisestasi.",
     "subtitle": "Tee lyhyt osaamistesti paikan päällä kaupungin EXAM-tilassa. Ansaitse SkillCheck-merkkejä ja tapaa yritykset, joihin haluat töihin, Espoon kaupungin rekrytointitapahtumissa.",
     "ctaCandidate": "Löydä tapahtuma",
     "ctaCompany": "Liity yrityksenä",

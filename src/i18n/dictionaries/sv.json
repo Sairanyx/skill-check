@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "SkillCheck",
-    "description": "Inget CV, inget personligt brev. Visa vad du kan i ett kort kunskapstest på plats och träffa företag på Esbo stads evenemang."
+    "description": "Inget CV, inget personligt brev. Berätta om din kompetens i ett kort kunskapstest på plats och träffa företag på Esbo stads evenemang."
   },
   "nav": {
     "candidate": "För arbetssökande",
@@ -14,7 +14,7 @@
   },
   "landing": {
     "eyebrow": "Esbo stads rekryteringsevenemang",
-    "title": "Inget CV. Inget personligt brev. Visa vad du kan.",
+    "title": "Inget CV. Inget personligt brev. Berätta om din kompetens.",
     "subtitle": "Gör ett kort kunskapstest på plats i ett EXAM-rum hos staden. Samla SkillCheck-märken och träffa företagen du vill jobba för på Esbo stads rekryteringsevenemang.",
     "ctaCandidate": "Hitta ett evenemang",
     "ctaCompany": "Gå med som företag",

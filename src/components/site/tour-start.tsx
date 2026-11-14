@@ -10,15 +10,21 @@ export function TourStart({ lang, ids }: { lang: string; ids: { event: string; c
     goToStep({ mode, step: 0, steps, lang }, 0);
   };
   return (
-    <div className="mt-10 grid gap-4 sm:grid-cols-2">
-      <button onClick={() => start("watch")} className="rounded-xl border-2 border-primary p-6 text-left transition-colors hover:bg-primary/5">
-        <span className="text-lg font-semibold text-primary">Watch the story</span>
-        <span className="mt-2 block text-sm text-muted-foreground">About 3 minutes. The demo moves by itself and explains each step. Pause any time.</span>
+    <div className="mt-10 space-y-6">
+      <button onClick={() => start("watch")} className="w-full rounded-2xl bg-primary p-6 text-left text-primary-foreground transition-opacity hover:opacity-90 md:p-8">
+        <span className="text-2xl font-semibold">Start the 90-second demo</span>
+        <span className="mt-2 block opacity-90">8 short steps. It moves by itself. Pause any time.</span>
       </button>
-      <button onClick={() => start("try")} className="rounded-xl border p-6 text-left transition-colors hover:bg-muted">
-        <span className="text-lg font-semibold">Try it yourself</span>
-        <span className="mt-2 block text-sm text-muted-foreground">Same steps, at your own pace. Click around as Aino, the company and the City.</span>
-      </button>
+      <div>
+        <p className="text-sm text-muted-foreground">Or log in straight away (demo accounts are filled in):</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          {(["candidate", "company", "city"] as const).map((r) => (
+            <a key={r} href={`/${lang}/login?as=${r}`} className="rounded-lg border-2 border-primary px-3 py-2 text-center font-medium text-primary hover:bg-primary/5">
+              {r === "candidate" ? "Aino, jobseeker" : r === "company" ? "Kauklahti Parcel" : "City of Espoo"}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
