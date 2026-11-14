@@ -12,7 +12,8 @@
     "db:seed": "tsx --env-file=.env.local --conditions=react-server src/db/seed.ts",
     "db:audit": "tsx --env-file=.env.local src/db/apply-sql.ts",
     "db:reset": "tsx --env-file=.env.local src/db/reset.ts",
-    "db:demo": "tsx --env-file=.env.local --conditions=react-server src/db/seed-demo.ts"
+    "db:demo": "tsx --env-file=.env.local --conditions=react-server src/db/seed-demo.ts",
+    "db:fresh": "npm run db:reset -- --yes && npm run db:seed && npm run db:demo"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

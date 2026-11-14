@@ -51,7 +51,7 @@ Password for all demo accounts: `junction2026`
 | Company (no skill check needed) | `hello@kivenlahtibakery.demo` |
 | City of Espoo | `events@espoo.demo` |
 
-1. Fresh data with Aino booked **right now**: `npm run db:reset -- --yes && npm run db:seed`
+1. Fresh data with Aino booked **right now**: `npm run db:fresh` (about 15 min, includes 30 AI-scored jobseekers) or quick: `npm run db:reset -- --yes && npm run db:seed`
 2. Log in as **City** → Testing rooms → *Leppävaara, Workstation 1* → **Use this computer** (your browser becomes that kiosk) → Log out.
 3. Log in as **Aino** on the kiosk page → Start → answer 6 questions (type, or the mic) → result.
 4. Log in as **Kauklahti Parcel** → candidate list → open the result → **Invite to meet** (= accept).

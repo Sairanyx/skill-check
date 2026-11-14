@@ -47,7 +47,7 @@ Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 S
 - Stamps as European Digital Credentials
 
 ## 🎬 Submission (Sunday morning, Eduard)
-- [ ] Fresh demo data: `npm run db:reset -- --yes && npm run db:seed && npm run db:demo`
+- [ ] Fresh demo data: `npm run db:fresh` (about 15 min)
 - [ ] Pitch video, max 2:00 (record a backup screen recording of the demo too)
 - [ ] Pitch deck PDF (Prezi export tool)
 - [ ] Verda process summary posted in their Discord (required for the Verda prize)
