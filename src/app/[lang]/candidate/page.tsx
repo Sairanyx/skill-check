@@ -7,11 +7,13 @@ import { myChecks } from "@/lib/services/checks";
 import { buttonVariants } from "@/components/ui/button";
 import { PageTitle, Section, Empty, statusLabel, fmtTime, fmtClock } from "@/components/app/ui";
 import { CancelAppointment } from "@/components/app/candidate-actions";
+import { ExamRoomStart } from "@/components/app/exam-room-start";
 
 /** Can still be changed: more than 2 hours before the start. */
 const changeable = (startsAt: Date) => new Date(startsAt).getTime() - Date.now() > RESCHEDULE_DEADLINE_MS;
 
 const hasPassed = (d: Date) => d.getTime() <= Date.now();
+const hasStarted = (d: Date) => d.getTime() - 10 * 60_000 <= Date.now(); // login opens 10 minutes before the slot
 
 export default async function CandidatePage({ params }: PageProps<"/[lang]/candidate">) {
   const { lang } = await params;
@@ -41,8 +43,8 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
                       <Link href={`/${lang}/candidate/book?reschedule=${a.id}`} className="text-primary hover:underline">Change time</Link>
                     )}
                     {a.status === "booked" && !hasPassed(a.startsAt) && <CancelAppointment id={a.id} />}
-                    {hasPassed(a.startsAt) ? (
-                      <span className="font-medium text-primary">Now: log in on {a.workstation} in the testing room.</span>
+                    {hasStarted(a.startsAt) ? (
+                      <ExamRoomStart appointmentId={a.id} place={`${a.venue}, ${a.room}, ${a.workstation}`} lang={lang} />
                     ) : (
                       !canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the testing room and log in on {a.workstation}.</span>
                     )}
