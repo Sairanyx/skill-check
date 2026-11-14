@@ -1,7 +1,12 @@
-# HTTPS in front of the app. Caddy gets and renews the certificate automatically.
+# HTTPS in front of the app. Caddy gets and renews the certificates automatically.
 {$SITE_HOST} {
 	encode zstd gzip
 	reverse_proxy app:3000 {
 		flush_interval -1 # keep streaming responses streaming
 	}
+}
+
+# Other names (www, the old Verda address) send visitors to the main address, so login cookies stay on one site.
+{$REDIRECT_HOSTS} {
+	redir https://{$SITE_HOST}{uri}
 }

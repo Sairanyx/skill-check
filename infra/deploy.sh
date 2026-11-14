@@ -9,4 +9,4 @@ git archive --format=tar HEAD | ssh "$HOST" \
   'rm -rf /opt/skill-check/app && mkdir -p /opt/skill-check/app && tar -x -C /opt/skill-check/app'
 scp -q infra/docker-compose.yml infra/Caddyfile "$HOST":/opt/skill-check/
 ssh "$HOST" 'cd /opt/skill-check && docker compose build app | tail -1 && docker compose up -d app caddy | tail -2'
-echo "Live: https://65.108.32.183.compute.verda.run"
+echo "Live: https://skillcheck.fi"
