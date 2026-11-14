@@ -27,6 +27,7 @@ export async function loadNeed(needId: string): Promise<Need & { companyId: stri
     questionBank: row.need.questionBankReview?.ok === false ? null : row.need.questionBank, // unscreened banks are not used
     companyDescription: row.company.description,
     anchors: row.need.anchors,
+    languageRequirements: row.need.languageRequirements,
   };
 }
 
@@ -52,7 +53,7 @@ export async function listNeeds() {
 
 export async function createNeed(
   actor: ApiUser,
-  input: { title: string; summary: string; skills: string[]; level?: "junior" | "mid" | "senior"; source?: string },
+  input: { title: string; summary: string; skills: string[]; level?: "junior" | "mid" | "senior"; source?: string; languageRequirements?: { language: "fi" | "sv" | "en"; level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" }[] },
 ) {
   const company = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
   if (!company) throw new ApiError(400, "Create your company profile first");
@@ -72,6 +73,7 @@ export async function createNeed(
       skills,
       escoSkills,
       anchors,
+      languageRequirements: input.languageRequirements?.filter((r) => ["fi", "sv", "en"].includes(r.language) && ["A1", "A2", "B1", "B2", "C1", "C2"].includes(r.level)) ?? null,
       level: input.level ?? "mid",
       source: input.source === "ai_drafted" ? "ai_drafted" : "written",
       confirmedBy: actor.id, // a human submitted it, so it is confirmed

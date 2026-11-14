@@ -10,3 +10,6 @@ export const localeNames: Record<Locale, string> = {
 
 export const hasLocale = (value: string): value is Locale =>
   (locales as readonly string[]).includes(value);
+
+/** English names, used inside AI prompts. */
+export const languageNamesEn: Record<Locale, string> = { en: "English", fi: "Finnish", sv: "Swedish" };

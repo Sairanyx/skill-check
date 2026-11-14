@@ -9,6 +9,8 @@ export type Need = {
   /** Optional company questions per level. Empty = the AI builds easy filter questions itself. */
   questionBank?: { junior?: string[]; mid?: string[]; senior?: string[] } | null;
   companyDescription?: string | null;
+  /** Optional language requirements (CEFR), e.g. [{ language: "sv", level: "B2" }]. */
+  languageRequirements?: { language: "fi" | "sv" | "en"; level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" }[] | null;
   /** BARS anchors per skill (generated once per need). */
   anchors?: { skill: string; anchors: { "1": string; "3": string; "5": string }; checklist: string[] }[] | null;
 };

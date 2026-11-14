@@ -2,7 +2,7 @@ import "server-only";
 import { thinkJsonRaw, type ChatMessage } from "./llm";
 import type { Need } from "@/lib/demo-data";
 import type { Difficulty } from "@/db/schema";
-import { localeNames, type Locale } from "@/i18n/config";
+import { localeNames, languageNamesEn, type Locale } from "@/i18n/config";
 
 export const MAX_TURNS = 6;
 
@@ -38,18 +38,24 @@ ${
     : `The company did not prepare questions. Ask practical, slightly-below-average, easy questions about this kind of work. The goal is only to filter out clearly weak answers, not to find experts.`
 }
 
+${extraLanguages(need, lang).map((r) => `This job requires ${languageNamesEn[r.language]} (CEFR ${r.level}). One question will be asked in ${languageNamesEn[r.language]}. After the candidate answers it, continue normally.`).join("\n")}
+
 Difficulty:
 - Every question has a difficulty: "low", "medium" or "high". Start at "${p.start}". Never go above "${p.ceiling}".
 - After a specific, well-reasoned answer, go one level up. After a vague or wrong answer, go one level down. Never jump two levels.
 
 Rules:
-- Speak ${localeNames[lang]} only. Keep each question short (1–3 sentences).
+- Speak ${localeNames[lang]} only (except the one language question above, if any). Keep each question short (1–3 sentences).
 - Ask HOW the candidate would solve realistic problems, and about real work they have done. Follow up on their previous answer.
 - Over the interview, make sure EVERY key skill gets at least one question. Prefer skills not discussed yet.
 - Never ask about age, origin, nationality, family, health, religion or anything unrelated to the job.
 - Tags like [NAME] or [EMPLOYER] are privacy redactions. Never ask what they stand for.
 - Never judge or score the candidate out loud. Be encouraging and neutral.`;
 }
+
+/** Languages the job requires beyond the interview language: each gets one question, asked from question 3 on. */
+const extraLanguages = (need: Need, lang: Locale) => (need.languageRequirements ?? []).filter((r) => r.language !== lang);
+const LANGUAGE_TURN = 2;
 
 const SCHEMA = {
   type: "object",
@@ -60,11 +66,20 @@ const SCHEMA = {
 export async function nextQuestion(need: Need, lang: Locale, turns: Turn[]): Promise<NextQuestion> {
   const messages: ChatMessage[] = [{ role: "system", content: system(need, lang) }];
   if (turns.length === 0) {
-    messages.push({ role: "user", content: "(The candidate has sat down. Greet them in one short sentence and ask the first question.)" });
+    messages.push({ role: "user", content: "(The candidate has sat down. In ONE message: greet them in a few words AND ask the first real question, ending with a question mark.)" });
   }
   for (const t of turns) {
     messages.push({ role: "assistant", content: JSON.stringify({ question: t.question, difficulty: t.difficulty ?? plan(need).start }) });
     messages.push({ role: "user", content: t.answer });
+  }
+  // The language question is placed in code, so it always happens (the prompt alone was not reliable).
+  const langReq = extraLanguages(need, lang)[turns.length - LANGUAGE_TURN];
+  if (langReq) {
+    const name = languageNamesEn[langReq.language];
+    messages.push({
+      role: "system",
+      content: `This job requires ${name} at CEFR ${langReq.level}. Write your NEXT question entirely in ${name}: a practical work situation from this job, and ask the candidate to answer in ${name}. Do not translate it.`,
+    });
   }
   const out = JSON.parse(await thinkJsonRaw(messages, { json: SCHEMA, maxTokens: 400 })) as NextQuestion;
   // Enforce the ceiling and the one-step rule in code, not only in the prompt.

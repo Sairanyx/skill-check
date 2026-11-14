@@ -74,7 +74,7 @@ export async function answerCheck(actor: ApiUser, checkId: string, input: { text
   // Last answer: the evaluator and fairness auditor run on the pseudonymised transcript.
   const ev = await evaluate(need, agentTurns(turns));
   const reached = difficultyReached(turns);
-  const needsReview = ev.confidence < REVIEW_CONFIDENCE || ev.fairness.flags.length > 0;
+  const needsReview = ev.confidence < REVIEW_CONFIDENCE || ev.fairness.flags.length > 0 || ev.language.some((l) => l.reason.startsWith("The automatic language assessment could not run"));
   const finishedAt = new Date();
   await db.transaction(async (tx) => {
     await tx
@@ -94,6 +94,7 @@ export async function answerCheck(actor: ApiUser, checkId: string, input: { text
       fairnessNote: ev.fairness.note,
       model: ev.model,
       method: ev.method,
+      languageAssessment: ev.language.length ? ev.language : null,
     });
   });
   // Booking is complete when every need in it has a finished check.

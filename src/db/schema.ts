@@ -108,6 +108,13 @@ export const checkModeEnum = pgEnum("check_mode", ["required", "optional", "off"
 /** Optional company questions per seniority level. The AI uses them as starting points. */
 export type QuestionBank = { junior?: string[]; mid?: string[]; senior?: string[] };
 
+/** CEFR levels (Common European Framework of Reference; Finland's YKI test uses the same scale). */
+export const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+export type Cefr = (typeof CEFR)[number];
+/** Optional: a language that is a genuine requirement of the job (allowed when justified and proportionate). */
+export type LanguageRequirement = { language: "fi" | "sv" | "en"; level: Cefr };
+export type LanguageResult = { language: string; required: Cefr; assessed: Cefr | null; meets: boolean; score: number; evidence: string[]; reason: string };
+
 export const needs = pgTable("needs", {
   id: id(),
   companyId: text("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
@@ -118,6 +125,7 @@ export const needs = pgTable("needs", {
   escoSkills: jsonb("esco_skills").$type<EscoSkill[]>(),
   level: levelEnum("level").notNull().default("mid"),
   checkMode: checkModeEnum("check_mode").notNull().default("required"), // required | optional | off (anyone can come)
+  languageRequirements: jsonb("language_requirements").$type<LanguageRequirement[]>(), // optional, e.g. Swedish B2
   questionBank: jsonb("question_bank").$type<QuestionBank>(), // null = AI builds easy filter questions itself
   questionBankReview: jsonb("question_bank_review").$type<{ ok: boolean; problems: string[] }>(), // fairness screening
   // BARS: what a 1 / 3 / 5 answer looks like per skill, written before anyone is scored (see lib/ai/rubric.ts)
@@ -297,6 +305,7 @@ export const evaluations = pgTable("evaluations", {
   fairnessNote: text("fairness_note"),
   model: text("model").notNull(), // which AI produced this (audit)
   method: jsonb("method"), // BARS: evidence coverage, agreement between the two scoring runs, raw run scores
+  languageAssessment: jsonb("language_assessment").$type<LanguageResult[]>(), // only when the need has a language requirement
   createdAt: createdAt(),
 });
 

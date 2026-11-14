@@ -3,7 +3,8 @@ import { thinkJsonRaw, modelLabel } from "./llm";
 import { generateAnchors, type SkillAnchors } from "./rubric";
 import type { Need } from "@/lib/demo-data";
 import type { Turn } from "./interviewer";
-import type { Difficulty } from "@/db/schema";
+import { CEFR, type Cefr, type Difficulty, type LanguageResult } from "@/db/schema";
+import { languageNamesEn as localeNames } from "@/i18n/config";
 
 /**
  * Evaluator (agent 2) + fairness auditor (agent 3), BARS style:
@@ -11,6 +12,8 @@ import type { Difficulty } from "@/db/schema";
  *   2. score each skill against its written anchors (1–5, 0 = not shown), two independent runs
  *   3. match, level and confidence are COMPUTED IN CODE, not guessed by the model
  *   4. fairness auditor checks only for bias (language, fluency, background), not answer quality
+ *   5. a language requirement (if the company set one) is assessed SEPARATELY on the CEFR scale,
+ *      never mixed into the skill match, so fluency stays out of every other score
  */
 export type SkillResult = { criterion: string; score: number; evidence: string[]; reason: string; checklist: string[] };
 export type Evaluation = {
@@ -23,6 +26,7 @@ export type Evaluation = {
   fairness: { flags: string[]; note: string };
   model: string;
   method: { coverage: number; agreement: number; runs: number[][] };
+  language: LanguageResult[]; // separate from match: only when the job has a language requirement
 };
 
 const answersOnly = (turns: Turn[]) => turns.map((t) => t.answer).join("\n");
@@ -131,10 +135,57 @@ function compute(runs: { skill: string; score: number }[][], difficulty: Difficu
   return { avg, match, level, confidence, coverage: Math.round(coverage * 100) / 100, agreement: Math.round(agreement * 100) / 100 };
 }
 
+/**
+ * Language for this job: only when the need says e.g. "Swedish B2". The model quotes sentences
+ * written in that language (verified in code) and estimates a CEFR level for written/spoken production.
+ * Meets = assessed level ≥ required level. No answer in that language → not assessed, never guessed.
+ */
+async function assessLanguages(need: Need, turns: Turn[]): Promise<LanguageResult[]> {
+  const reqs = need.languageRequirements ?? [];
+  if (!reqs.length) return [];
+  const haystack = norm(answersOnly(turns));
+  return Promise.all(
+    reqs.map(async (r): Promise<LanguageResult> => {
+      const name = localeNames[r.language];
+      try {
+        const raw = await thinkJsonRaw(
+          [
+            {
+              role: "system",
+              content: `You assess ONE thing: how well a job candidate communicates in ${name}, on the CEFR scale (A1 to C2), for a job that requires ${name} ${r.level}.
+Use only the candidate's answers that are written in ${name}. Copy up to 3 sentences in ${name} EXACTLY as written. Judge whether the meaning is clear and appropriate for work: range, accuracy, coherence. Placeholders like [NAME] or [PLACE] are privacy tags, ignore them.
+Give level as one of A1, A2, B1, B2, C1, C2. If no answer is in ${name}, return an empty quotes list and level "none".`,
+            },
+            { role: "user", content: `ANSWERS:\n${answersOnly(turns)}` },
+          ],
+          {
+            json: {
+              type: "object",
+              properties: { quotes: { type: "array", items: { type: "string" } }, reason: { type: "string" }, level: { type: "string" } },
+              required: ["quotes", "reason", "level"],
+            },
+            maxTokens: 600,
+            temperature: 0,
+          },
+        );
+        const out = JSON.parse(raw) as { quotes: string[]; level: string; reason: string };
+        const evidence = out.quotes.filter((q) => q.trim() && haystack.includes(norm(q))); // verified
+        const level = out.level.trim().toUpperCase().slice(0, 2);
+        const assessed = evidence.length && (CEFR as readonly string[]).includes(level) ? (level as Cefr) : null;
+        const meets = assessed !== null && CEFR.indexOf(assessed) >= CEFR.indexOf(r.level);
+        const score = assessed ? Math.round(((CEFR.indexOf(assessed) + 1) / CEFR.length) * 100) / 10 : 0; // A1 1.7 … C2 10
+        return { language: r.language, required: r.level, assessed, meets, score, evidence, reason: assessed ? out.reason : `No answer in ${name} to assess.` };
+      } catch {
+        return { language: r.language, required: r.level, assessed: null, meets: false, score: 0, evidence: [], reason: "The automatic language assessment could not run. A City reviewer checks it." };
+      }
+    }),
+  );
+}
+
 export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const anchors = need.anchors?.length ? need.anchors : await generateAnchors(need);
   const evidence = await extractEvidence(anchors, turns);
-  const runs = await Promise.all([scoreRun(anchors, evidence, 0), scoreRun(anchors, evidence, 0.7)]);
+  const [runs, language] = await Promise.all([Promise.all([scoreRun(anchors, evidence, 0), scoreRun(anchors, evidence, 0.7)]), assessLanguages(need, turns)]);
   const difficulty: Difficulty = turns.some((t) => t.difficulty === "high") ? "high" : turns.some((t) => t.difficulty === "medium") ? "medium" : "low";
   const c = compute(runs, difficulty);
 
@@ -156,7 +207,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
         {
           role: "system",
           content: `You audit an AI evaluation of a job candidate ONLY for bias. Flag a problem only if a score or reason depends on grammar, fluency, accent, writing style, language choice, nationality, age, gender, education prestige, career gaps or anything unrelated to the job.
-  Do NOT flag weak or missing evidence: that is not bias. Return flags (empty if none) and a one-sentence note.`,
+  Do NOT flag weak or missing evidence: that is not bias.${language.length ? ` This job has a stated language requirement (${language.map((l) => `${localeNames[l.language as "fi" | "sv" | "en"]} ${l.required}`).join(", ")}). It is assessed separately and is legitimate, so do not flag the separate language assessment, but DO flag if language quality affected the skill scores below.` : ""} Return flags (empty if none) and a one-sentence note.`,
         },
         { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nSCORES AND REASONS:\n${rubric.map((r) => `${r.criterion}: ${r.score}/10, ${r.reason}`).join("\n")}` },
       ],
@@ -177,5 +228,6 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
     fairness,
     model: modelLabel(),
     method: { coverage: c.coverage, agreement: c.agreement, runs: runs.map((r) => r.map((x) => x.score)) },
+    language,
   };
 }
