@@ -37,4 +37,4 @@ export async function think(
 }
 
 export const modelLabel = () =>
-  (process.env.INTERVIEW_PROVIDER ?? "gemma") === "gemini" ? "Gemini Pro" : "Gemma 4 12B (Verda, Helsinki)";
+  (process.env.INTERVIEW_PROVIDER ?? "gemma") === "gemini" ? "Gemini Pro" : "Gemma 4 12B on Verda, Finland";
