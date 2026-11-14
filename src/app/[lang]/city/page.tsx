@@ -112,6 +112,9 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
       </Section>
 
       <Section title="EXAM rooms">
+        <details>
+          <summary className="cursor-pointer text-sm text-primary">Set up a computer as an EXAM room workstation</summary>
+          <div className="mt-4">
         {venues.map((v) => (
           <div key={v} className="mb-6">
             <p className="mb-2 text-sm font-medium">{v}</p>
@@ -131,6 +134,8 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
             </ul>
           </div>
         ))}
+                </div>
+        </details>
       </Section>
     </div>
   );

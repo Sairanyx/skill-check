@@ -88,17 +88,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
                 <span><span className="font-medium">{n.title}</span> <span className="text-muted-foreground">· {n.skills.join(", ")}</span></span>
                 <span className="flex shrink-0 gap-4 text-muted-foreground">{n.ready} ready <Link href={`/${lang}/company/needs/${n.id}`} className="text-primary hover:underline">Edit</Link></span>
               </div>
-              {!!n.escoSkills?.length && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  ESCO:{" "}
-                  {n.escoSkills.map((e, i) => (
-                    <span key={e.uri}>
-                      {i > 0 && ", "}
-                      <a href={e.uri} target="_blank" rel="noreferrer" className="hover:text-primary hover:underline">{(lang === "fi" && e.label.fi) || (lang === "sv" && e.label.sv) || e.label.en}</a>
-                    </span>
-                  ))}
-                </p>
-              )}
+
             </li>
           ))}
         </PagedList>
