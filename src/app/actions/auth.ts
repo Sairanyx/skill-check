@@ -2,9 +2,11 @@
 
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { db, user } from "@/db";
 import { auth, type Role } from "@/lib/auth";
+import { assertKioskTurn, KIOSK_COOKIE } from "@/lib/services/testing";
+import { ApiError } from "@/lib/api";
 
 export type FormState = { error?: string };
 
@@ -19,6 +21,19 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
     return { error: "Wrong email or password." };
   }
   const u = await db.query.user.findFirst({ where: eq(user.email, String(form.get("email")).toLowerCase()) });
+
+  // On a City testing-room computer, only the person booked for this workstation and time may log in.
+  const kiosk = (await cookies()).get(KIOSK_COOKIE)?.value;
+  if (kiosk && u && u.role !== "city") {
+    try {
+      if (u.role !== "candidate") throw new ApiError(403, "This computer is for skill checks only");
+      await assertKioskTurn({ id: u.id, name: u.name, email: u.email, role: "candidate" }, kiosk);
+    } catch (e) {
+      await auth.api.signOut({ headers: await headers() });
+      return { error: e instanceof Error ? e.message : "Not allowed on this computer" };
+    }
+    redirect(`/${lang}/kiosk`);
+  }
   redirect(`/${lang}/${u?.role ?? "candidate"}`);
 }
 

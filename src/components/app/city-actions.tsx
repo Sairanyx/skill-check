@@ -1,46 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { apiCall } from "./api-client";
 
-export function SessionToggle({ sessionId, open }: { sessionId: string; open: boolean }) {
+/** City staff, sitting at a testing-room computer, make it that workstation (it becomes a locked kiosk). */
+export function EnrollHere({ workstationId, label, lang }: { workstationId: string; label: string; lang: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   return (
     <Button
-      variant={open ? "outline" : "default"}
+      variant="outline"
+      size="sm"
       disabled={busy}
       onClick={async () => {
+        if (!confirm(`Make THIS computer "${label}"? Only people booked on it will be able to log in here.`)) return;
         setBusy(true);
-        await apiCall(`/sessions/${sessionId}`, { method: "PATCH", json: { action: open ? "close" : "open" } });
-        router.refresh();
-        setBusy(false);
+        await apiCall(`/workstations/${workstationId}/enroll`, { method: "POST" });
+        router.push(`/${lang}/kiosk`);
       }}
     >
-      {open ? "Close" : "Open room"}
+      Use this computer
     </Button>
-  );
-}
-
-/** Big code for the screen in the room. Refreshes so a re-opened session shows the new code. */
-export function RoomCode({ sessionId }: { sessionId: string }) {
-  const [data, setData] = useState<{ accessCode: string | null; open: boolean } | null>(null);
-  useEffect(() => {
-    let alive = true;
-    const load = () => apiCall<{ accessCode: string | null; open: boolean }>(`/sessions/${sessionId}/code`).then((d) => alive && setData(d));
-    load();
-    const t = setInterval(load, 5000);
-    return () => {
-      alive = false;
-      clearInterval(t);
-    };
-  }, [sessionId]);
-  if (!data) return null;
-  return data.open ? (
-    <p className="font-mono text-8xl font-semibold tracking-[0.3em] text-primary md:text-9xl">{data.accessCode}</p>
-  ) : (
-    <p className="text-2xl text-muted-foreground">This session is closed.</p>
   );
 }
