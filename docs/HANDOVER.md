@@ -21,9 +21,10 @@ Judging: impact 45%, innovation and UX 35%, responsible and feasible 20%.
 | Job | Model | Made by | Runs on |
 |---|---|---|---|
 | Speech to text | **Whisper large-v3-turbo** | OpenAI (open weights) | Verda A100 80GB, FIN-01 |
-| Privacy guard, interviewer, evaluator, fairness check, judge 1 | **Gemma 4 26B-A4B-it** | Google (open weights) | Verda A100 80GB, FIN-01 |
-| Judge 2 | **Mistral Small 3.2 24B Instruct** | Mistral AI, France (open, Apache 2.0) | Verda A100 40GB Spot, FIN-01 (**not running yet**, see §6) |
-| Judge 3 (optional) | **Gemini 3.8 Flash** (or Gemini 4) | Google | Google cloud, hackathon key |
+| Interviewer | **Gemini 3.8 Flash** (Gemma as fallback) | Google | Google cloud, hackathon key |
+| Privacy guard, evaluator, fairness check, judge 1 | **Gemma 4 26B-A4B-it** | Google (open weights) | Verda A100 80GB, FIN-01 |
+| Judge 2 | **Mistral Small 3.2 24B Instruct** | Mistral AI, France (open, Apache 2.0) | Verda A100 40GB Spot, FIN-01 (no internet of its own, reached only by the main server) |
+| Judge 3 (optional, off) | **Gemini** | Google | Google cloud |
 | Serving | **vLLM** v0.33.0 | open source | both Verda servers |
 
 ## 3. Read these (in this order)
@@ -61,9 +62,11 @@ Laptop and live site share **the same database**, so be careful with `db:reset`.
 | Privacy guard aligned with the Non-Discrimination Act, dates → `[YEAR]`, durations kept | ✅ live | `src/lib/ai/guard.ts`, D15 |
 | Language requirement per job (CEFR), one question in that language, own score, never in the match | ✅ live | `interviewer.ts`, `evaluator.ts` (`assessLanguages`), D16 |
 | Official proofs: jobseeker adds, City desk verifies, company sees "Verified by the City" | ✅ live | `src/lib/proofs.ts`, `services/proofs.ts`, `/candidate/proofs`, City page, D17 |
-| Panel of judges, median per skill, disagreement lowers confidence | ✅ code done, **live uses Gemma only** | `evaluator.ts` (`scorePanel`), `llm.ts`, setting `JUDGES` |
+| Panel of judges, median per skill, disagreement lowers confidence | ✅ live: Gemma + Mistral | `evaluator.ts` (`scorePanel`), `llm.ts`, setting `JUDGES` |
+| Gemini as interviewer, Gemma fallback | ✅ live | `interviewer.ts`, setting `INTERVIEWER`, D19 |
 | Benchmark: judges compared, native vs non-native gap | ✅ script, **not run yet** | `npm run bench:panel` |
-| Mistral judge server | ⛔ **blocked**: the Verda Spot instance has no internet (Verda support contacted) | `infra/judge/` (`setup.sh <ip>`) |
+| Mistral judge server | ✅ running. Verda Spot has no internet, so the model was downloaded through the main server | `infra/judge/` (`setup.sh <ip>`) |
+| Demo helper: book Aino in the slot running now | ✅ | `npm run demo:now` |
 | Domain `skillcheck.fi` | ✅ live, www and the old verda.run address redirect | `infra/Caddyfile` |
 
 **Gemini credits are limited.** Do not run `bench:panel` or set `JUDGES=…,gemini` without asking Eduard first. The hackathon Google account is deleted the day after the event.
@@ -120,7 +123,7 @@ This is **Next.js 16**: some APIs changed. Read `AGENTS.md` and `node_modules/ne
 - Deploy: `./infra/deploy.sh` (ships only committed code to https://skillcheck.fi).
 
 ## 11. Known issues
-- The Mistral judge server has no internet (Verda side). If not fixed, delete it and deploy a new Spot instance.
+- The Mistral judge is a Spot instance: Verda can take it back. Then the panel continues with Gemma alone (logged).
 - **Aiven password** was exposed in a screenshot earlier: must be reset before the repo goes public.
 - One ESCO skill match is wrong ("root-cause analysis" → "present a cause").
 - Portals are English only (the landing page is translated). fi/sv texts are on the checklist.

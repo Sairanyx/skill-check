@@ -138,3 +138,11 @@ Every important design choice, with the research behind it (Finland first), how 
 - **Later:** first a Finnish-tuned speech model (the clearest win for accents and Finnish). After a pilot, measure how often people agree with the AI and adjust the anchors and thresholds. Fine-tune only if a measured gap remains, with City-approved data and a fairness test before and after.
 - **➕** Easy to audit and explain. No training data to protect. Models can be swapped.
 - **➖** May be a little less accurate in narrow domains than a tuned model.
+
+## D19. Gemini interviews, a panel of other models judges
+**Decision:** Gemini (Google cloud) asks the questions. Gemma and Mistral Small (open models on our Verda servers in Finland) score the answers. Gemma stays the privacy guard. If Gemini fails, Gemma takes over the interview automatically.
+- **Research:** LLM judges favour text from their own model (Panickssery et al., NeurIPS 2024). A panel of judges from different companies agrees with humans better than one large judge (Verga et al., 2024). So no judge scores a conversation its own model steered.
+- **Privacy:** Gemini only receives pseudonymised answers. The free tier may be read by Google, so it is used with synthetic demo data only. Real use needs a paid EU contract.
+- **Tested:** natural Finnish and English follow-up questions, about 3 seconds each. Gemma and Mistral gave identical scores on the first live check.
+- **➕** Strong conversation quality, independent judges, scoring stays in Finland.
+- **➖** The interview depends on a US cloud service (with fallback). Gemma and Gemini share a company, so Gemini is not used as a judge by default.
