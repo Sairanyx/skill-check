@@ -16,7 +16,7 @@ RUN DATABASE_URL=postgres://build:build@localhost:5432/build BETTER_AUTH_SECRET=
 FROM node:24-slim
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
-COPY --from=build /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/standalone ./
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]
