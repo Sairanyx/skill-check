@@ -15,9 +15,10 @@ Judging (Espoo): impact 45%, innovation & UX 35%, responsible & feasible 20%. No
 
 ## 2. Read these (in this order)
 1. `docs/CHECKLIST.md`: **what is done and what is next** (we tick items off together)
-2. `docs/ARCHITECTURE.md`: diagrams, how the agents interact, where everything is in the repo, full API
-3. `docs/SPEC.md` §8: product decisions we agreed on (exam rooms, consent, stamps, etc.)
-4. `infra/README.md`: SSH, the database, deploy
+2. `docs/REPOSITORY.md`: how the code is organised (layer diagram)
+3. `docs/ARCHITECTURE.md`: diagrams, how the agents interact, where everything is in the repo, full API
+4. `docs/SPEC.md` §8: product decisions we agreed on (exam rooms, consent, stamps, etc.)
+5. `infra/README.md`: SSH, the database, deploy
 
 ## 3. Access you need (ask Eduard)
 | What | How |
