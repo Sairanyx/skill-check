@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import { LogoIcon } from "./logo";
 
 export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(mode === "login" ? signIn : signUp, {});
+  const [role, setRole] = useState<"candidate" | "company">("candidate");
 
   return (
     <form action={action} className="mx-auto mt-16 max-w-sm space-y-5 px-4">
@@ -20,12 +21,13 @@ export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: strin
       {mode === "signup" && (
         <>
           <fieldset className="flex gap-6 text-sm">
-            <label className="flex items-center gap-2"><input type="radio" name="role" value="candidate" defaultChecked className="accent-primary" /> I am looking for work</label>
-            <label className="flex items-center gap-2"><input type="radio" name="role" value="company" className="accent-primary" /> I am hiring</label>
+            <label className="flex items-center gap-2"><input type="radio" name="role" value="candidate" checked={role === "candidate"} onChange={() => setRole("candidate")} className="accent-primary" /> I am looking for work</label>
+            <label className="flex items-center gap-2"><input type="radio" name="role" value="company" checked={role === "company"} onChange={() => setRole("company")} className="accent-primary" /> I am hiring</label>
           </fieldset>
           <div className="space-y-2">
-            <Label htmlFor="name">Display name</Label>
-            <Input id="name" name="name" placeholder="A nickname is fine" />
+            <Label htmlFor="name">{role === "company" ? "Company name" : "Your name"}</Label>
+            <Input id="name" name="name" required={role === "company"} placeholder={role === "company" ? "Example Oy" : ""} />
+            {role === "candidate" && <p className="text-xs text-muted-foreground">Companies never see your name. They see an alias until you choose to share your contact.</p>}
           </div>
         </>
       )}
