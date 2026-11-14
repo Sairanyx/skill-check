@@ -7,6 +7,7 @@ import { EvaluationView, type EvaluationData } from "@/components/app/evaluation
 import { Transcript } from "@/components/app/transcript";
 import { DecisionPanel } from "@/components/app/decision-panel";
 import { PageTitle, Section } from "@/components/app/ui";
+import { IdentityReveal } from "@/components/app/identity-reveal";
 
 export default async function ReviewPage({ params }: PageProps<"/[lang]/city/review/[id]">) {
   const { lang, id } = await params;
@@ -25,6 +26,10 @@ export default async function ReviewPage({ params }: PageProps<"/[lang]/city/rev
       <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" />
       <Section title="Your decision">
         <DecisionPanel checkId={id} options={[{ value: "approve", label: "Release to company", primary: true }, { value: "reject", label: "Withdraw result" }]} />
+      </Section>
+      <Section title="Identity">
+        <p className="mb-3 text-sm text-muted-foreground">Reviews are done without knowing who the person is. Only open the identity if you need to, the reason is recorded.</p>
+        <IdentityReveal checkId={id} />
       </Section>
       <Section title="Full conversation (pseudonymised)">
         <Transcript turns={check.turns as { question: string; seen: string }[]} />
