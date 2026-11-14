@@ -35,6 +35,9 @@ Tick items off as we finish and check them together. Deadline: **Sun 15 Nov, 10:
 - [ ] 5. Event card page: accepted stamps only, candidate consent, no QR
 - [ ] 6. Test everything (API + browser), commit, deploy
 
+### A2. Event types
+- [ ] Online and hybrid events: company meetings as video calls (online) or room + video (hybrid). Skill checks stay in City testing rooms. Online events show the stamp as a digital badge on the profile instead of the printed lanyard
+
 ### B. UI
 - [ ] 7. Go through every screen together: remove anything that is not needed, keep it minimal
 - [ ] 8. Finnish and Swedish texts in the portals (landing is already done)

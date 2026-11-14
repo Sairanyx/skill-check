@@ -70,3 +70,15 @@ Every important design choice, with the research behind it (Finland first), how 
 - **EU:** ESCO is the EU's common skills language, already used by Europass and EURES.
 - **➕** Fewer repeated tests for jobseekers, more candidates for companies.
 - **➖** "Similar" is not "the same". → the company decides, and the candidate decides whether to share.
+
+## D11. Both the City and the company can accept
+**Decision:** the City decides by default; the company can also decide. Accepted = the company accepted, or the City accepted and the company did not decline. A company "no" only affects that company.
+- **Finland:** the challenge says companies are hard to engage and doubt the City's candidate pool. The City runs employment services, so it can carry the matching work while companies keep control over who they meet.
+- **Industry:** most AI hiring tools leave every decision to the employer; public employment services usually pre-select. We combine both.
+- **➕** Minimal work for companies (the City's decision stands if they do nothing). Companies keep control of their own time. "Yes" from either side leans toward giving people a chance.
+- **➖** More work for City staff. Two decision-makers can disagree; the rule above settles it, and the candidate never sees a "no" from anyone in public.
+
+## D12. Skill check per company and per event, open events allowed
+**Decision:** each company chooses per event: skill check required / optional / not needed. The City can make a whole event open (no skill checks). Stamps on the lanyard card show who verified the person for which company.
+- **➕** Fits every kind of employer (a bakery does not need a reasoning check). At open events the stamp still helps: people walk up to any company, and companies that care can see who is verified.
+- **➖** A stamp can feel like an advantage others don't have. → stamps are opt-in, positive only, and the skill check is free and bookable for everyone.
