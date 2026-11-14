@@ -7,7 +7,7 @@
 
 ## 1. Demo story (what the judges see, ~2 min)
 1. **City admin** creates the event *"Espoo Tech Talent Day"* (rooms, time slots) and invites companies.
-2. **Company** (e.g. *Nordic Logistics Oy*) adds a need. It pastes its website → **Context.dev** pulls company data → **Gemini** drafts the need + skill list → the company edits and confirms.
+2. **Company** (e.g. *Kauklahti Parcel Oy*) adds a need. It pastes its website → **Context.dev** pulls company data → **Gemini** drafts the need + skill list → the company edits and confirms.
 3. **Jobseeker "Aino"** signs up (pseudonymous), picks the company, chooses **Finnish**, and takes the **skill check**: a 6–8 turn conversation with the interviewer (**Gemma on Verda, Helsinki**), plus a small code task run in a **Modal Sandbox**.
 4. Gemma anonymises the transcript → **Gemini** scores it: *match 7/10, mid-level, confidence 0.82*, with quotes as evidence → the fairness check passes.
 5. **Company** sees anonymous candidates ranked by match, opens Aino's transcript, reads two answers, clicks **Invite to meet** (human decision, logged).

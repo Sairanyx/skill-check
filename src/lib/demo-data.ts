@@ -16,7 +16,7 @@ export type Need = {
 export const DEMO_NEEDS: Need[] = [
   {
     id: "nordic-logistics-data",
-    company: "Nordic Logistics Oy",
+    company: "Kauklahti Parcel Oy",
     title: "Data analyst: delivery delays",
     summary:
       "Our delivery data is messy: duplicate scans, missing timestamps, three different depot systems. " +

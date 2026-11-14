@@ -16,7 +16,7 @@ const MIN = 60_000;
 
 const people = [
   { email: "aino@demo.skillcheck.fi", name: "Candidate 7F2A", role: "candidate" },
-  { email: "recruiter@nordiclogistics.demo", name: "Nordic Logistics", role: "company" },
+  { email: "recruiter@kauklahtiparcel.demo", name: "Kauklahti Parcel", role: "company" },
   { email: "recruiter@tapiolacloud.demo", name: "Tapiola Cloud", role: "company" },
   { email: "hello@kivenlahtibakery.demo", name: "Kivenlahti Bakery", role: "company" },
   { email: "events@espoo.demo", name: "City of Espoo", role: "city" },
@@ -53,9 +53,9 @@ async function main() {
   const [nordicCo, tapiolaCo, bakeryCo] = await db
     .insert(companies)
     .values([
-      { name: "Nordic Logistics Oy", ownerId: nordic.id, sector: "Logistics", website: "https://nordiclogistics.demo", description: "Parcel delivery company with three depots in the Helsinki region." },
-      { name: "Tapiola Cloud Oy", ownerId: tapiola.id, sector: "Software", website: "https://tapiolacloud.demo", description: "Runs cloud platforms for Finnish retail companies." },
-      { name: "Kivenlahti Bakery Oy", ownerId: bakery.id, sector: "Food", description: "Family bakery with two shops in Espoo." },
+      { name: "Kauklahti Parcel Oy", ownerId: nordic.id, sector: "Logistics", website: "https://kauklahtiparcel.demo", description: "Fictional company for the Skill Check demo. Parcel delivery with three depots in the Helsinki region." },
+      { name: "Tapiola Cloud Oy", ownerId: tapiola.id, sector: "Software", website: "https://tapiolacloud.demo", description: "Fictional company for the Skill Check demo. Runs cloud platforms for Finnish retail companies." },
+      { name: "Kivenlahti Bakery Oy", ownerId: bakery.id, sector: "Food", description: "Fictional company for the Skill Check demo. Family bakery with two shops in Espoo." },
     ])
     .returning();
 

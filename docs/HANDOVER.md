@@ -46,7 +46,7 @@ Password for all demo accounts: `junction2026`
 | Who | Email |
 |---|---|
 | Jobseeker | `aino@demo.skillcheck.fi` |
-| Company (has its own questions) | `recruiter@nordiclogistics.demo` |
+| Company (has its own questions) | `recruiter@kauklahtiparcel.demo` |
 | Company (no questions, AI easy mode) | `recruiter@tapiolacloud.demo` |
 | Company (no skill check needed) | `hello@kivenlahtibakery.demo` |
 | City of Espoo | `events@espoo.demo` |
@@ -54,7 +54,7 @@ Password for all demo accounts: `junction2026`
 1. Fresh data with Aino booked **right now**: `npm run db:reset -- --yes && npm run db:seed`
 2. Log in as **City** → Testing rooms → *Leppävaara, Workstation 1* → **Use this computer** (your browser becomes that kiosk) → Log out.
 3. Log in as **Aino** on the kiosk page → Start → answer 6 questions (type, or the mic) → result.
-4. Log in as **Nordic Logistics** → candidate list → open the result → **Invite to meet** (= accept).
+4. Log in as **Kauklahti Parcel** → candidate list → open the result → **Invite to meet** (= accept).
 5. Log in as **Aino** → the result shows the invite → book a meeting → **Event card** → consent → stamp.
 6. Log in as **City** → numbers, review queue, **Audit log** (every access and decision, append-only).
 
