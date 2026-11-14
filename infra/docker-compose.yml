@@ -1,0 +1,63 @@
+# Skill Check – services on the Verda A100 in Helsinki (FIN-01)
+# Gemma 4 12B = privacy guard (pseudonymisation). Whisper = speech-to-text.
+# Only bound to 127.0.0.1: reachable by the app on this box or via SSH tunnel, never from the internet.
+services:
+  gemma:
+    image: vllm/vllm-openai:v0.33.0
+    restart: unless-stopped
+    ipc: host
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    environment:
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command:
+      - --model=google/gemma-4-12B-it
+      - --served-model-name=gemma-4-12b
+      - --max-model-len=32768
+      - --gpu-memory-utilization=0.70
+      - --limit-mm-per-prompt={"audio":1,"image":0}
+      - --api-key=${VLLM_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 40
+
+  # Whisper = speech-to-text for fi/sv/en (Gemma 4 refused Finnish/Swedish audio in testing).
+  whisper:
+    image: vllm/vllm-openai:v0.33.0
+    restart: unless-stopped
+    ipc: host
+    ports:
+      - "127.0.0.1:8002:8000"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command:
+      - --model=openai/whisper-large-v3-turbo
+      - --served-model-name=whisper
+      - --gpu-memory-utilization=0.15
+      - --api-key=${VLLM_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 40
+
+volumes:
+  hf-cache:
