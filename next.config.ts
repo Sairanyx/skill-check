@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone", // small self-contained server for the Docker image
+  // A new id for every build: a tab left open across a deploy reloads itself instead of failing
+  // ("Failed to find Server Action"). See docs: next-config-js/deploymentId.
+  deploymentId: process.env.NEXT_DEPLOYMENT_ID ?? `build-${Date.now().toString(36)}`,
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
