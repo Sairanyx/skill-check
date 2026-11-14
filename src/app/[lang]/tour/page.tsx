@@ -23,7 +23,7 @@ export default async function TourPage({ params }: PageProps<"/[lang]/tour">) {
     <div className="mx-auto max-w-3xl px-4 py-16">
       <Link href={`/${lang}`} className="text-sm font-medium text-primary hover:underline">← Home</Link>
       <p className="mt-6 text-sm font-medium text-primary">Guided demo</p>
-      <h1 className="mt-2 text-4xl font-semibold tracking-tight">SkillCheck in 90 seconds</h1>
+      <h1 className="mt-2 text-4xl font-semibold tracking-tight">SkillCheck in 8 steps</h1>
       <p className="mt-4 text-lg text-muted-foreground">Follow Aino from an Espoo recruitment event to a skill check in an EXAM room, then see the company and the City. All people and companies are fictional.</p>
       {ev && check ? (
         <TourStart lang={lang} ids={{ event: ev.id, check: check.id, need: check.needId }} />

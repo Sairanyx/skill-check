@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { DEMO_ACCOUNTS, DEMO_PASSWORD, TOUR_KEY, type TourState } from "./tour";
 
@@ -45,8 +45,6 @@ export function TourGuide() {
   const raw = useSyncExternalStore(subscribe, snapshot, () => null);
   const tour = useMemo<TourState | null>(() => (raw ? JSON.parse(raw) : null), [raw]);
   const setTour = (t: TourState | null) => save(t);
-  const [paused, setPaused] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
   const lit = useRef<Element | null>(null);
   const step = tour?.steps[tour.step];
   const onPage = !!step && pathname === `/${tour!.lang}${step.path.split("?")[0]}`.replace(/\/$/, "");
@@ -78,22 +76,6 @@ export function TourGuide() {
     goToStep({ ...s, step: tour.step }, n);
   }, [tour]);
 
-  // Watch mode: move on by itself.
-  useEffect(() => {
-    if (!tour || tour.mode !== "watch" || paused || !onPage || !(step?.seconds ?? 10)) return;
-    const total = (step?.seconds ?? 10) * 1000;
-    const start = Date.now();
-    const id = setInterval(() => {
-      const f = Math.min(1, (Date.now() - start) / total);
-      setElapsed(f);
-      if (f >= 1) {
-        clearInterval(id);
-        setElapsed(0);
-        next();
-      }
-    }, 100);
-    return () => clearInterval(id);
-  }, [tour, paused, onPage, step, next]);
 
   if (!tour || !step) return null;
   const n = tour.step;
@@ -124,16 +106,10 @@ export function TourGuide() {
           ))}
         </div>
       )}
-      {tour.mode === "watch" && (step.seconds ?? 10) > 0 && (
-        <div className="mt-4 h-1 rounded-full bg-muted">
-          <div className="h-1 rounded-full bg-primary transition-[width] duration-100" style={{ width: `${elapsed * 100}%` }} />
-        </div>
-      )}
+
       <div className="mt-4 flex items-center gap-2">
         <button disabled={n === 0} onClick={() => goToStep(tour, n - 1)} className="rounded-lg border px-4 py-2 disabled:opacity-40">Back</button>
-        {tour.mode === "watch" && (
-          <button onClick={() => setPaused((p) => !p)} className="rounded-lg border px-4 py-2">{paused ? "Play" : "Pause"}</button>
-        )}
+
         <button onClick={next} className="ml-auto rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground">
           {n >= tour.steps.length - 1 ? "Close" : onPage ? "Next" : "Open"}
         </button>

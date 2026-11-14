@@ -12,8 +12,8 @@ export function TourStart({ lang, ids }: { lang: string; ids: { event: string; c
   return (
     <div className="mt-10 space-y-6">
       <button onClick={() => start("watch")} className="w-full rounded-2xl bg-primary p-6 text-left text-primary-foreground transition-opacity hover:opacity-90 md:p-8">
-        <span className="text-2xl font-semibold">Start the 90-second demo</span>
-        <span className="mt-2 block opacity-90">8 short steps. It moves by itself. Pause any time.</span>
+        <span className="text-2xl font-semibold">Start the demo</span>
+        <span className="mt-2 block opacity-90">8 short steps. Click Next when you are ready.</span>
       </button>
       <div>
         <p className="text-sm text-muted-foreground">Or log in straight away (demo accounts are filled in):</p>
