@@ -9,9 +9,23 @@ import { signIn, signUp, type FormState } from "@/app/actions/auth";
 import { LogoIcon } from "./logo";
 import { formProblem } from "@/components/app/form-check";
 
-export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: string }) {
+type Role = "candidate" | "company" | "city";
+const TABS: { role: Role; label: string }[] = [
+  { role: "candidate", label: "Jobseeker" },
+  { role: "company", label: "Company" },
+  { role: "city", label: "City of Espoo" },
+];
+/** Ready-made demo accounts, one per side (synthetic data only). */
+const DEMO: Record<Role, { email: string; who: string }> = {
+  candidate: { email: "aino@demo.skillcheck.fi", who: "Aino Mäkelä, a jobseeker" },
+  company: { email: "recruiter@kauklahtiparcel.demo", who: "Kauklahti Parcel Oy, a logistics company" },
+  city: { email: "events@espoo.demo", who: "City of Espoo employment services" },
+};
+const DEMO_PASSWORD = "junction2026";
+
+export function AuthForm({ mode, lang, role: initialRole = "candidate" }: { mode: "login" | "signup"; lang: string; role?: Role }) {
   const [state, action, pending] = useActionState<FormState, FormData>(mode === "login" ? signIn : signUp, {});
-  const [role, setRole] = useState<"candidate" | "company">("candidate");
+  const role = mode === "signup" && initialRole === "city" ? "candidate" : initialRole;
   const [problem, setProblem] = useState<string | null>(null);
 
   return (
@@ -27,14 +41,41 @@ export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: strin
     >
       <LogoIcon className="size-10" />
       <h1 className="text-2xl font-semibold">{mode === "login" ? "Log in" : "Create an account"}</h1>
+      <nav className="flex gap-1 rounded-lg bg-muted p-1 text-sm" aria-label="Who are you?">
+        {TABS.filter((t) => mode === "login" || t.role !== "city").map((t) => (
+          <Link
+            key={t.role}
+            href={`/${lang}/${mode}?as=${t.role}`}
+            aria-current={t.role === role ? "page" : undefined}
+            className={`flex-1 rounded-md px-3 py-1.5 text-center ${t.role === role ? "bg-background font-medium text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </nav>
       <input type="hidden" name="lang" value={lang} />
+      {mode === "login" && (
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+          <p>
+            Demo account: <strong>{DEMO[role].who}</strong>
+          </p>
+          <button
+            type="button"
+            className="mt-1 text-primary underline"
+            onClick={(e) => {
+              const f = e.currentTarget.form!;
+              (f.elements.namedItem("email") as HTMLInputElement).value = DEMO[role].email;
+              (f.elements.namedItem("password") as HTMLInputElement).value = DEMO_PASSWORD;
+            }}
+          >
+            Use the demo account
+          </button>
+        </div>
+      )}
 
       {mode === "signup" && (
         <>
-          <fieldset className="flex gap-6 text-sm">
-            <label className="flex items-center gap-2"><input type="radio" name="role" value="candidate" checked={role === "candidate"} onChange={() => setRole("candidate")} className="accent-primary" /> I am looking for work</label>
-            <label className="flex items-center gap-2"><input type="radio" name="role" value="company" checked={role === "company"} onChange={() => setRole("company")} className="accent-primary" /> I am hiring</label>
-          </fieldset>
+          <input type="hidden" name="role" value={role} />
           <div className="space-y-2">
             <Label htmlFor="name">{role === "company" ? "Company name" : "Your name"}</Label>
             <Input id="name" name="name" required={role === "company"} placeholder={role === "company" ? "Example Oy" : ""} />
@@ -56,9 +97,9 @@ export function AuthForm({ mode, lang }: { mode: "login" | "signup"; lang: strin
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         {mode === "login" ? (
-          <Link href={`/${lang}/signup`} className="text-primary hover:underline">New here? Create an account</Link>
+          role !== "city" ? <Link href={`/${lang}/signup?as=${role}`} className="text-primary hover:underline">New here? Create an account</Link> : <span>City accounts are created by the City.</span>
         ) : (
-          <Link href={`/${lang}/login`} className="text-primary hover:underline">Already have an account? Log in</Link>
+          <Link href={`/${lang}/login?as=${role}`} className="text-primary hover:underline">Already have an account? Log in</Link>
         )}
       </p>
     </form>

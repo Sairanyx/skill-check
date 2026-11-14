@@ -1,6 +1,8 @@
 import { AuthForm } from "@/components/site/auth-form";
 
-export default async function Page({ params }: PageProps<"/[lang]/signup">) {
+export default async function Page({ params, searchParams }: PageProps<"/[lang]/signup">) {
   const { lang } = await params;
-  return <AuthForm mode="signup" lang={lang} />;
+  const as = (await searchParams).as;
+  const role = as === "company" || as === "city" ? as : "candidate";
+  return <AuthForm mode="signup" lang={lang} role={role} />;
 }
