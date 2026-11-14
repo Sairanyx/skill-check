@@ -1,0 +1,19 @@
+[package]
+name = "skillcheck-panel"
+version = "0.1.0"
+edition = "2024"
+description = "SkillCheck interview panel: three Gemini 4 models deliberate after every answer"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1.53", features = ["full"] }
+sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls-ring-webpki", "postgres", "json"] }
+reqwest = { version = "0.13", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1"
+dotenvy = "0.15"
+ulid = "3.0.0"
+
+[profile.release]
+strip = true

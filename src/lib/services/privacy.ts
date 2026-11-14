@@ -1,6 +1,7 @@
 import "server-only";
 import { and, eq, isNull } from "drizzle-orm";
 import { db, user, session, account, skillChecks, evaluations, bookings, decisions, contactShares, companies, proofs } from "@/db";
+import { panelEnabled, panelErase } from "@/lib/ai/panel";
 import { ApiError } from "@/lib/api";
 import { aliasFor } from "@/lib/alias";
 import type { ApiUser } from "@/lib/api";
@@ -46,6 +47,11 @@ export async function eraseMe(actor: ApiUser) {
     await tx.delete(account).where(eq(account.userId, actor.id)); // password hash
     await tx.update(user).set({ name: "Erased user", email: `${tag}@erased.invalid`, image: null }).where(eq(user.id, actor.id));
   });
+  // The panel service keeps its own copy of each conversation: erase it too.
+  if (panelEnabled()) {
+    const ids = await db.select({ id: skillChecks.id }).from(skillChecks).where(eq(skillChecks.candidateId, actor.id));
+    await Promise.all(ids.map((c) => panelErase(c.id)));
+  }
   await audit({ ...actor, name: "Erased user", email: "" }, "account.erased", { subjectId: actor.id, targetType: "user", targetId: actor.id });
   return { erased: true };
 }

@@ -148,7 +148,7 @@ async function scorePanel(anchors: SkillAnchors[], evidence: { skill: string; qu
  * written in that language (verified in code) and estimates a CEFR level for written/spoken production.
  * Meets = assessed level ≥ required level. No answer in that language → not assessed, never guessed.
  */
-async function assessLanguages(need: Need, turns: Turn[]): Promise<LanguageResult[]> {
+export async function assessLanguages(need: Need, turns: Turn[]): Promise<LanguageResult[]> {
   const reqs = need.languageRequirements ?? [];
   if (!reqs.length) return [];
   const haystack = norm(answersOnly(turns));

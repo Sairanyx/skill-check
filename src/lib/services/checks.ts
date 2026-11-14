@@ -5,7 +5,8 @@ import { db, skillChecks, evaluations, decisions, companies, needs, user, appoin
 import { ApiError, type ApiUser } from "@/lib/api";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { MAX_TURNS, nextQuestion, difficultyReached } from "@/lib/ai/interviewer";
-import { evaluate } from "@/lib/ai/evaluator";
+import { evaluate, assessLanguages } from "@/lib/ai/evaluator";
+import { panelEnabled, panelStart, panelMessage, panelReport, panelEvaluation, isPanelError } from "@/lib/ai/panel";
 import { pseudonymise } from "@/lib/ai/guard";
 import { transcribe } from "@/lib/ai/transcribe";
 import { loadNeed } from "./needs";
@@ -37,14 +38,25 @@ export async function startCheck(actor: ApiUser, needId: string, language: strin
   if (already) return { checkId: already.id, question: already.pendingQuestion, difficulty: already.pendingDifficulty, turn: already.turns.length + 1, max: MAX_TURNS };
 
   const need = await loadNeed(needId);
-  const { question, difficulty } = await nextQuestion(need, language, []);
+  // With the panel, the check id is also the panel's interview id.
+  const id = crypto.randomUUID();
+  const { question, difficulty } = panelEnabled()
+    ? { question: (await panelStart(id, need, language).catch(panelFailure)).message, difficulty: "medium" as const }
+    : await nextQuestion(need, language, []);
   const [check] = await db
     .insert(skillChecks)
-    .values({ candidateId: actor.id, needId, appointmentId: appointment.id, workstationId: workstation.id, language, pendingQuestion: question, pendingDifficulty: difficulty })
+    .values({ id, candidateId: actor.id, needId, appointmentId: appointment.id, workstationId: workstation.id, language, pendingQuestion: question, pendingDifficulty: difficulty })
     .returning();
   if (appointment.status === "booked") await db.update(appointments).set({ status: "in_progress" }).where(eq(appointments.id, appointment.id));
   await audit(actor, "check.started", { subjectId: actor.id, targetType: "skill_check", targetId: check.id, meta: { needId, language, workstation: workstation.label } });
-  return { checkId: check.id, question, difficulty, turn: 1, max: MAX_TURNS };
+  return { checkId: check.id, question, difficulty, turn: 1, max: panelEnabled() ? null : MAX_TURNS };
+}
+
+/** The panel retries its own models; if it still can't think, nothing was stored and the candidate sends again. */
+function panelFailure(e: unknown): never {
+  if (isPanelError(e) && e.status === 409) throw new ApiError(409, "Still thinking about your previous answer");
+  console.error(JSON.stringify({ event: "ai.panel_failed", error: String(e).slice(0, 200) }));
+  throw new ApiError(503, "The interviewer couldn't answer just now. Please send your answer again.");
 }
 
 /**
@@ -66,16 +78,25 @@ export async function answerCheck(actor: ApiUser, checkId: string, input: { text
   const turns: StoredTurn[] = [...check.turns, { question: check.pendingQuestion, said, seen, difficulty: check.pendingDifficulty ?? "medium" }];
   const need = await loadNeed(check.needId);
 
-  if (turns.length < MAX_TURNS) {
+  // Panel: three models decide after every answer whether they have enough. No fixed number of questions.
+  const step = panelEnabled() ? await panelMessage(checkId, seen).catch(panelFailure) : null;
+  if (step && !step.done) {
+    await db.update(skillChecks).set({ turns, pendingQuestion: step.message, pendingDifficulty: "medium" }).where(eq(skillChecks.id, checkId));
+    return { done: false, said, seen, question: step.message, difficulty: "medium" as const, turn: turns.length + 1, max: null };
+  }
+
+  if (!step && turns.length < MAX_TURNS) {
     const { question, difficulty } = await nextQuestion(need, lang, agentTurns(turns));
     await db.update(skillChecks).set({ turns, pendingQuestion: question, pendingDifficulty: difficulty }).where(eq(skillChecks.id, checkId));
     return { done: false, said, seen, question, difficulty, turn: turns.length + 1, max: MAX_TURNS };
   }
 
   // Last answer: the evaluator and fairness auditor run on the pseudonymised transcript.
-  const ev = await evaluate(need, agentTurns(turns));
+  const ev = step
+    ? panelEvaluation(...(await Promise.all([panelReport(checkId), assessLanguages(need, agentTurns(turns))])))
+    : { ...(await evaluate(need, agentTurns(turns))), reviewSuggested: false };
   const reached = difficultyReached(turns);
-  const needsReview = ev.confidence < REVIEW_CONFIDENCE || ev.fairness.flags.length > 0 || ev.language.some((l) => l.reason.startsWith("The automatic language assessment could not run"));
+  const needsReview = ev.reviewSuggested || ev.confidence < REVIEW_CONFIDENCE || ev.fairness.flags.length > 0 || ev.language.some((l) => l.reason.startsWith("The automatic language assessment could not run"));
   const finishedAt = new Date();
   await db.transaction(async (tx) => {
     await tx
