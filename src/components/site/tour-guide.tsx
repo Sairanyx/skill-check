@@ -34,9 +34,18 @@ export async function goToStep(s: TourState, i: number) {
     await post("/api/auth/sign-out");
     await post("/api/auth/sign-in/email", { email: DEMO_ACCOUNTS[step.as], password: DEMO_PASSWORD });
   }
+  if (!step.as) await post("/api/auth/sign-out"); // intro and end: nobody is logged in
   // A full load on purpose: the new login must apply to the whole page.
   // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   window.location.href = `/${s.lang}${step.path}`;
+}
+
+/** Leaving the demo always logs the demo account out and returns to the home page. */
+async function endTour(lang: string) {
+  save(null);
+  await post("/api/auth/sign-out");
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.href = `/${lang}`;
 }
 
 /** The floating guide shown on every page while the tour runs. */
@@ -67,7 +76,7 @@ export function TourGuide() {
 
   const next = useCallback(() => {
     if (!tour) return;
-    if (tour.step >= tour.steps.length - 1) return save(null);
+    if (tour.step >= tour.steps.length - 1) return void endTour(tour.lang);
     const s = { ...tour };
     const n = tour.step + 1;
     // Same page, next part (e.g. conversation, then feedback): no reload needed.
@@ -89,7 +98,7 @@ export function TourGuide() {
           <span className="font-medium uppercase tracking-wide text-primary">Demo {n + 1} / {tour.steps.length}</span>
           {step.tag && <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">{step.tag}</span>}
         </span>
-        <button onClick={() => setTour(null)} className="hover:text-foreground">Exit</button>
+        <button onClick={() => endTour(tour.lang)} className="hover:text-foreground">Exit</button>
       </div>
       <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{step.title}</h2>
       <p className="mt-2 text-base leading-relaxed text-foreground/80 md:text-lg">{onPage ? step.text : "Opening the next page…"}</p>

@@ -30,7 +30,6 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
             <Link key={role} href={`/${lang}/login?as=${role}`} className="group flex flex-col rounded-lg border p-6 transition-colors hover:border-primary hover:bg-primary/5">
               <h3 className="font-semibold text-primary group-hover:underline">{t.roles[role].title} →</h3>
               <p className="mt-2 flex-1 text-sm text-muted-foreground">{role === "city" ? `${t.roles[role].text} ${t.staffNote}` : t.roles[role].text}</p>
-              <span className="mt-4 text-sm font-medium text-primary">{role === "city" ? t.staffLogin : `${t.login} · ${t.signup}`}</span>
             </Link>
           ))}
         </div>
