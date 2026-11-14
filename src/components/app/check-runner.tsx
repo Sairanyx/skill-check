@@ -14,7 +14,7 @@ const MAX_SECONDS = 30;
 const MAX_TURNS = 6;
 
 /** The skill check conversation: voice or text, privacy guard on every answer, evaluation at the end. */
-export function CheckRunner(props: { checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null }) {
+export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null }) {
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>(props.initialTurns);
   const [question, setQuestion] = useState(props.pendingQuestion);
@@ -121,6 +121,11 @@ export function CheckRunner(props: { checkId: string; lang: string; initialTurns
       {evaluation && (
         <div className="mt-12 border-t pt-10">
           <EvaluationView e={evaluation} audience="candidate" />
+          {props.kiosk && (
+            <Button size="lg" className="mt-10" onClick={() => router.push(`/${props.lang}/kiosk`)}>
+              Next company or finish
+            </Button>
+          )}
         </div>
       )}
     </div>

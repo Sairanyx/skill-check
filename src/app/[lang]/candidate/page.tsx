@@ -2,81 +2,54 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
-import { listSessions, mySessions } from "@/lib/services/sessions";
+import { myAppointments, MAX_RESCHEDULES, RESCHEDULE_DEADLINE_MS } from "@/lib/services/testing";
 import { myChecks } from "@/lib/services/checks";
-import { listNeeds } from "@/lib/services/needs";
+import { buttonVariants } from "@/components/ui/button";
 import { PageTitle, Section, Empty, statusLabel, fmtTime } from "@/components/app/ui";
-import { BookSessionButton, CheckInForm, StartCheckButton } from "@/components/app/candidate-actions";
+import { CancelAppointment } from "@/components/app/candidate-actions";
+
+/** Can still be changed: more than 2 hours before the start. */
+const changeable = (startsAt: Date) => new Date(startsAt).getTime() - Date.now() > RESCHEDULE_DEADLINE_MS;
 
 export default async function CandidatePage({ params }: PageProps<"/[lang]/candidate">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const me = await requireRole(lang, "candidate");
-  const [booked, all, checks, needs] = await Promise.all([mySessions(me), listSessions(), myChecks(me), listNeeds()]);
-
-  const active = booked.find((s) => s.openedAt && !s.closedAt);
-  const upcoming = booked.filter((s) => !s.closedAt);
-  const bookable = all.filter((s) => !s.closedAt && !booked.some((b) => b.id === s.id) && s.booked < s.capacity);
-  const done = new Set(checks.map((c) => c.needTitle));
+  const [appts, checks] = await Promise.all([myAppointments(me), myChecks(me)]);
+  const upcoming = appts.filter((a) => a.status === "booked" || a.status === "in_progress");
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <PageTitle kicker="City of Espoo" title="Skill checks">
-        Skill checks take place in a session run by the City of Espoo, at the venue or online room you book.
+        A short conversation about real problems from the companies you want to meet, on a City computer in a testing room.
       </PageTitle>
 
-      {active && (
-        <Section title={`Now: ${active.venue}, ${active.room}`}>
-          {!active.checkedInAt ? (
-            <>
-              <p className="mb-4 text-sm text-muted-foreground">Enter the code shown in the room to unlock your skill checks.</p>
-              <CheckInForm sessionId={active.id} />
-            </>
-          ) : (
-            <ul className="divide-y border-y">
-              {needs.map((n) => (
-                <li key={n.id} className="flex items-center justify-between gap-6 py-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{n.company}</p>
-                    <p className="font-medium">{n.title}</p>
-                  </div>
-                  {done.has(n.title) ? <span className="text-sm text-muted-foreground">Done</span> : <StartCheckButton needId={n.id} sessionId={active.id} lang={lang} />}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
-      )}
-
-      <Section title="Your sessions">
+      <Section title="Your testing time" action={!upcoming.length ? <Link href={`/${lang}/candidate/book`} className={buttonVariants({ size: "sm" })}>Book a time</Link> : undefined}>
         {upcoming.length ? (
-          <ul className="space-y-2 text-sm">
-            {upcoming.map((s) => (
-              <li key={s.id} className="flex justify-between gap-4">
-                <span>{s.venue}, {s.room}</span>
-                <span className="text-muted-foreground">{fmtTime(s.startsAt)}{s.openedAt && !s.closedAt ? " · open now" : ""}</span>
-              </li>
-            ))}
+          <ul className="divide-y border-y">
+            {upcoming.map((a) => {
+              const canChange = a.status === "booked" && changeable(a.startsAt);
+              return (
+                <li key={a.id} className="space-y-2 py-4 text-sm">
+                  <p className="text-base"><strong>{fmtTime(a.startsAt)}</strong> · {a.venue}, {a.room}, {a.workstation}</p>
+                  <p className="text-muted-foreground">{a.needs.map((n) => `${n.company}: ${n.title}`).join(" · ")}</p>
+                  <div className="flex items-center gap-4">
+                    {canChange && a.rescheduleCount < MAX_RESCHEDULES && (
+                      <Link href={`/${lang}/candidate/book?reschedule=${a.id}`} className="text-primary hover:underline">Change time</Link>
+                    )}
+                    {a.status === "booked" && <CancelAppointment id={a.id} />}
+                    {!canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the testing room and log in on {a.workstation}.</span>}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
-          <Empty>No session booked yet.</Empty>
-        )}
-        {bookable.length > 0 && (
-          <ul className="mt-6 divide-y border-y">
-            {bookable.map((s) => (
-              <li key={s.id} className="flex items-center justify-between gap-6 py-4 text-sm">
-                <div>
-                  <p className="font-medium">{s.venue}</p>
-                  <p className="text-muted-foreground">{s.room} · {fmtTime(s.startsAt)} · {s.capacity - s.booked} seats left</p>
-                </div>
-                <BookSessionButton sessionId={s.id} />
-              </li>
-            ))}
-          </ul>
+          <Empty>No testing time booked.</Empty>
         )}
       </Section>
 
-      <Section title="Your results" action={<Link href={`/${lang}/candidate/privacy`} className="text-sm text-primary hover:underline">Your data</Link>}>
+      <Section title="Your results" action={<span className="flex gap-4 text-sm"><Link href={`/${lang}/candidate/card`} className="text-primary hover:underline">Event card</Link><Link href={`/${lang}/candidate/privacy`} className="text-primary hover:underline">Your data</Link></span>}>
         {checks.length ? (
           <ul className="divide-y border-y">
             {checks.map((c) => (
@@ -92,7 +65,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
             ))}
           </ul>
         ) : (
-          <Empty>Your results appear here after a skill check.</Empty>
+          <Empty>Your results appear here after your skill check.</Empty>
         )}
       </Section>
     </div>

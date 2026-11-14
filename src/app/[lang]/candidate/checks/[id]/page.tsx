@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { KIOSK_COOKIE } from "@/lib/services/testing";
+import { ConsentToggle } from "@/components/app/consent-toggle";
 import { eq } from "drizzle-orm";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { getCheck } from "@/lib/services/checks";
 import { freeSlots } from "@/lib/services/decisions";
-import { db, bookings, slots, rooms } from "@/db";
+import { db, bookings, meetingSlots, meetingRooms } from "@/db";
 import { CheckRunner } from "@/components/app/check-runner";
 import { BookMeeting } from "@/components/app/book-meeting";
 import { PageTitle, Section, statusLabel, fmtTime } from "@/components/app/ui";
@@ -17,20 +20,21 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
   const me = await requireRole(lang, "candidate");
   const check = await getCheck(me, id).catch(() => null);
   if (!check) notFound();
+  const onKiosk = !!(await cookies()).get(KIOSK_COOKIE)?.value;
 
   const invited = check.decisions.find((d) => d.role === "company")?.decision === "invite";
   const [booking] = await db
-    .select({ startsAt: slots.startsAt, room: rooms.name, qr: bookings.qrToken })
+    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, qr: bookings.qrToken })
     .from(bookings)
-    .innerJoin(slots, eq(bookings.slotId, slots.id))
-    .innerJoin(rooms, eq(slots.roomId, rooms.id))
+    .innerJoin(meetingSlots, eq(bookings.slotId, meetingSlots.id))
+    .innerJoin(meetingRooms, eq(meetingSlots.roomId, meetingRooms.id))
     .where(eq(bookings.checkId, id));
   const event = invited && !booking ? await db.query.events.findFirst() : null;
   const open = event ? await freeSlots(event.id) : [];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
+      <Link href={`/${lang}/${onKiosk ? "kiosk" : "candidate"}`} className="text-sm text-muted-foreground hover:text-foreground">← {onKiosk ? "Back" : "Skill checks"}</Link>
       <div className="mt-6">
         <PageTitle kicker={check.need.company} title={check.need.title}>
           {check.status === "in_progress" ? "About 6 short questions. Answer by voice or text." : statusLabel(check.status)}
@@ -52,7 +56,19 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
         </Section>
       )}
 
+      {check.status !== "in_progress" && !onKiosk && (
+        <Section title="Sharing">
+          <ConsentToggle
+            path={`/checks/${id}/share`}
+            field="share"
+            initial={check.shareWithEquivalent}
+            label="Share this result with other companies that accept it for a similar role, so I do not need to take the same check again."
+          />
+        </Section>
+      )}
+
       <CheckRunner
+        kiosk={onKiosk}
         checkId={id}
         lang={check.language}
         initialTurns={check.turns as { question: string; said?: string; seen: string }[]}
