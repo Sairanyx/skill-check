@@ -107,6 +107,8 @@ export async function rescheduleAppointment(actor: ApiUser, id: string, newSlotI
 export async function cancelAppointment(actor: ApiUser, id: string) {
   const a = await ownAppointment(actor, id);
   if (a.status !== "booked") throw new ApiError(409, "This booking can no longer be cancelled");
+  const slot = await db.query.testSlots.findFirst({ where: eq(testSlots.id, a.slotId) });
+  if (slot && slot.startsAt.getTime() <= Date.now()) throw new ApiError(409, "Your testing time has already started"); // cancel any time before the start
   await db.update(appointments).set({ status: "cancelled" }).where(eq(appointments.id, id));
   await audit(actor, "appointment.cancelled", { subjectId: actor.id, targetType: "appointment", targetId: id });
   return { cancelled: true };

@@ -5,11 +5,13 @@ import { requireRole } from "@/lib/session";
 import { myAppointments, MAX_RESCHEDULES, RESCHEDULE_DEADLINE_MS } from "@/lib/services/testing";
 import { myChecks } from "@/lib/services/checks";
 import { buttonVariants } from "@/components/ui/button";
-import { PageTitle, Section, Empty, statusLabel, fmtTime } from "@/components/app/ui";
+import { PageTitle, Section, Empty, statusLabel, fmtTime, fmtClock } from "@/components/app/ui";
 import { CancelAppointment } from "@/components/app/candidate-actions";
 
 /** Can still be changed: more than 2 hours before the start. */
 const changeable = (startsAt: Date) => new Date(startsAt).getTime() - Date.now() > RESCHEDULE_DEADLINE_MS;
+
+const hasPassed = (d: Date) => d.getTime() <= Date.now();
 
 export default async function CandidatePage({ params }: PageProps<"/[lang]/candidate">) {
   const { lang } = await params;
@@ -17,8 +19,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
   const me = await requireRole(lang, "candidate");
   const [appts, checks] = await Promise.all([myAppointments(me), myChecks(me)]);
   // A time that has passed without a check is simply missed: no penalty, the jobseeker can book again.
-  const now = Date.now();
-  const upcoming = appts.filter((a) => (a.status === "booked" || a.status === "in_progress") && a.endsAt.getTime() > now);
+  const upcoming = appts.filter((a) => (a.status === "booked" || a.status === "in_progress") && !hasPassed(a.endsAt));
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
@@ -33,14 +34,18 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
               const canChange = a.status === "booked" && changeable(a.startsAt);
               return (
                 <li key={a.id} className="space-y-2 py-4 text-sm">
-                  <p className="text-base"><strong>{fmtTime(a.startsAt)}</strong> · {a.venue}, {a.room}, {a.workstation}</p>
+                  <p className="text-base"><strong>{fmtTime(a.startsAt)} to {fmtClock(a.endsAt)}</strong> · {a.venue}, {a.room}, {a.workstation}</p>
                   <p className="text-muted-foreground">{a.needs.map((n) => `${n.company}: ${n.title}`).join(" · ")}</p>
                   <div className="flex items-center gap-4">
                     {canChange && a.rescheduleCount < MAX_RESCHEDULES && (
                       <Link href={`/${lang}/candidate/book?reschedule=${a.id}`} className="text-primary hover:underline">Change time</Link>
                     )}
-                    {a.status === "booked" && <CancelAppointment id={a.id} />}
-                    {!canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the testing room and log in on {a.workstation}.</span>}
+                    {a.status === "booked" && !hasPassed(a.startsAt) && <CancelAppointment id={a.id} />}
+                    {hasPassed(a.startsAt) ? (
+                      <span className="font-medium text-primary">Now: log in on {a.workstation} in the testing room.</span>
+                    ) : (
+                      !canChange && a.status === "booked" && <span className="text-muted-foreground">Go to the testing room and log in on {a.workstation}.</span>
+                    )}
                   </div>
                 </li>
               );

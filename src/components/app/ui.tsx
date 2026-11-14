@@ -35,3 +35,6 @@ export const statusLabel = (s: string) => STATUS[s] ?? s;
 
 export const fmtTime = (d: Date | string) =>
   new Date(d).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Helsinki" });
+
+/** Only the clock time in Finland, e.g. "17:00". */
+export const fmtClock = (d: Date | string) => new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Helsinki" });
