@@ -26,6 +26,11 @@ export const PROOF_TYPES: ProofType[] = [
   { code: "card-hygiene", kind: "card", label: { en: "Hygiene passport", fi: "Hygieniapassi", sv: "Hygienpass" }, check: "See the original card (Finnish Food Authority)" },
   { code: "card-safety", kind: "card", label: { en: "Occupational safety card", fi: "Työturvallisuuskortti", sv: "Arbetarskyddskort" }, check: "See the original card or the card register" },
   { code: "card-first-aid", kind: "card", label: { en: "First aid certificate", fi: "Ensiapukortti", sv: "Första hjälpen-intyg" }, check: "See the original certificate and its expiry date" },
+  { code: "card-forklift", kind: "card", label: { en: "Forklift licence", fi: "Trukkikortti", sv: "Truckkort" }, check: "See the original card or the course certificate" },
+  { code: "card-hot-work", kind: "card", label: { en: "Hot work licence", fi: "Tulityökortti", sv: "Heta arbeten-kort" }, check: "See the original card and its expiry date (valid 5 years)" },
+  { code: "card-electrical-safety", kind: "card", label: { en: "Electrical safety card", fi: "Sähkötyöturvallisuuskortti", sv: "Elarbetssäkerhetskort" }, check: "See the original card and its expiry date" },
+  { code: "card-driving-d", kind: "card", label: { en: "Driving licence, category D (bus)", fi: "Ajokortti, D-luokka (linja-auto)", sv: "Körkort, klass D (buss)" }, check: "See the original driving licence" },
+  { code: "card-driver-cpc", kind: "card", label: { en: "Professional driver qualification (code 95)", fi: "Kuljettajan ammattipätevyys (koodi 95)", sv: "Yrkeskompetens för förare (kod 95)" }, check: "Code 95 on the driving licence, or the qualification card" },
   { code: "card-driving-c", kind: "card", label: { en: "Driving licence, category C", fi: "Ajokortti, C-luokka", sv: "Körkort, klass C" }, check: "See the original driving licence" },
   // Degrees: only when the law or the job truly requires one.
   { code: "degree-bachelor", kind: "degree", label: { en: "Bachelor's degree", fi: "Alempi korkeakoulututkinto", sv: "Lägre högskoleexamen" }, check: "See the original degree certificate (or a recognition decision for a foreign degree)" },
