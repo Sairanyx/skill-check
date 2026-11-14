@@ -26,7 +26,7 @@ export default async function ReviewPage({ params }: PageProps<"/[lang]/city/rev
             : "Decide whether this person is accepted for the company. The company can also decide; its own decision applies to itself."}
         </PageTitle>
       </div>
-      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" />
+      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" proofs={check.proofs} />
       <Section title="Your decision">
         {flagged ? (
           <DecisionPanel checkId={id} options={[{ value: "approve", label: "Release result", primary: true }, { value: "reject", label: "Withdraw result" }]} />

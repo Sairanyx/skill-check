@@ -29,7 +29,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
         </PageTitle>
       </div>
 
-      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" />
+      <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" proofs={check.proofs} />
 
       <Section title="Your decision">
         {booking ? (

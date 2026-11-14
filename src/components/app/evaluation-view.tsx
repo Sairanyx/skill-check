@@ -16,7 +16,10 @@ export type EvaluationData = {
 type LanguageResult = { language: string; required: string; assessed: string | null; meets: boolean; score: number; evidence: string[]; reason: string };
 const LANGUAGE_NAMES: Record<string, string> = { fi: "Finnish", sv: "Swedish", en: "English" };
 
-export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "candidate" | "reviewer" }) {
+export type ProofStatus = { code: string; label: string; required: boolean; level?: string; status: "verified" | "declared" | "missing" };
+const PROOF_STATUS = { verified: "Verified by the City", declared: "Not checked yet", missing: "Missing" } as const;
+
+export function EvaluationView({ e, audience, proofs = [] }: { e: EvaluationData; audience: "candidate" | "reviewer"; proofs?: ProofStatus[] }) {
   const rubric = (e.rubric ?? []) as { criterion: string; score: number; evidence: string[]; reason?: string }[];
   const flags = e.fairnessFlags ?? e.fairness?.flags ?? [];
   const note = e.fairnessNote ?? e.fairness?.note ?? "";
@@ -55,6 +58,25 @@ export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {proofs.length > 0 && (
+        <section>
+          <h2 className="font-semibold">Official proofs</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Checked in person by City staff. The document itself is never shared.</p>
+          <ul className="mt-4 divide-y border-y text-sm">
+            {proofs.map((p) => (
+              <li key={p.code} className="flex justify-between gap-6 py-3">
+                <span>
+                  {p.label}
+                  {p.level ? `, ${p.level}` : ""}
+                  <span className="ml-2 text-muted-foreground">{p.required ? "required" : "optional"}</span>
+                </span>
+                <span className={p.status === "verified" ? "text-primary" : p.status === "missing" && p.required ? "text-destructive" : "text-muted-foreground"}>{PROOF_STATUS[p.status]}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
