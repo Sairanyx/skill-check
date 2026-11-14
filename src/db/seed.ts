@@ -12,6 +12,7 @@ import { mapToEsco } from "@/lib/esco";
 import { generateAnchors } from "@/lib/ai/rubric";
 
 const DEMO_PASSWORD = process.env.SEED_PASSWORD ?? "junction2026"; // set SEED_PASSWORD for the live demo
+const MEETING_MIN = 15; // same as Espoo's TalentMatch meetings
 const MIN = 60_000;
 
 const people = [
@@ -104,7 +105,7 @@ async function main() {
     mRooms.flatMap((room) =>
       Array.from({ length: 12 }, (_, i) => ({
         eventId: event.id, roomId: room.id,
-        startsAt: new Date(eventStart.getTime() + i * 10 * MIN), endsAt: new Date(eventStart.getTime() + (i + 1) * 10 * MIN),
+        startsAt: new Date(eventStart.getTime() + i * MEETING_MIN * MIN), endsAt: new Date(eventStart.getTime() + (i + 1) * MEETING_MIN * MIN),
       })),
     ),
   );

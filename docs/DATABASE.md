@@ -142,7 +142,7 @@ erDiagram
 |---|---|---|
 | **Login** | `user`, `session`, `account`, `verification`, `jwks` | Managed by Better Auth. `account.password` is a hash. `jwks` holds the JWT signing keys (private key encrypted) |
 | **Companies** | `companies`, `needs`, `need_equivalences` | A company's needs: skills, ESCO links, BARS anchors, optional questions, skill check mode. Equivalences = "results from that need count for us too" |
-| **Events** | `events`, `event_companies`, `event_needs`, `meeting_rooms`, `meeting_slots` | City events. Companies apply → City approves → company confirms (≥ 1 week before). 10-minute meeting slots |
+| **Events** | `events`, `event_companies`, `event_needs`, `meeting_rooms`, `meeting_slots` | City events. Companies apply → City approves → company confirms (≥ 1 week before). 15-minute meeting slots (as in TalentMatch) |
 | **Testing rooms** | `venues`, `test_rooms`, `workstations`, `test_slots`, `appointments` | EXAM-room model. A booking = jobseeker + 30-minute slot on one workstation + 1–3 needs |
 | **Skill checks** | `skill_checks`, `evaluations` | The conversation (raw and pseudonymised), the AI evidence and the separate language assessment |
 | **Official proofs** | `proofs` | Licences, cards, degrees, language certificates. Declared by the jobseeker, verified by City staff in person. No document copies |

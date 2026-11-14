@@ -187,7 +187,7 @@ export const eventNeeds = pgTable("event_needs", {
   needId: text("need_id").notNull().references(() => needs.id, { onDelete: "cascade" }),
 });
 
-/** Rooms and 10-minute slots for company meetings at the event (not the testing rooms). */
+/** Rooms and 15-minute slots for company meetings at the event (not the testing rooms). */
 export const meetingRooms = pgTable("meeting_rooms", {
   id: id(),
   eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),

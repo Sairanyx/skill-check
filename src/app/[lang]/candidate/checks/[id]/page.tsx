@@ -63,7 +63,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
             </>
           ) : (
             <>
-              <p className="mb-4 text-sm text-muted-foreground">Pick a 10 minute slot at Espoo Tech Talent Day. Your name is shared with the company only after you book.</p>
+              <p className="mb-4 text-sm text-muted-foreground">Pick a 15 minute slot at Espoo Tech Talent Day. The company sees your name only if you choose to share your contact details.</p>
               <BookMeeting checkId={id} slots={open} />
             </>
           )}

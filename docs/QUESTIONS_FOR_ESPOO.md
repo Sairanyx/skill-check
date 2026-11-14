@@ -14,7 +14,7 @@ Bring this to the Espoo booth or Discord (International Working Life Services an
 7. Companies only see an **alias and evidence**, never names or contact details unless the jobseeker shares them. Would companies accept that? Would your team?
 8. Skill checks happen **in person on City computers in testing rooms** (like university EXAM rooms). Could **libraries (Sello, Lippulaiva, Leppävaara)** or **Espoo Talent Hub** host a few computers for this?
 9. Is **30 minutes** a reasonable time to ask of jobseekers? What accessibility needs should we plan for (extra time, assistive tech, languages)?
-10. Our event meetings are 10 minutes; TalentMatch uses **15 minutes**. Which works better?
+10. Our event meetings are now **15 minutes**, like TalentMatch. Is that right for your events?
 11. Companies **apply to an event**, the City approves them, and they confirm **at least one week before**. Does that match how you work with companies now?
 
 ## Responsible AI and law
