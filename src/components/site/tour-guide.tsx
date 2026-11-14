@@ -53,11 +53,13 @@ export function TourGuide() {
   useEffect(() => {
     lit.current?.classList.remove("tour-highlight");
     if (!onPage || !step?.highlight) return;
+    window.scrollTo({ top: 0 });
     const t = setTimeout(() => {
       const el = document.querySelector(step.highlight!);
       if (!el) return;
       el.classList.add("tour-highlight");
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      const r = el.getBoundingClientRect();
+      if (r.top > window.innerHeight * 0.6) el.scrollIntoView({ behavior: "smooth", block: "center" });
       lit.current = el;
     }, 400);
     return () => clearTimeout(t);
@@ -81,7 +83,7 @@ export function TourGuide() {
   const n = tour.step;
 
   return (
-    <div role="dialog" aria-label="Guided demo" className="fixed bottom-6 left-1/2 z-50 w-[min(94vw,640px)] -translate-x-1/2 rounded-2xl border-2 border-primary bg-background p-6 shadow-2xl md:p-8">
+    <div role="dialog" aria-label="Guided demo" className="fixed bottom-6 left-1/2 z-50 w-[min(94vw,820px)] -translate-x-1/2 rounded-2xl border-2 border-primary bg-background p-6 shadow-2xl md:p-8">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span className="flex items-center gap-2">
           <span className="font-medium uppercase tracking-wide text-primary">Demo {n + 1} / {tour.steps.length}</span>
@@ -98,7 +100,10 @@ export function TourGuide() {
         </p>
       )}
       {n === tour.steps.length - 1 && (
-        <div className="mt-5 grid gap-2 sm:grid-cols-3">
+        <div className="mt-5 grid gap-2 sm:grid-cols-4">
+          <a href={`/${tour.lang}/demo`} onClick={() => save(null)} className="rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground hover:opacity-90">
+            Take a skill check
+          </a>
           {(["candidate", "company", "city"] as const).map((r) => (
             <a key={r} href={`/${tour.lang}/login?as=${r}`} onClick={() => save(null)} className="rounded-lg border-2 border-primary px-3 py-2 text-center text-sm font-medium text-primary hover:bg-primary/5">
               {r === "candidate" ? "Aino, jobseeker" : r === "company" ? "Kauklahti Parcel" : "City of Espoo"}
