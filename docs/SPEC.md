@@ -138,3 +138,16 @@ Every AI output stores the model name + version for the audit trail.
 | 9 | Pitch video, deck PDF, Verda Discord summary, submission | both | submitted before Sun 10:00 |
 
 **Cut line if late:** drop 7 (Modal), then video path, then `/city/audit` (keep the decision log). Never cut 3 or 4.
+
+## 8. Decisions (14 Nov, Team Zero)
+- **Exam-room model:** all skill checks in person at City testing rooms (like university EXAM rooms). Booking = venue → room → workstation → 30-min slot. The workstation is a kiosk that only lets the booked person log in during their slot (10 min grace) and logs out at the end.
+- **Up to 3 company needs per booking.**
+- **Reschedule** until 2 h before start, max 2 times. **No penalty for no-shows** (for now).
+- **Results on the profile:** match 0–10, AI confidence, candidate level, question difficulty reached (low/medium/high). Interviewer adapts difficulty.
+- **Visibility:** candidate + City always; company only for its own need; other companies only if the candidate opts in to sharing.
+- **Retention:** results auto-deleted after 12 months; candidate can delete earlier.
+- **Company profile:** optional question bank per seniority level (screened by the fairness agent). Per need: skill check required / optional / off.
+- **Events:** City sets an RSVP deadline; companies confirm attendance and pick needs. Without company questions, the AI builds slightly-below-average questions from the company description/website to filter only very weak answers.
+- **Event card:** printable, opt-in emblems "Skill check completed for <company>" (never "passed", never failures) + QR for recruiters.
+- **Transferable checks:** platform suggests similar needs via ESCO overlap; company accepts equivalence; candidate consents to sharing.
+- **Update:** no QR code on the card. A stamp appears only when the company accepts the result (human decision). No review or a rejection = no stamp. Failures are never shown. Companies confirm attendance at least 1 week before the event. Minimal effort for everyone: this is step 1 of hiring.
