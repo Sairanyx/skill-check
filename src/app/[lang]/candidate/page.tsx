@@ -5,7 +5,6 @@ import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
 import { myAppointments, MAX_RESCHEDULES, RESCHEDULE_DEADLINE_MS } from "@/lib/services/testing";
 import { myChecks } from "@/lib/services/checks";
-import { buttonVariants } from "@/components/ui/button";
 import { PageTitle, Section, Empty, statusLabel, fmtTime, fmtClock, eventMode } from "@/components/app/ui";
 import { asc, gt } from "drizzle-orm";
 import { db, events } from "@/db";
@@ -47,7 +46,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
         </ul>
       </Section>
 
-      <Section title="Your testing time" action={!upcoming.length ? <Link href={`/${lang}/candidate/book`} className={buttonVariants({ size: "sm" })}>Book a time</Link> : undefined}>
+      <Section title="Your EXAM room time">
         {upcoming.length ? (
           <ul className="divide-y border-y">
             {upcoming.map((a) => {
@@ -72,7 +71,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
             })}
           </ul>
         ) : (
-          <Empty>No testing time booked.</Empty>
+          <Empty>No EXAM room time booked yet. Start from an event above: pick the companies, then book the skill checks they ask for.</Empty>
         )}
       </Section>
 

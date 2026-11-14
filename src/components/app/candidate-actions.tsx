@@ -56,7 +56,7 @@ export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [
     <div className="space-y-10">
       {!rescheduleId && (
         <section>
-          <h2 className="font-semibold">1. Which companies? <span className="font-normal text-muted-foreground">(up to 3)</span></h2>
+          <h2 className="font-semibold">1. Your skill checks <span className="font-normal text-muted-foreground">(up to 3 in one visit)</span></h2>
           <ul className="mt-4 divide-y border-y">
             {needs.map((n) => (
               <li key={n.id} className="flex items-center justify-between gap-6 py-3 text-sm">

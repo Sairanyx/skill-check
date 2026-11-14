@@ -44,9 +44,16 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
     <div className="mx-auto max-w-5xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
-        <PageTitle title={reschedule ? "Change your time" : "Book a skill check"} />
+        <PageTitle title={reschedule ? "Change your time" : "Book your EXAM room time"} />
       </div>
-      <BookingForm lang={lang} needs={needs} slots={slots} rescheduleId={reschedule} initialNeeds={initialNeeds} missing={missing} />
+      {reschedule || initialNeeds.length ? (
+        <BookingForm lang={lang} needs={reschedule ? needs : needs.filter((n) => initialNeeds.includes(n.id))} slots={slots} rescheduleId={reschedule} initialNeeds={initialNeeds} missing={missing} />
+      ) : (
+        <div className="space-y-4">
+          <p className="text-muted-foreground">Choose an event first. There you pick the companies you want to meet and see which skill checks they ask for.</p>
+          <Link href={`/${lang}/candidate`} className="font-medium text-primary hover:underline">← Choose an event</Link>
+        </div>
+      )}
     </div>
   );
 }
