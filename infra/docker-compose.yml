@@ -59,5 +59,32 @@ services:
       timeout: 5s
       retries: 40
 
+  # The web app. Talks to gemma/whisper over the internal Docker network (never the internet).
+  app:
+    build: ./app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - GUARD_BASE_URL=http://gemma:8000/v1
+      - ASR_BASE_URL=http://whisper:8000/v1
+      - GUARD_MODEL=gemma-4-12b
+      - ASR_MODEL=whisper
+    depends_on: [gemma, whisper]
+
+  # HTTPS (ports 80/443 are the only ones open in the firewall besides SSH).
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - SITE_HOST=${SITE_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on: [app]
+
 volumes:
   hf-cache:
+  caddy-data:
