@@ -4,6 +4,7 @@ import { db, companies, needs } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
 import type { Need } from "@/lib/demo-data";
 import { mapToEsco } from "@/lib/esco";
+import { generateAnchors } from "@/lib/ai/rubric";
 
 /** A need together with its company name, in the shape the AI agents expect. */
 export async function loadNeed(needId: string): Promise<Need & { companyId: string; ownerId: string; checkMode: string }> {
@@ -25,6 +26,7 @@ export async function loadNeed(needId: string): Promise<Need & { companyId: stri
     checkMode: row.need.checkMode,
     questionBank: row.need.questionBankReview?.ok === false ? null : row.need.questionBank, // unscreened banks are not used
     companyDescription: row.company.description,
+    anchors: row.need.anchors,
   };
 }
 
@@ -57,7 +59,10 @@ export async function createNeed(
   if (!input.title?.trim() || !input.summary?.trim() || !input.skills?.length)
     throw new ApiError(400, "title, summary and at least one skill are required");
   const skills = input.skills.map((s) => s.trim()).filter(Boolean);
-  const escoSkills = await mapToEsco(skills, `${input.title}: ${input.summary}`);
+  const [escoSkills, anchors] = await Promise.all([
+    mapToEsco(skills, `${input.title}: ${input.summary}`),
+    generateAnchors({ title: input.title, summary: input.summary, skills, level: input.level ?? "mid" }),
+  ]);
   const [need] = await db
     .insert(needs)
     .values({
@@ -66,6 +71,7 @@ export async function createNeed(
       summary: input.summary.trim(),
       skills,
       escoSkills,
+      anchors,
       level: input.level ?? "mid",
       source: input.source === "ai_drafted" ? "ai_drafted" : "written",
       confirmedBy: actor.id, // a human submitted it, so it is confirmed

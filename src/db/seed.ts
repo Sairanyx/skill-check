@@ -9,6 +9,7 @@ import {
   venues, testRooms, workstations, testSlots, appointments, type QuestionBank,
 } from "@/db";
 import { mapToEsco } from "@/lib/esco";
+import { generateAnchors } from "@/lib/ai/rubric";
 
 const DEMO_PASSWORD = process.env.SEED_PASSWORD ?? "junction2026"; // set SEED_PASSWORD for the live demo
 const MIN = 60_000;
@@ -80,7 +81,8 @@ async function main() {
     },
   ];
   for (const { owner, ...n } of needRows) {
-    await db.insert(needs).values({ ...n, escoSkills: await mapToEsco(n.skills, `${n.title}: ${n.summary}`), confirmedBy: owner, confirmedAt: new Date() });
+    const [escoSkills, anchors] = await Promise.all([mapToEsco(n.skills, `${n.title}: ${n.summary}`), generateAnchors(n)]);
+    await db.insert(needs).values({ ...n, escoSkills, anchors, confirmedBy: owner, confirmedAt: new Date() });
   }
 
   // The City's recruitment event: companies confirm attendance before the RSVP deadline
