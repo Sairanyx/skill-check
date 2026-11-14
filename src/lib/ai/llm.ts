@@ -11,7 +11,7 @@ export type ChatMessage = { role: "system" | "user" | "assistant"; content: stri
  */
 export async function think(
   messages: ChatMessage[],
-  opts: { json?: object; maxTokens?: number } = {},
+  opts: { json?: object; maxTokens?: number; temperature?: number } = {},
 ): Promise<string> {
   const provider = process.env.INTERVIEW_PROVIDER ?? "gemma";
   if (provider === "gemini") throw new Error("Gemini provider not wired yet (waiting for API key)");
@@ -26,7 +26,7 @@ export async function think(
         model: process.env.GUARD_MODEL ?? "gemma",
         messages,
         max_tokens: opts.maxTokens ?? 800,
-        temperature: 0.3,
+        temperature: opts.temperature ?? 0.3,
         ...(opts.json
           ? { response_format: { type: "json_schema", json_schema: { name: "out", schema: opts.json } } }
           : {}),

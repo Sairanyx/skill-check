@@ -93,6 +93,7 @@ export async function answerCheck(actor: ApiUser, checkId: string, input: { text
       fairnessFlags: ev.fairness.flags,
       fairnessNote: ev.fairness.note,
       model: ev.model,
+      method: ev.method,
     });
   });
   // Booking is complete when every need in it has a finished check.

@@ -120,6 +120,8 @@ export const needs = pgTable("needs", {
   checkMode: checkModeEnum("check_mode").notNull().default("required"), // required | optional | off (anyone can come)
   questionBank: jsonb("question_bank").$type<QuestionBank>(), // null = AI builds easy filter questions itself
   questionBankReview: jsonb("question_bank_review").$type<{ ok: boolean; problems: string[] }>(), // fairness screening
+  // BARS: what a 1 / 3 / 5 answer looks like per skill, written before anyone is scored (see lib/ai/rubric.ts)
+  anchors: jsonb("anchors").$type<{ skill: string; anchors: { "1": string; "3": string; "5": string }; checklist: string[] }[]>(),
   source: text("source").notNull().default("written"), // "written" | "ai_drafted"
   confirmedBy: text("confirmed_by").references(() => user.id), // a human confirmed the AI draft
   confirmedAt: timestamp("confirmed_at"),
@@ -294,6 +296,7 @@ export const evaluations = pgTable("evaluations", {
   fairnessFlags: jsonb("fairness_flags").$type<string[]>().notNull(),
   fairnessNote: text("fairness_note"),
   model: text("model").notNull(), // which AI produced this (audit)
+  method: jsonb("method"), // BARS: evidence coverage, agreement between the two scoring runs, raw run scores
   createdAt: createdAt(),
 });
 

@@ -1,82 +1,174 @@
 import "server-only";
 import { think, modelLabel } from "./llm";
+import { generateAnchors, type SkillAnchors } from "./rubric";
 import type { Need } from "@/lib/demo-data";
 import type { Turn } from "./interviewer";
+import type { Difficulty } from "@/db/schema";
 
+/**
+ * Evaluator (agent 2) + fairness auditor (agent 3), BARS style:
+ *   1. evidence first: exact quotes per skill, verified in code against the real answers
+ *   2. score each skill against its written anchors (1–5, 0 = not shown), two independent runs
+ *   3. match, level and confidence are COMPUTED IN CODE, not guessed by the model
+ *   4. fairness auditor checks only for bias (language, fluency, background), not answer quality
+ */
+export type SkillResult = { criterion: string; score: number; evidence: string[]; reason: string; checklist: string[] };
 export type Evaluation = {
-  match: number; // 0–10
-  level: "junior" | "mid" | "senior";
-  confidence: number; // 0–1
-  rubric: { criterion: string; score: number; evidence: string[] }[];
+  match: number; // 0–10, computed
+  level: "junior" | "mid" | "senior"; // computed
+  confidence: number; // 0–1, computed from evidence coverage + agreement between runs
+  rubric: SkillResult[]; // score shown 0–10 per skill
   strengths: string[];
   gaps: string[];
   fairness: { flags: string[]; note: string };
   model: string;
+  method: { coverage: number; agreement: number; runs: number[][] };
 };
 
-const EVAL_SCHEMA = {
-  type: "object",
-  properties: {
-    match: { type: "number", minimum: 0, maximum: 10 },
-    level: { type: "string", enum: ["junior", "mid", "senior"] },
-    confidence: { type: "number", minimum: 0, maximum: 1 },
-    rubric: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          criterion: { type: "string" },
-          score: { type: "number", minimum: 0, maximum: 10 },
-          evidence: { type: "array", items: { type: "string" } },
-        },
-        required: ["criterion", "score", "evidence"],
-      },
-    },
-    strengths: { type: "array", items: { type: "string" } },
-    gaps: { type: "array", items: { type: "string" } },
-  },
-  required: ["match", "level", "confidence", "rubric", "strengths", "gaps"],
-};
-
-const FAIRNESS_SCHEMA = {
-  type: "object",
-  properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } },
-  required: ["flags", "note"],
-};
-
+const answersOnly = (turns: Turn[]) => turns.map((t) => t.answer).join("\n");
 const transcript = (turns: Turn[]) =>
   turns.map((t, i) => `Q${i + 1} (${t.difficulty ?? "medium"} difficulty): ${t.question}\nA${i + 1}: ${t.answer}`).join("\n\n");
+const norm = (s: string) => s.toLowerCase().replace(/[“”"'.,!?;:()]/g, "").replace(/\s+/g, " ").trim();
 
-export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
+/** Step 1: quotes per skill. Any quote that is not really in the answers is thrown away. */
+async function extractEvidence(anchors: SkillAnchors[], turns: Turn[]) {
   const raw = await think(
     [
       {
         role: "system",
-        content: `You assess a pseudonymised skill-check transcript for the need "${need.title}" (${need.company}).
-Skills: ${need.skills.join(", ")}. Target level: ${need.level}.
-Each question is marked with its difficulty (low / medium / high). Strong answers to harder questions are stronger evidence.
-Score ONLY reasoning, problem-solving and relevant knowledge shown in the answers. Ignore grammar, fluency, accent, language choice and writing style completely.
-Use the key skills as rubric criteria. For each, quote short exact phrases from the answers as evidence (in the original language).
-"match" = how well the candidate fits this need (0–10). "confidence" = how sure you are given the amount of evidence (short or vague answers → low confidence).
-You give evidence to help a human decide. You do not decide.`,
+        content: `For each skill, copy the parts of the candidate's ANSWERS (lines starting with A) that show this skill.
+Copy them EXACTLY, word for word, short (max 25 words each). Do not paraphrase. If nothing shows the skill, return an empty list.
+Ignore grammar and language quality.`,
       },
-      { role: "user", content: transcript(turns) },
+      { role: "user", content: `Skills: ${anchors.map((a) => a.skill).join("; ")}\n\n${transcript(turns)}` },
     ],
-    { json: EVAL_SCHEMA, maxTokens: 1500 },
+    {
+      json: {
+        type: "object",
+        properties: {
+          skills: { type: "array", items: { type: "object", properties: { skill: { type: "string" }, quotes: { type: "array", items: { type: "string" } } }, required: ["skill", "quotes"] } },
+        },
+        required: ["skills"],
+      },
+      maxTokens: 1500,
+      temperature: 0,
+    },
   );
-  const evaluation = JSON.parse(raw) as Omit<Evaluation, "fairness" | "model">;
+  const found = (JSON.parse(raw) as { skills: { skill: string; quotes: string[] }[] }).skills;
+  const haystack = norm(answersOnly(turns));
+  return anchors.map((a) => {
+    const quotes = found.find((f) => f.skill.toLowerCase() === a.skill.toLowerCase())?.quotes ?? [];
+    return { skill: a.skill, quotes: quotes.filter((q) => q.trim() && haystack.includes(norm(q))) }; // verified, never invented
+  });
+}
+
+/** Step 2: score every skill against its anchors, using only the verified quotes. */
+async function scoreRun(anchors: SkillAnchors[], evidence: { skill: string; quotes: string[] }[], temperature: number) {
+  const raw = await think(
+    [
+      {
+        role: "system",
+        content: `Score each skill 1–5 against its anchors, using ONLY the quoted evidence. 0 = no evidence.
+Pick the anchor the evidence matches best (2 and 4 are in between). List which checklist items the evidence shows.
+Give a one-sentence reason that refers to the evidence. Never consider grammar, fluency, accent or language choice.`,
+      },
+      {
+        role: "user",
+        content: anchors
+          .map((a) => {
+            const q = evidence.find((e) => e.skill === a.skill)?.quotes ?? [];
+            return `SKILL: ${a.skill}\n1 = ${a.anchors["1"]}\n3 = ${a.anchors["3"]}\n5 = ${a.anchors["5"]}\nChecklist: ${a.checklist.join(" | ")}\nEvidence: ${q.length ? q.map((x) => `"${x}"`).join(" ") : "(none)"}`;
+          })
+          .join("\n\n"),
+      },
+    ],
+    {
+      json: {
+        type: "object",
+        properties: {
+          skills: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { skill: { type: "string" }, score: { type: "integer", minimum: 0, maximum: 5 }, checklist: { type: "array", items: { type: "string" } }, reason: { type: "string" } },
+              required: ["skill", "score", "checklist", "reason"],
+            },
+          },
+        },
+        required: ["skills"],
+      },
+      maxTokens: 1500,
+      temperature,
+    },
+  );
+  const out = (JSON.parse(raw) as { skills: { skill: string; score: number; checklist: string[]; reason: string }[] }).skills;
+  return anchors.map((a) => {
+    const r = out.find((o) => o.skill.toLowerCase() === a.skill.toLowerCase());
+    const hasEvidence = (evidence.find((e) => e.skill === a.skill)?.quotes.length ?? 0) > 0;
+    if (!hasEvidence) return { skill: a.skill, score: 0, checklist: [], reason: "" };
+    // Blend the anchor level with the yes/no checklist (small yes/no judgements are more reliable for LLMs).
+    const anchor = Math.max(1, Math.min(5, r?.score ?? 1));
+    const hits = (r?.checklist ?? []).filter((c) => a.checklist.some((x) => norm(x) === norm(c) || norm(x).includes(norm(c)) || norm(c).includes(norm(x)))).length;
+    const fromChecklist = a.checklist.length ? 1 + (4 * Math.min(hits, a.checklist.length)) / a.checklist.length : anchor;
+    return { skill: a.skill, score: Math.round(((anchor + fromChecklist) / 2) * 2) / 2, checklist: r?.checklist ?? [], reason: r?.reason ?? "" };
+  });
+}
+
+/** Step 3: everything that can be computed, is computed. */
+function compute(runs: { skill: string; score: number }[][], difficulty: Difficulty) {
+  const n = runs[0].length;
+  const avg = runs[0].map((_, i) => runs.reduce((s, r) => s + r[i].score, 0) / runs.length);
+  const shown = avg.filter((x) => x > 0);
+  const coverage = shown.length / n;
+  const disagreement = runs[0].reduce((s, _, i) => s + Math.abs(runs[0][i].score - runs[runs.length - 1][i].score), 0) / n;
+  const agreement = 1 - disagreement / 5;
+  // Match is over the skills the candidate actually showed. Skills not shown lower the CONFIDENCE, not the score:
+  // a strong answer should not lose points for a question that was never asked.
+  const mean = shown.length ? shown.reduce((a, b) => a + b, 0) / shown.length : 0;
+  const match = Math.round((mean / 5) * 100) / 10; // 0–10
+  const level: Evaluation["level"] = mean >= 4 && difficulty === "high" ? "senior" : mean >= 2.5 ? "mid" : "junior";
+  const confidence = Math.round((0.5 * coverage + 0.5 * agreement) * 100) / 100;
+  return { avg, match, level, confidence, coverage: Math.round(coverage * 100) / 100, agreement: Math.round(agreement * 100) / 100 };
+}
+
+export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
+  const anchors = need.anchors?.length ? need.anchors : await generateAnchors(need);
+  const evidence = await extractEvidence(anchors, turns);
+  const runs = await Promise.all([scoreRun(anchors, evidence, 0), scoreRun(anchors, evidence, 0.7)]);
+  const difficulty: Difficulty = turns.some((t) => t.difficulty === "high") ? "high" : turns.some((t) => t.difficulty === "medium") ? "medium" : "low";
+  const c = compute(runs, difficulty);
+
+  const rubric: SkillResult[] = anchors.map((a, i) => ({
+    criterion: a.skill,
+    score: Math.round(c.avg[i] * 2 * 10) / 10, // shown on a 0–10 bar
+    evidence: evidence[i].quotes,
+    reason: runs[0][i].reason,
+    checklist: runs[0][i].checklist,
+  }));
+  const strengths = rubric.filter((r) => r.score >= 8).map((r) => `${r.criterion}: ${r.reason}`);
+  const gaps = rubric.filter((r) => r.score <= 4).map((r) => (r.evidence.length ? `${r.criterion}: ${r.reason}` : `${r.criterion}: not shown in the answers yet`));
 
   const fairnessRaw = await think(
     [
       {
         role: "system",
-        content: `You audit an AI evaluation of a job candidate for bias. Check whether the scores or wording rely on language fluency, grammar, accent, style, nationality, education prestige, career gaps or anything unrelated to the job, and whether the evidence actually supports the scores.
-Return flags (short phrases, empty if none) and a one-sentence note.`,
+        content: `You audit an AI evaluation of a job candidate ONLY for bias. Flag a problem only if a score or reason depends on grammar, fluency, accent, writing style, language choice, nationality, age, gender, education prestige, career gaps or anything unrelated to the job.
+Do NOT flag weak or missing evidence: that is not bias. Return flags (empty if none) and a one-sentence note.`,
       },
-      { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nEVALUATION:\n${raw}` },
+      { role: "user", content: `TRANSCRIPT:\n${transcript(turns)}\n\nSCORES AND REASONS:\n${rubric.map((r) => `${r.criterion}: ${r.score}/10, ${r.reason}`).join("\n")}` },
     ],
-    { json: FAIRNESS_SCHEMA, maxTokens: 400 },
+    { json: { type: "object", properties: { flags: { type: "array", items: { type: "string" } }, note: { type: "string" } }, required: ["flags", "note"] }, maxTokens: 400, temperature: 0 },
   );
 
-  return { ...evaluation, fairness: JSON.parse(fairnessRaw), model: modelLabel() };
+  return {
+    match: c.match,
+    level: c.level,
+    confidence: c.confidence,
+    rubric,
+    strengths,
+    gaps,
+    fairness: JSON.parse(fairnessRaw),
+    model: modelLabel(),
+    method: { coverage: c.coverage, agreement: c.agreement, runs: runs.map((r) => r.map((x) => x.score)) },
+  };
 }

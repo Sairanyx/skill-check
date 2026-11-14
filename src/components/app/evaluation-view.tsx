@@ -13,7 +13,7 @@ export type EvaluationData = {
 };
 
 export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "candidate" | "reviewer" }) {
-  const rubric = (e.rubric ?? []) as { criterion: string; score: number; evidence: string[] }[];
+  const rubric = (e.rubric ?? []) as { criterion: string; score: number; evidence: string[]; reason?: string }[];
   const flags = e.fairnessFlags ?? e.fairness?.flags ?? [];
   const note = e.fairnessNote ?? e.fairness?.note ?? "";
   return (
@@ -32,14 +32,21 @@ export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "
               <div key={r.criterion}>
                 <div className="flex justify-between text-sm">
                   <span className="capitalize">{r.criterion}</span>
-                  <span className="text-muted-foreground">{r.score}/10</span>
+                  <span className="text-muted-foreground">{r.evidence.length ? `${r.score}/10` : "not shown"}</span>
                 </div>
                 <div className="mt-1 h-1 rounded-full bg-muted">
                   <div className="h-1 rounded-full bg-primary" style={{ width: `${r.score * 10}%` }} />
                 </div>
-                {r.evidence.map((q) => (
-                  <p key={q} className="mt-1 text-sm text-muted-foreground">“{q}”</p>
-                ))}
+                {r.evidence.length ? (
+                  <>
+                    {r.evidence.map((q) => (
+                      <p key={q} className="mt-1 text-sm text-muted-foreground">“{q}”</p>
+                    ))}
+                    {r.reason && <p className="mt-1 text-xs text-muted-foreground">{r.reason}</p>}
+                  </>
+                ) : (
+                  <p className="mt-1 text-sm text-muted-foreground">Not shown in the answers. Lowers confidence, not the score.</p>
+                )}
               </div>
             ))}
           </div>
@@ -53,7 +60,7 @@ export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "
 
       <p className="text-xs text-muted-foreground">
         {flags.length ? `Fairness check flagged: ${flags.join(", ")}. ` : `Fairness check: ${note} `}
-        Scored by {e.model} on pseudonymised answers. Evidence for a human decision, not a decision.
+        Scored by {e.model} on pseudonymised answers against written anchors for each skill. Quotes are checked against the real answers. Evidence for a human decision, not a decision.
       </p>
     </div>
   );
