@@ -10,12 +10,17 @@ export type EvaluationData = {
   fairnessNote?: string | null;
   fairness?: { flags: string[]; note: string };
   model: string;
+  languageAssessment?: LanguageResult[] | null;
+  language?: LanguageResult[];
 };
+type LanguageResult = { language: string; required: string; assessed: string | null; meets: boolean; score: number; evidence: string[]; reason: string };
+const LANGUAGE_NAMES: Record<string, string> = { fi: "Finnish", sv: "Swedish", en: "English" };
 
 export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "candidate" | "reviewer" }) {
   const rubric = (e.rubric ?? []) as { criterion: string; score: number; evidence: string[]; reason?: string }[];
   const flags = e.fairnessFlags ?? e.fairness?.flags ?? [];
   const note = e.fairnessNote ?? e.fairness?.note ?? "";
+  const languages = e.languageAssessment ?? e.language ?? [];
   return (
     <div className="space-y-10">
       <div className="flex flex-wrap gap-12">
@@ -47,6 +52,32 @@ export function EvaluationView({ e, audience }: { e: EvaluationData; audience: "
                 ) : (
                   <p className="mt-1 text-sm text-muted-foreground">Not shown in the answers. Lowers confidence, not the score.</p>
                 )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {languages.length > 0 && (
+        <section>
+          <h2 className="font-semibold">Language for this job</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Required by the company. Scored separately, not part of the match.</p>
+          <div className="mt-4 space-y-5">
+            {languages.map((l) => (
+              <div key={l.language}>
+                <div className="flex justify-between text-sm">
+                  <span>{LANGUAGE_NAMES[l.language] ?? l.language}, {l.required} required</span>
+                  <span className={l.meets ? "text-primary" : "text-muted-foreground"}>
+                    {l.assessed ? `${l.assessed}, ${l.meets ? "meets" : "below"}` : "not assessed"}
+                  </span>
+                </div>
+                <div className="mt-1 h-1 rounded-full bg-muted">
+                  <div className="h-1 rounded-full bg-primary" style={{ width: `${l.score * 10}%` }} />
+                </div>
+                {l.evidence.map((q) => (
+                  <p key={q} className="mt-1 text-sm text-muted-foreground">“{q}”</p>
+                ))}
+                <p className="mt-1 text-xs text-muted-foreground">{l.reason}</p>
               </div>
             ))}
           </div>

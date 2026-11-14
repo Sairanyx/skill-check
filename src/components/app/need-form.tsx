@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiCall } from "./api-client";
 
+const LANGS = [["fi", "Finnish"], ["sv", "Swedish"], ["en", "English"]] as const;
+const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
 export function NeedForm({ lang }: { lang: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +27,7 @@ export function NeedForm({ lang }: { lang: string }) {
               summary: f.get("summary"),
               skills: String(f.get("skills")).split(","),
               level: f.get("level"),
+              languageRequirements: LANGS.filter(([code]) => f.get(`lang-${code}`)).map(([code]) => ({ language: code, level: f.get(`lang-${code}`) })),
             },
           });
           router.push(`/${lang}/company`);
@@ -53,6 +57,23 @@ export function NeedForm({ lang }: { lang: string }) {
           <option value="senior">Senior</option>
         </select>
       </div>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">Language the job really needs (optional)</legend>
+        <p className="text-sm text-muted-foreground">Only if the work itself requires it. It gets its own score. Every other score ignores language.</p>
+        <div className="flex flex-wrap gap-6 pt-1">
+          {LANGS.map(([code, name]) => (
+            <label key={code} className="flex items-center gap-2 text-sm">
+              {name}
+              <select name={`lang-${code}`} defaultValue="" className="h-9 rounded-md border bg-background px-2 text-sm">
+                <option value="">Not required</option>
+                {CEFR_LEVELS.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" size="lg">Save need</Button>
     </form>
