@@ -7,8 +7,8 @@ import { vllm } from "./openai-compat";
  * for names, employers, schools, places, nationality and other personal details.
  */
 const PATTERNS: [RegExp, string][] = [
-  [/[\w.+-]+@[\w-]+\.[\w.-]+/g, "[CONTACT]"],
-  [/https?:\/\/\S+|www\.\S+/g, "[CONTACT]"],
+  [/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g, "[CONTACT]"], // stops before a full stop that ends the sentence
+  [/(?:https?:\/\/|www\.)\S+?(?=[.,;:!?)]*(?:\s|$))/g, "[CONTACT]"],
   [/(\+?\d[\d\s-]{6,}\d)/g, "[CONTACT]"],
 ];
 

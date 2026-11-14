@@ -6,6 +6,10 @@ describe("privacy guard, first pass (patterns)", () => {
   it("removes email addresses", () => expect(patternPass("Mail me at aino.makela@example.fi please")).not.toContain("@example.fi"));
   it("removes web addresses", () => expect(patternPass("See https://github.com/aino")).not.toContain("github.com/aino"));
   it("removes phone numbers", () => expect(patternPass("Call +358 40 123 4567")).not.toMatch(/123 ?4567/));
+  it("keeps the full stop after an email or link", () => {
+    expect(patternPass("Email me at eduard@example.com. Thanks")).toBe("Email me at [CONTACT]. Thanks");
+    expect(patternPass("See https://example.fi/cv, please.")).toBe("See [CONTACT], please.");
+  });
   it("keeps technical content", () => expect(patternPass("I used Python 3.12 and cut costs 30%.")).toBe("I used Python 3.12 and cut costs 30%."));
 });
 
