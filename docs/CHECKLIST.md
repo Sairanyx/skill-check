@@ -26,6 +26,7 @@ Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 S
 | 5 | Security before going public: reset Aiven password, IP allowlist, different demo password on the live site | **Eduard (Aiven)** + Claude |
 | 6 | Rate limits on login and AI endpoints (cost and abuse) | Claude / teammate |
 | 7 | README for the repo | Claude |
+| 7b | **Typography and logo refresh**: choose better fonts for the site and the wordmark (Eduard dislikes the current ones) | Eduard + Claude |
 
 ## 🟠 Should (prizes and polish)
 | # | Item | Who |
