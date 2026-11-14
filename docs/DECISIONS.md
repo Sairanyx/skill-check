@@ -131,3 +131,10 @@ Every important design choice, with the research behind it (Finland first), how 
 - **Industry:** skills-based hiring drops the degree filter unless the job legally needs it. Background-check services verify licences against registers, but they store copies of documents.
 - **➕** No CV or cover letter to write (and nothing for an AI to be biased by). Proof is checked once, by a trusted public body, in person. Data minimisation: no document copies.
 - **➖** The jobseeker must bring the original to the visit. Foreign degrees need a recognition decision first, which takes time. Staff need a few minutes per proof.
+
+## D18. No fine-tuning: control quality with rules, a panel of judges and people
+**Decision:** we use the models as they are. Quality comes from written anchors per skill, quotes verified in code, two scoring runs, judges from different companies and a human decision.
+- **Why not:** we have no real data, only synthetic answers written by Gemma, so training on them would teach the model its own habits and biases. A fine-tuned judge hides its reasons in the weights, while today every score can be traced. Under the EU AI Act, training data would also have to be documented and justified.
+- **Later:** first a Finnish-tuned speech model (the clearest win for accents and Finnish). After a pilot, measure how often people agree with the AI and adjust the anchors and thresholds. Fine-tune only if a measured gap remains, with City-approved data and a fairness test before and after.
+- **➕** Easy to audit and explain. No training data to protect. Models can be swapped.
+- **➖** May be a little less accurate in narrow domains than a tuned model.
