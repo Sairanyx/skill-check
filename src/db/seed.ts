@@ -136,7 +136,7 @@ async function main() {
     .insert(venues)
     .values([
       { name: "Espoo Employment Services, Leppävaara", address: "Leppävaara, Espoo" },
-      { name: "Otaniemi EXAM Room", address: "Otaniemi, Espoo" },
+      { name: "Espoo Employment Services, Otaniemi", address: "Otaniemi, Espoo" },
     ])
     .returning();
   const rooms = await db.insert(testRooms).values([{ venueId: lepp.id, name: "EXAM room A" }, { venueId: ota.id, name: "EXAM room B" }]).returning();
