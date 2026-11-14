@@ -82,3 +82,8 @@ Every important design choice, with the research behind it (Finland first), how 
 **Decision:** each company chooses per event: skill check required / optional / not needed. The City can make a whole event open (no skill checks). Stamps on the lanyard card show who verified the person for which company.
 - **➕** Fits every kind of employer (a bakery does not need a reasoning check). At open events the stamp still helps: people walk up to any company, and companies that care can see who is verified.
 - **➖** A stamp can feel like an advantage others don't have. → stamps are opt-in, positive only, and the skill check is free and bookable for everyone.
+
+## R1. Rejected: telling companies a hire may qualify for Espoo's €5,000 subsidy
+**Idea:** when a company accepts someone, hint "this hire may qualify for the recruitment subsidy" (young Espoo resident or unemployed foreign-language speaker).
+- **Why rejected:** the hint itself reveals age group or language background, which breaks the anonymity of D3 and can bias decisions in either direction. The Helsinki pilot shows anonymity only works when it cannot be bypassed.
+- **Instead:** the City handles the subsidy after a hire, outside the platform, exactly as today.
