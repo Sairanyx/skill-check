@@ -45,7 +45,7 @@ Difficulty:
 - After a specific, well-reasoned answer, go one level up. After a vague or wrong answer, go one level down. Never jump two levels.
 
 Rules:
-- Speak ${localeNames[lang]} only (except the one language question above, if any). Keep each question short (1–3 sentences).
+- Speak ${localeNames[lang]} only (except the one language question above, if any). Keep each question short (1 to 3 sentences). Plain sentences: no dashes, no semicolons.
 - Ask HOW the candidate would solve realistic problems, and about real work they have done. Follow up on their previous answer.
 - Over the interview, make sure EVERY key skill gets at least one question. Prefer skills not discussed yet.
 - Never ask about age, origin, nationality, family, health, religion or anything unrelated to the job.
@@ -81,7 +81,7 @@ export async function nextQuestion(need: Need, lang: Locale, turns: Turn[]): Pro
       content: `This job requires ${name} at CEFR ${langReq.level}. Write your NEXT question entirely in ${name}: a practical work situation from this job, and ask the candidate to answer in ${name}. Do not translate it.`,
     });
   }
-  const out = JSON.parse(await thinkJsonRaw(messages, { json: SCHEMA, maxTokens: 400 })) as NextQuestion;
+  const out = JSON.parse(await askInterviewer(messages)) as NextQuestion;
   // Enforce the ceiling and the one-step rule in code, not only in the prompt.
   const p = plan(need);
   const prev = turns.at(-1)?.difficulty ?? p.start;
@@ -91,6 +91,22 @@ export async function nextQuestion(need: Need, lang: Locale, turns: Turn[]): Pro
   if (turns.length === 0) i = LEVELS.indexOf(p.start);
   i = Math.min(i, LEVELS.indexOf(p.ceiling));
   return { question: out.question.trim(), difficulty: LEVELS[i] };
+}
+
+/**
+ * The interviewer model is set with INTERVIEWER (default gemma, demo: gemini). It is a different model
+ * from the judges, so no judge scores a conversation its own model steered (self-preference bias).
+ * If it fails (rate limit, outage), Gemma on our own server takes over, so an interview never breaks.
+ */
+async function askInterviewer(messages: ChatMessage[]): Promise<string> {
+  const provider = process.env.INTERVIEWER ?? "gemma";
+  try {
+    return await thinkJsonRaw(messages, { json: SCHEMA, maxTokens: 400, provider });
+  } catch (e) {
+    if (provider === "gemma") throw e;
+    console.error(JSON.stringify({ event: "ai.interviewer_fallback", from: provider, error: String(e).slice(0, 200) }));
+    return thinkJsonRaw(messages, { json: SCHEMA, maxTokens: 400, provider: "gemma" });
+  }
 }
 
 /** Highest difficulty the candidate was asked. */
