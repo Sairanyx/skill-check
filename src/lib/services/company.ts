@@ -4,7 +4,9 @@ import { think } from "@/lib/ai/llm";
 import { ApiError } from "@/lib/api";
 import { loadNeed } from "./needs";
 import { audit } from "./audit";
-import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, user, events, eventCompanies, needEquivalences, type QuestionBank } from "@/db";
+import { aliasFor } from "@/lib/alias";
+import { sharedContact } from "./privacy";
+import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, events, eventCompanies, needEquivalences, type QuestionBank } from "@/db";
 import type { ApiUser } from "@/lib/api";
 
 /** The company's own needs with how many candidates are ready for review. */
@@ -32,32 +34,35 @@ export async function latestDecisions(checkIds: string[]) {
   return map;
 }
 
-/** Booked meetings. The candidate's contact is shown only here: they chose to meet (mutual opt-in). */
+/** Booked meetings. Companies see the alias only. Contact appears only if the candidate shared it. */
 export async function myMeetings(actor: ApiUser) {
-  return db
-    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, alias: user.name, email: user.email, need: needs.title, checkId: bookings.checkId })
+  const co = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
+  if (!co) return [];
+  const rows = await db
+    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, candidateId: bookings.candidateId, need: needs.title, checkId: bookings.checkId })
     .from(bookings)
-    .innerJoin(companies, eq(bookings.companyId, companies.id))
     .innerJoin(meetingSlots, eq(bookings.slotId, meetingSlots.id))
     .innerJoin(meetingRooms, eq(meetingSlots.roomId, meetingRooms.id))
-    .innerJoin(user, eq(bookings.candidateId, user.id))
     .innerJoin(skillChecks, eq(bookings.checkId, skillChecks.id))
     .innerJoin(needs, eq(skillChecks.needId, needs.id))
-    .where(eq(companies.ownerId, actor.id))
+    .where(eq(bookings.companyId, co.id))
     .orderBy(meetingSlots.startsAt);
+  return Promise.all(rows.map(async ({ candidateId, ...r }) => ({ ...r, alias: aliasFor(candidateId), contact: await sharedContact(candidateId, co.id) })));
 }
 
-export async function bookingForCheck(checkId: string) {
+/** This company's meeting for a check (alias + time; contact only if shared). */
+export async function bookingForCheck(actor: ApiUser, checkId: string) {
+  const co = await db.query.companies.findFirst({ where: eq(companies.ownerId, actor.id) });
+  if (!co) return null;
   const [b] = await db
-    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, email: user.email })
+    .select({ startsAt: meetingSlots.startsAt, room: meetingRooms.name, candidateId: bookings.candidateId })
     .from(bookings)
     .innerJoin(meetingSlots, eq(bookings.slotId, meetingSlots.id))
     .innerJoin(meetingRooms, eq(meetingSlots.roomId, meetingRooms.id))
-    .innerJoin(user, eq(bookings.candidateId, user.id))
-    .where(eq(bookings.checkId, checkId));
-  return b ?? null;
+    .where(and(eq(bookings.checkId, checkId), eq(bookings.companyId, co.id)));
+  if (!b) return null;
+  return { startsAt: b.startsAt, room: b.room, contact: await sharedContact(b.candidateId, co.id) };
 }
-
 
 /* ---------- events: confirm attendance (one click, at least 1 week before) ---------- */
 

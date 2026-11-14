@@ -11,6 +11,7 @@ import { loadNeed } from "./needs";
 import { audit } from "./audit";
 import { assertKioskTurn } from "./testing";
 import { acceptedNeedIds } from "./company";
+import { aliasFor } from "@/lib/alias";
 
 /** Below this confidence, or with any fairness flag, a person at the City reviews first. */
 export const REVIEW_CONFIDENCE = 0.6;
@@ -127,7 +128,7 @@ export async function getCheck(actor: ApiUser, checkId: string) {
     status: check.status,
     language: check.language,
     need: { id: need.id, title: need.title, company: need.company, skills: need.skills },
-    candidate: { alias: candidate?.name ?? "Candidate" }, // pseudonymous alias, never the email
+    candidate: { alias: isOwner ? (candidate?.name ?? "You") : aliasFor(check.candidateId) }, // companies and City see a pseudonym
     turns: check.turns.map((t) => (isOwner ? t : { question: t.question, seen: t.seen })),
     pendingQuestion: isOwner ? check.pendingQuestion : undefined,
     evaluation: evaluation ?? null,
@@ -180,7 +181,7 @@ export async function companyCandidates(actor: ApiUser, needId?: string) {
       needId: skillChecks.needId,
       needTitle: needs.title,
       company: companies.name,
-      alias: user.name,
+      candidateId: skillChecks.candidateId,
       language: skillChecks.language,
       match: evaluations.match,
       level: evaluations.level,
@@ -194,7 +195,8 @@ export async function companyCandidates(actor: ApiUser, needId?: string) {
     .innerJoin(companies, eq(needs.companyId, companies.id))
     .innerJoin(user, eq(skillChecks.candidateId, user.id))
     .where(and(visible, eq(skillChecks.status, "evaluated")))
-    .orderBy(desc(evaluations.match));
+    .orderBy(desc(evaluations.match))
+    .then((rows) => rows.map(({ candidateId, ...r }) => ({ ...r, alias: aliasFor(candidateId) })));
 }
 
 /** Candidate consent: share this result with companies that accept it as equivalent. */

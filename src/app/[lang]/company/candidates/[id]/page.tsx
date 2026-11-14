@@ -15,7 +15,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
   const me = await requireRole(lang, "company");
   const check = await getCheck(me, id).catch(() => null);
   if (!check || !check.evaluation) notFound();
-  const booking = await bookingForCheck(id);
+  const booking = await bookingForCheck(me, id);
   const mine = check.decisions.filter((d) => d.role === "company");
 
   return (
@@ -31,7 +31,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
 
       <Section title="Your decision">
         {booking ? (
-          <p className="text-sm">Meeting booked: <strong>{fmtTime(booking.startsAt)}</strong>, {booking.room}. Contact: {booking.email}</p>
+          <p className="text-sm">Meeting booked: <strong>{fmtTime(booking.startsAt)}</strong>, {booking.room}. {booking.contact ? `Contact shared by the candidate: ${booking.contact}` : "The candidate introduces themselves at the meeting."}</p>
         ) : (
           <DecisionPanel
             checkId={id}

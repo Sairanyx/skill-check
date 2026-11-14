@@ -18,7 +18,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <PageTitle kicker={me.name} title="Candidates">
-        People who took a skill check for your needs, best match first. Names stay hidden until they book a meeting with you.
+        People who took a skill check for your needs, best match first. Names and contact details stay with the City of Espoo. Candidates can choose to share their contact with you.
       </PageTitle>
 
       <Section title="Ready to review">
@@ -51,7 +51,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
             {meetings.map((m) => (
               <li key={m.checkId} className="flex justify-between gap-6 py-3">
                 <span><strong>{fmtTime(m.startsAt)}</strong>, {m.room} · {m.need}</span>
-                <span className="text-muted-foreground">{m.email}</span>
+                <span className="text-muted-foreground">{m.alias}{m.contact ? ` · ${m.contact}` : ""}</span>
               </li>
             ))}
           </ul>
