@@ -139,7 +139,7 @@ async function main() {
       { name: "Otaniemi EXAM Room", address: "Otaniemi, Espoo" },
     ])
     .returning();
-  const rooms = await db.insert(testRooms).values([{ venueId: lepp.id, name: "EXAM room 2" }, { venueId: ota.id, name: "EXAM room A" }]).returning();
+  const rooms = await db.insert(testRooms).values([{ venueId: lepp.id, name: "EXAM room A" }, { venueId: ota.id, name: "EXAM room B" }]).returning();
   const stations = await db
     .insert(workstations)
     .values(rooms.flatMap((r) => [1, 2, 3, 4].map((n) => ({ roomId: r.id, label: `Workstation ${n}` }))))
