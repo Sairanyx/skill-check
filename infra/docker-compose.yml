@@ -79,6 +79,15 @@ services:
     restart: unless-stopped
     env_file: .env
 
+  # Interview panel (Rust, panel/): three Gemini 4 models interview together. Optional: the app uses it only
+  # when PANEL_URL and PANEL_API_KEY are set in .env. No published port, only the app reaches it.
+  # Build and start: docker compose up -d --build panel (settings in panel.env, see panel/.env.example)
+  panel:
+    build: ./app/panel
+    restart: unless-stopped
+    env_file: panel.env
+    profiles: [panel]
+
   # HTTPS (ports 80/443 are the only ones open in the firewall besides SSH).
   caddy:
     image: caddy:2
