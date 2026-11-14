@@ -9,22 +9,24 @@ import { pseudonymise } from "@/lib/ai/guard";
 import { transcribe } from "@/lib/ai/transcribe";
 import { loadNeed } from "./needs";
 import { audit } from "./audit";
+import { assertInSession } from "./sessions";
 
 /** Below this confidence, or with any fairness flag, a person at the City reviews first. */
 export const REVIEW_CONFIDENCE = 0.6;
 
 const agentTurns = (turns: StoredTurn[]) => turns.map((t) => ({ question: t.question, answer: t.seen }));
 
-/** Candidate starts a skill check for a need. Returns the first question. */
-export async function startCheck(actor: ApiUser, needId: string, language: string) {
+/** Candidate starts a skill check for a need, only inside an open City session (venue rule). */
+export async function startCheck(actor: ApiUser, needId: string, language: string, sessionId: string) {
   if (!hasLocale(language)) throw new ApiError(400, "language must be en, fi or sv");
+  await assertInSession(actor, sessionId);
   const need = await loadNeed(needId);
   const question = await nextQuestion(need, language, []);
   const [check] = await db
     .insert(skillChecks)
-    .values({ candidateId: actor.id, needId, language, pendingQuestion: question })
+    .values({ candidateId: actor.id, needId, sessionId, language, pendingQuestion: question })
     .returning();
-  await audit(actor, "check.started", { subjectId: actor.id, targetType: "skill_check", targetId: check.id, meta: { needId, language } });
+  await audit(actor, "check.started", { subjectId: actor.id, targetType: "skill_check", targetId: check.id, meta: { needId, language, sessionId } });
   return { checkId: check.id, question, turn: 1, max: MAX_TURNS };
 }
 
