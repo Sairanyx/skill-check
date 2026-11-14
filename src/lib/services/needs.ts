@@ -1,4 +1,5 @@
 import "server-only";
+import { pageAsMarkdown } from "@/lib/context-dev";
 import { proofType } from "@/lib/proofs";
 import { desc, eq } from "drizzle-orm";
 import { db, companies, needs } from "@/db";
@@ -6,6 +7,8 @@ import { ApiError, type ApiUser } from "@/lib/api";
 import type { Need } from "@/lib/demo-data";
 import { mapToEsco } from "@/lib/esco";
 import { generateAnchors } from "@/lib/ai/rubric";
+import { thinkJson } from "@/lib/ai/llm";
+import { audit } from "./audit";
 
 /** A need together with its company name, in the shape the AI agents expect. */
 export async function loadNeed(needId: string): Promise<Need & { companyId: string; ownerId: string; checkMode: string }> {
@@ -84,4 +87,44 @@ export async function createNeed(
     })
     .returning();
   return need;
+}
+
+/**
+ * Draft a need from the company's own website or job post (Context.dev reads the page, Gemma drafts).
+ * Nothing is saved: the company checks and edits the draft in the normal form.
+ */
+export async function draftNeedFromUrl(actor: ApiUser, url: string) {
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    throw new ApiError(400, "Paste a full web address, for example https://yourcompany.fi/careers");
+  }
+  if (!["http:", "https:"].includes(u.protocol)) throw new ApiError(400, "Only http and https addresses");
+  if (!process.env.CONTEXT_DEV_API_KEY) throw new ApiError(503, "Reading websites is not switched on yet");
+  const page = await pageAsMarkdown(u.toString()).catch((e) => {
+    throw new ApiError(502, (e as Error).message);
+  });
+  const draft = await thinkJson<{ title: string; summary: string; skills: string[]; level: "junior" | "mid" | "senior" }>(
+    [
+      {
+        role: "system",
+        content: `You help a company describe ONE real problem it needs help with, for a skill check at a City of Espoo recruitment event.
+From the web page, write: a short title ("Role: problem"), a 2 to 3 sentence summary of the real problem, 3 to 5 key skills, and the level.
+Describe the work, not the person: never mention age, gender, nationality, native language, health or family. No dashes or semicolons.`,
+      },
+      { role: "user", content: `PAGE: ${page.title ?? ""}\n\n${page.markdown}` },
+    ],
+    {
+      json: {
+        type: "object",
+        properties: { title: { type: "string" }, summary: { type: "string" }, skills: { type: "array", items: { type: "string" } }, level: { type: "string", enum: ["junior", "mid", "senior"] } },
+        required: ["title", "summary", "skills", "level"],
+      },
+      maxTokens: 600,
+      temperature: 0.2,
+    },
+  );
+  await audit(actor, "need.drafted_from_website", { targetType: "url", targetId: u.hostname });
+  return { ...draft, skills: draft.skills.slice(0, 6), source: u.toString() };
 }
