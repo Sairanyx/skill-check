@@ -19,9 +19,10 @@ use crate::types::*;
 use serde_json::Value;
 use std::time::Duration;
 
-// Thinking levels. Higher where a mistake costs the most.
-const MEMO_THINKING: &str = "MEDIUM";
-const CHAIR_THINKING: &str = "MEDIUM";
+// Thinking levels. The interview loop runs on LOW to keep turns quick; the
+// final verdicts and report, where a mistake costs the most, run on HIGH.
+const MEMO_THINKING: &str = "LOW";
+const CHAIR_THINKING: &str = "LOW";
 const VERDICT_THINKING: &str = "HIGH";
 const REPORT_THINKING: &str = "HIGH";
 

@@ -46,8 +46,7 @@ pub static PANEL: [Panelist; 3] = [
                 (specific, situated, with the messy details) or generic textbook phrasing? \
                 Propose follow-ups that a person who really did the work could answer easily \
                 and a bluffer could not.",
-        // Fast reader: its lens needs less deliberation, and the turn waits for all three.
-        thinking: Some("LOW"),
+        thinking: None,
     },
 ];
 
