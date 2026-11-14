@@ -6,6 +6,7 @@ Collected 14 Nov 2026. Vendor numbers are marked as such. Use the wording below 
 - **Since 1 Jan 2025 (TE24 reform), the City of Espoo is the employment authority for Espoo and Kauniainen, responsible for about 30,000 jobseekers.** Matching people to jobs is literally the City's job now. [Kauniainen](https://kauniainen.fi/en/news/te-services-will-become-municipal-services-on-1-january-2025) · [Työmarkkinatori](https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle)
 - Espoo already finds candidates and lets employers choose. **Skill Check gives that work evidence, scale and fairness.**
 - "EXAM rooms for reasoning", using existing City spaces (libraries, Espoo Talent Hub).
+- **Our own fairness test:** the same answers written in fluent and in non-native English scored **7.0 vs 6.7**. The scorer judges reasoning, not language.
 
 ## The problem we solve
 - **Remote assessment is broken by AI cheating.** One vendor analysis of ~20,000 AI interviews flagged **38.5%** of candidates for cheating behaviour, **48%** for software roles (vendor data, indicative). [Fabric](https://fabrichq.ai/blogs/how-employers-are-trying-to-fight-cheating-during-interviews)
