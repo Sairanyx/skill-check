@@ -1,4 +1,5 @@
 import "server-only";
+import { cefrAtLeast } from "@/lib/rules";
 import { and, asc, eq } from "drizzle-orm";
 import { db, proofs, user, CEFR, type Cefr } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
@@ -96,7 +97,7 @@ export async function proofStatusForNeed(candidateId: string, need: Pick<Need, "
   const now = Date.now();
   return asked.map((a) => {
     const usable = mine.filter(
-      (p) => p.code === a.code && p.status !== "rejected" && (!p.validUntil || p.validUntil.getTime() > now) && (!a.level || (p.level && CEFR.indexOf(p.level as Cefr) >= CEFR.indexOf(a.level))),
+      (p) => p.code === a.code && p.status !== "rejected" && (!p.validUntil || p.validUntil.getTime() > now) && (!a.level || (!!p.level && cefrAtLeast(p.level, a.level))),
     );
     const status = usable.some((p) => p.status === "verified") ? "verified" : usable.length ? "declared" : "missing";
     return { code: a.code, label: proofType(a.code)?.label.en ?? a.code, required: a.required, level: a.level, status };

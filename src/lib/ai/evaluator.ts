@@ -1,4 +1,5 @@
 import "server-only";
+import { computeScores } from "@/lib/rules";
 import { thinkJsonRaw, modelLabel, judges, providerLabel, type Provider } from "./llm";
 import { generateAnchors, type SkillAnchors } from "./rubric";
 import type { Need } from "@/lib/demo-data";
@@ -119,10 +120,7 @@ Give a one-sentence reason that refers to the evidence. Never consider grammar, 
   });
 }
 
-const median = (xs: number[]) => {
-  const s = [...xs].sort((a, b) => a - b);
-  return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
-};
+
 
 /**
  * Step 2b: the panel. Several judges from different companies score the same verified evidence
@@ -144,23 +142,6 @@ async function scorePanel(anchors: SkillAnchors[], evidence: { skill: string; qu
   return { runs, judges: panel.map((j, i) => ({ judge: j, label: providerLabel(j), ok: settled[i].status === "fulfilled" })) };
 }
 
-/** Step 3: everything that can be computed, is computed. */
-function compute(runs: { skill: string; score: number }[][], difficulty: Difficulty) {
-  const n = runs[0].length;
-  // Median per skill: one outlier judge cannot move the result (with 2 runs it is the mean).
-  const avg = runs[0].map((_, i) => median(runs.map((r) => r[i].score)));
-  const shown = avg.filter((x) => x > 0);
-  const coverage = shown.length / n;
-  const disagreement = runs[0].reduce((s, _, i) => s + (Math.max(...runs.map((r) => r[i].score)) - Math.min(...runs.map((r) => r[i].score))), 0) / n;
-  const agreement = 1 - disagreement / 5;
-  // Match is over the skills the candidate actually showed. Skills not shown lower the CONFIDENCE, not the score:
-  // a strong answer should not lose points for a question that was never asked.
-  const mean = shown.length ? shown.reduce((a, b) => a + b, 0) / shown.length : 0;
-  const match = Math.round((mean / 5) * 100) / 10; // 0–10
-  const level: Evaluation["level"] = mean >= 4 && difficulty === "high" ? "senior" : mean >= 2.5 ? "mid" : "junior";
-  const confidence = Math.round((0.5 * coverage + 0.5 * agreement) * 100) / 100;
-  return { avg, match, level, confidence, coverage: Math.round(coverage * 100) / 100, agreement: Math.round(agreement * 100) / 100 };
-}
 
 /**
  * Language for this job: only when the need says e.g. "Swedish B2". The model quotes sentences
@@ -215,7 +196,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const [panel, language] = await Promise.all([scorePanel(anchors, evidence), assessLanguages(need, turns)]);
   const runs = panel.runs;
   const difficulty: Difficulty = turns.some((t) => t.difficulty === "high") ? "high" : turns.some((t) => t.difficulty === "medium") ? "medium" : "low";
-  const c = compute(runs, difficulty);
+  const c = computeScores(runs, difficulty);
 
   const rubric: SkillResult[] = anchors.map((a, i) => ({
     criterion: a.skill,

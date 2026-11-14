@@ -1,4 +1,5 @@
 import "server-only";
+import { isAccepted } from "@/lib/rules";
 import { and, count, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db, skillChecks, evaluations, decisions, bookings, meetingSlots, meetingRooms, user, needs, companies } from "@/db";
 import { ApiError, type ApiUser } from "@/lib/api";
@@ -85,7 +86,7 @@ export async function outcomes(checkId: string): Promise<Outcome[]> {
     const declinedByCompany = o.companySays === "not_now";
     const acceptedByCity = o.citySays === "invite";
     const declinedByCity = o.citySays === "not_now";
-    return { companyId, company: o.company, acceptedByCompany, acceptedByCity, declinedByCompany, declinedByCity, accepted: acceptedByCompany || (acceptedByCity && !declinedByCompany) };
+    return { companyId, company: o.company, acceptedByCompany, acceptedByCity, declinedByCompany, declinedByCity, accepted: isAccepted(o.companySays, o.citySays) };
   });
 }
 

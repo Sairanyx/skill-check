@@ -1,5 +1,6 @@
 import "server-only";
 import { thinkJsonRaw, type ChatMessage } from "./llm";
+import { stepDifficulty } from "@/lib/rules";
 import type { Need } from "@/lib/demo-data";
 import type { Difficulty } from "@/db/schema";
 import { localeNames, languageNamesEn, type Locale } from "@/i18n/config";
@@ -84,13 +85,8 @@ export async function nextQuestion(need: Need, lang: Locale, turns: Turn[]): Pro
   const out = JSON.parse(await askInterviewer(messages)) as NextQuestion;
   // Enforce the ceiling and the one-step rule in code, not only in the prompt.
   const p = plan(need);
-  const prev = turns.at(-1)?.difficulty ?? p.start;
-  let i = LEVELS.indexOf(out.difficulty);
-  if (i < 0) i = LEVELS.indexOf(prev);
-  i = Math.max(LEVELS.indexOf(prev) - 1, Math.min(LEVELS.indexOf(prev) + 1, i));
-  if (turns.length === 0) i = LEVELS.indexOf(p.start);
-  i = Math.min(i, LEVELS.indexOf(p.ceiling));
-  return { question: out.question.trim(), difficulty: LEVELS[i] };
+  const difficulty = stepDifficulty({ proposed: out.difficulty, previous: turns.at(-1)?.difficulty ?? p.start, start: p.start, ceiling: p.ceiling, first: turns.length === 0 });
+  return { question: out.question.trim(), difficulty };
 }
 
 /**
