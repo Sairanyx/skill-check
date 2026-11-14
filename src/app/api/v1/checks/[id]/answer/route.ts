@@ -1,5 +1,6 @@
 import { api, caller } from "@/lib/api";
 import { answerCheck } from "@/lib/services/checks";
+import { kioskTokenFromRequest } from "@/lib/services/testing";
 
 /** POST /api/v1/checks/:id/answer: multipart `text` or `audio`. Returns the next question or the evaluation. */
 export const POST = api(async (req, { params }: RouteContext<"/api/v1/checks/[id]/answer">) => {
@@ -10,5 +11,5 @@ export const POST = api(async (req, { params }: RouteContext<"/api/v1/checks/[id
   return answerCheck(me, (await params).id, {
     audio: audio instanceof Blob ? audio : undefined,
     text: typeof text === "string" ? text : undefined,
-  });
+  }, kioskTokenFromRequest(req));
 });

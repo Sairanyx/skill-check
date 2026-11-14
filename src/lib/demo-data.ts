@@ -6,6 +6,9 @@ export type Need = {
   summary: string;
   skills: string[];
   level: "junior" | "mid" | "senior";
+  /** Optional company questions per level. Empty = the AI builds easy filter questions itself. */
+  questionBank?: { junior?: string[]; mid?: string[]; senior?: string[] } | null;
+  companyDescription?: string | null;
 };
 
 export const DEMO_NEEDS: Need[] = [

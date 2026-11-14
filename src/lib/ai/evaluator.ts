@@ -45,7 +45,7 @@ const FAIRNESS_SCHEMA = {
 };
 
 const transcript = (turns: Turn[]) =>
-  turns.map((t, i) => `Q${i + 1}: ${t.question}\nA${i + 1}: ${t.answer}`).join("\n\n");
+  turns.map((t, i) => `Q${i + 1} (${t.difficulty ?? "medium"} difficulty): ${t.question}\nA${i + 1}: ${t.answer}`).join("\n\n");
 
 export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const raw = await think(
@@ -54,6 +54,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
         role: "system",
         content: `You assess a pseudonymised skill-check transcript for the need "${need.title}" (${need.company}).
 Skills: ${need.skills.join(", ")}. Target level: ${need.level}.
+Each question is marked with its difficulty (low / medium / high). Strong answers to harder questions are stronger evidence.
 Score ONLY reasoning, problem-solving and relevant knowledge shown in the answers. Ignore grammar, fluency, accent, language choice and writing style completely.
 Use the key skills as rubric criteria. For each, quote short exact phrases from the answers as evidence (in the original language).
 "match" = how well the candidate fits this need (0–10). "confidence" = how sure you are given the amount of evidence (short or vague answers → low confidence).

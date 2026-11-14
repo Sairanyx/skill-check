@@ -6,7 +6,7 @@ import type { Need } from "@/lib/demo-data";
 import { mapToEsco } from "@/lib/esco";
 
 /** A need together with its company name, in the shape the AI agents expect. */
-export async function loadNeed(needId: string): Promise<Need & { companyId: string; ownerId: string }> {
+export async function loadNeed(needId: string): Promise<Need & { companyId: string; ownerId: string; checkMode: string }> {
   const [row] = await db
     .select({ need: needs, company: companies })
     .from(needs)
@@ -22,6 +22,9 @@ export async function loadNeed(needId: string): Promise<Need & { companyId: stri
     summary: row.need.summary,
     skills: row.need.skills,
     level: row.need.level,
+    checkMode: row.need.checkMode,
+    questionBank: row.need.questionBankReview?.ok === false ? null : row.need.questionBank, // unscreened banks are not used
+    companyDescription: row.company.description,
   };
 }
 
@@ -34,6 +37,7 @@ export async function listNeeds() {
       skills: needs.skills,
       escoSkills: needs.escoSkills,
       level: needs.level,
+      checkMode: needs.checkMode,
       company: companies.name,
     })
     .from(needs)
