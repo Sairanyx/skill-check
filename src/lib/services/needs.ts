@@ -110,7 +110,7 @@ export async function draftNeedFromUrl(actor: ApiUser, url: string) {
       {
         role: "system",
         content: `You help a company describe ONE real problem it needs help with, for a skill check at a City of Espoo recruitment event.
-From the web page, write: a short title ("Role: problem"), a 2 to 3 sentence summary of the real problem, 3 to 5 key skills, and the level.
+From the web page, write: a short title in the form "job: problem" (for example "Cloud engineer: cost control"), a 2 to 3 sentence summary of the real problem, 3 to 5 key skills, and the level.
 Describe the work, not the person: never mention age, gender, nationality, native language, health or family. No dashes or semicolons.`,
       },
       { role: "user", content: `PAGE: ${page.title ?? ""}\n\n${page.markdown}` },
