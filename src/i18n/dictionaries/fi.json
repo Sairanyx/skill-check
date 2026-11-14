@@ -1,37 +1,80 @@
 {
-  "meta": { "title": "SkillCheck", "description": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi." },
-  "nav": { "candidate": "Työnhakijoille", "company": "Yrityksille", "city": "Espoon kaupunki", "login": "Kirjaudu", "signup": "Aloita", "language": "Kieli", "logout": "Kirjaudu ulos" },
+  "meta": {
+    "title": "SkillCheck",
+    "description": "Ei CV:tä eikä hakemuskirjettä. Näytä osaamisesi lyhyessä osaamistestissä paikan päällä ja tapaa yrityksiä Espoon kaupungin tapahtumissa."
+  },
+  "nav": {
+    "candidate": "Työnhakijoille",
+    "company": "Yrityksille",
+    "city": "Espoon kaupunki",
+    "login": "Kirjaudu",
+    "signup": "Aloita",
+    "language": "Kieli",
+    "logout": "Kirjaudu ulos"
+  },
   "landing": {
-    "eyebrow": "Espoon rekrytointitapahtumat uudella tavalla",
-    "title": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi.",
-    "subtitle": "Lyhyt keskustelu todellisista ongelmista yritykseltä, jonka haluat tavata. Vastaa suomeksi, ruotsiksi tai englanniksi, puhuen tai kirjoittaen. Yritykset näkevät näyttöä siitä, miten ajattelet. Ihmiset tekevät jokaisen päätöksen.",
-    "ctaCandidate": "Tee osaamistesti",
-    "ctaCompany": "Kerro tarpeesi",
+    "eyebrow": "Espoon kaupungin rekrytointitapahtumat",
+    "title": "Ei CV:tä. Ei hakemuskirjettä. Näytä mitä osaat.",
+    "subtitle": "Tee lyhyt osaamistesti paikan päällä kaupungin EXAM-tilassa. Ansaitse SkillCheck-merkkejä ja tapaa yritykset, joihin haluat töihin, Espoon kaupungin rekrytointitapahtumissa.",
+    "ctaCandidate": "Löydä tapahtuma",
+    "ctaCompany": "Liity yrityksenä",
     "howTitle": "Näin se toimii",
     "steps": [
-      { "title": "Yritys kuvaa todellisen tarpeen", "text": "Liitä verkkosivusi tai työpaikkailmoitus. Tekoäly luonnostelee tarpeen, sinä vahvistat sen." },
-      { "title": "Osaaja tekee osaamistestin", "text": "Noin 7 minuutin keskustelu siitä, miten ratkaisisit yrityksen ongelmia. Puhuen tai kirjoittaen, vahvimmalla kielelläsi." },
-      { "title": "Näyttöä, ei CV:itä", "text": "Yritys näkee osuvuuden, varmuuden ja lainauksia keskustelusta. Koko keskustelun voi myös lukea." },
-      { "title": "Ihmiset päättävät, sitten tavataan", "text": "Yritys valitsee, kenet se tapaa. Saat ajan ja huoneen Espoon tapahtumassa." }
+      {
+        "title": "Valitse tapahtuma ja yritykset",
+        "text": "Näet, mitkä yritykset tulevat seuraavaan Espoon kaupungin tapahtumaan ja mitä kukin pyytää."
+      },
+      {
+        "title": "Varaa aika EXAM-tilaan",
+        "text": "30 minuuttia kaupungin tietokoneella, enintään kolme osaamistestiä yhdellä käynnillä. Ota mukaan alkuperäiset todistukset ja kortit, joita työ vaatii."
+      },
+      {
+        "title": "Tee lyhyt osaamistesti",
+        "text": "Tekoälyhaastattelija kysyy oikeista työtilanteista. Vastaa suomeksi, ruotsiksi tai englanniksi, puhuen tai kirjoittaen. Henkilötiedot poistetaan ennen arviointia."
+      },
+      {
+        "title": "Saat merkit ja tapaat yritykset",
+        "text": "Ihminen tarkistaa tuloksen. Hyväksytyistä testeistä tulee merkkejä tapahtumakorttiisi ja 15 minuutin tapaaminen tapahtumassa."
+      }
     ],
-    "rolesTitle": "Yksi alusta, kolme osapuolta",
+    "rolesTitle": "Yksi palvelu, kolme osapuolta",
     "roles": {
-      "candidate": { "title": "Työnhakijat", "text": "Tule huomatuksi ajattelusi, ei hiotun CV:n perusteella. Ei nimeä eikä kuvaa ennen kuin molemmat sanovat kyllä." },
-      "company": { "title": "Yritykset", "text": "Vähemmän mutta parempia keskusteluja. Jokainen tapaamasi ehdokas on osoittanut osaamisensa." },
-      "city": { "title": "Espoon kaupunki", "text": "Tapahtumia, joissa on todellista signaalia, ihmisen arviointi tarvittaessa ja täysi kirjausketju." }
+      "candidate": {
+        "title": "Työnhakijat",
+        "text": "Ei CV:tä tai hakemuskirjettä. Yritykset näkevät, miten työskentelet, eivät nimeäsi tai kuvaasi, kunnes itse jaat ne."
+      },
+      "company": {
+        "title": "Yritykset",
+        "text": "Tapaa ihmisiä, jotka ovat jo näyttäneet tarvitsemasi osaamisen. Vähemmän seulontaa, parempia keskusteluja."
+      },
+      "city": {
+        "title": "Espoon kaupunki",
+        "text": "Näyttöön perustuvia tapahtumia laajasti, ihmisen tarkistus ja täydellinen lokitieto."
+      }
     },
-    "privacyTitle": "Rakennettu luottamukselle",
+    "privacyTitle": "Luotettava palvelu",
     "privacy": [
       "Tekoäly kerää näyttöä. Ihmiset tekevät jokaisen päätöksen.",
-      "Puheesi ja sanasi käsitellään Suomessa.",
-      "Henkilötiedot poistetaan ennen kuin tekoäly arvioi vastauksesi.",
-      "Arvioinnissa ratkaisee ajattelu, ei koskaan aksentti tai kielioppi."
+      "Henkilötiedot poistetaan ennen kuin mikään tekoäly näkee tai arvioi vastauksesi.",
+      "Arvioinnissa ratkaisee osaaminen, ei koskaan aksentti, kielioppi, ikä tai tausta.",
+      "Testi tehdään paikan päällä, joten tekoälyllä huijaaminen ei onnistu."
     ]
   },
   "dashboard": {
-    "candidate": { "title": "Osaamistestisi", "empty": "Ei vielä osaamistestejä. Valitse yritys seuraavasta tapahtumasta aloittaaksesi." },
-    "company": { "title": "Osaamistarpeenne", "empty": "Ei vielä tarpeita. Lisää ensimmäinen tarve saadaksesi näyttöä." },
-    "city": { "title": "Tapahtumien yleiskatsaus", "empty": "Ei vielä tapahtumia. Luo ensimmäinen tapahtuma." }
+    "candidate": {
+      "title": "Osaamistestisi",
+      "empty": "Ei vielä osaamistestejä. Valitse yritys seuraavasta tapahtumasta aloittaaksesi."
+    },
+    "company": {
+      "title": "Osaamistarpeenne",
+      "empty": "Ei vielä tarpeita. Lisää ensimmäinen tarve saadaksesi näyttöä."
+    },
+    "city": {
+      "title": "Tapahtumien yleiskatsaus",
+      "empty": "Ei vielä tapahtumia. Luo ensimmäinen tapahtuma."
+    }
   },
-  "footer": { "made": "Tehty Junction 2026 -hackathonissa Espoon kaupungille." }
+  "footer": {
+    "made": "Tehty Junction 2026 -hackathonissa Espoon kaupungille."
+  }
 }

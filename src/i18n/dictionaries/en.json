@@ -1,37 +1,80 @@
 {
-  "meta": { "title": "SkillCheck", "description": "Show what you can do, not what an AI wrote for you." },
-  "nav": { "candidate": "For jobseekers", "company": "For companies", "city": "City of Espoo", "login": "Log in", "signup": "Get started", "language": "Language", "logout": "Log out" },
+  "meta": {
+    "title": "SkillCheck",
+    "description": "No CV, no cover letter. Show your skills in a short in-person skill check and meet companies at City of Espoo events."
+  },
+  "nav": {
+    "candidate": "For jobseekers",
+    "company": "For companies",
+    "city": "City of Espoo",
+    "login": "Log in",
+    "signup": "Get started",
+    "language": "Language",
+    "logout": "Log out"
+  },
   "landing": {
-    "eyebrow": "Espoo recruitment events, reimagined",
-    "title": "Show what you can do. Not what an AI wrote for you.",
-    "subtitle": "A short conversation about real problems from the company you want to meet. Answer in English, Finnish or Swedish, by voice or text. Companies see evidence of how you think. People make every decision.",
-    "ctaCandidate": "Take a skill check",
-    "ctaCompany": "Post a need",
+    "eyebrow": "City of Espoo recruitment events",
+    "title": "No CV. No cover letter. Just show your skills.",
+    "subtitle": "Take a short skill check in person, in a City EXAM room. Earn SkillCheck badges and meet the companies you want to work for at City of Espoo recruitment events.",
+    "ctaCandidate": "Find an event",
+    "ctaCompany": "Join as a company",
     "howTitle": "How it works",
     "steps": [
-      { "title": "Companies describe a real need", "text": "Paste your website or job description. AI drafts the need, you confirm it." },
-      { "title": "Talent takes a skill check", "text": "A 6 to 8 minute conversation about how you would solve the company's problems. Voice or text, in your strongest language." },
-      { "title": "Evidence, not CVs", "text": "Companies see a match score, confidence and quotes from the conversation. They can read the full transcript too." },
-      { "title": "Humans decide, then you meet", "text": "The company chooses who to meet. You get a time slot and room at the Espoo event." }
+      {
+        "title": "Choose an event and companies",
+        "text": "See which companies come to the next City of Espoo event and what each one asks for."
+      },
+      {
+        "title": "Book an EXAM room time",
+        "text": "30 minutes on a City computer, up to three skill checks in one visit. Bring the original of any licence or card the job needs."
+      },
+      {
+        "title": "Take a short skill check",
+        "text": "An AI interviewer asks about real work situations. Answer in Finnish, Swedish or English, by voice or text. Personal details are removed before scoring."
+      },
+      {
+        "title": "Get badges, meet companies",
+        "text": "A person reviews the result. Accepted checks become badges on your event card and a 15-minute meeting at the event."
+      }
     ],
     "rolesTitle": "One platform, three sides",
     "roles": {
-      "candidate": { "title": "Jobseekers", "text": "Get noticed for how you think, not how polished your CV is. No name or photo until you both say yes." },
-      "company": { "title": "Companies", "text": "Fewer, better conversations. Every candidate you meet has shown relevant skills." },
-      "city": { "title": "City of Espoo", "text": "Run events with real signal, human review where it matters and a full audit trail." }
+      "candidate": {
+        "title": "Jobseekers",
+        "text": "No CV or cover letter to write. Companies see how you work, not your name or photo, until you choose to share."
+      },
+      "company": {
+        "title": "Companies",
+        "text": "Meet people who have already shown the skills you need. Less screening, better conversations."
+      },
+      "city": {
+        "title": "City of Espoo",
+        "text": "Evidence-based events at scale, with human review and a full audit trail."
+      }
     },
     "privacyTitle": "Built for trust",
     "privacy": [
       "AI gathers evidence. People make every decision.",
-      "Your voice and words are processed in Finland.",
-      "Personal details are removed before any AI scores your answers.",
-      "Scored on reasoning, never on accent or grammar."
+      "Personal details are removed before any AI sees or scores your answers.",
+      "Scored on what you can do, never on accent, grammar, age or origin.",
+      "Checked in person, so nobody can cheat with AI."
     ]
   },
   "dashboard": {
-    "candidate": { "title": "Your skill checks", "empty": "No skill checks yet. Pick a company at the next event to start." },
-    "company": { "title": "Your talent needs", "empty": "No needs yet. Post your first need to start receiving evidence." },
-    "city": { "title": "Event overview", "empty": "No events yet. Create the first event." }
+    "candidate": {
+      "title": "Your skill checks",
+      "empty": "No skill checks yet. Pick a company at the next event to start."
+    },
+    "company": {
+      "title": "Your talent needs",
+      "empty": "No needs yet. Post your first need to start receiving evidence."
+    },
+    "city": {
+      "title": "Event overview",
+      "empty": "No events yet. Create the first event."
+    }
   },
-  "footer": { "made": "Made at Junction 2026 for the City of Espoo." }
+  "footer": {
+    "made": "Made at Junction 2026 for the City of Espoo."
+  }
 }

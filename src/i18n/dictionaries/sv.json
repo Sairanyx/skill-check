@@ -1,37 +1,80 @@
 {
-  "meta": { "title": "SkillCheck", "description": "Visa vad du kan. Inte vad en AI skrev åt dig." },
-  "nav": { "candidate": "För arbetssökande", "company": "För företag", "city": "Esbo stad", "login": "Logga in", "signup": "Kom igång", "language": "Språk", "logout": "Logga ut" },
+  "meta": {
+    "title": "SkillCheck",
+    "description": "Inget CV, inget personligt brev. Visa vad du kan i ett kort kunskapstest på plats och träffa företag på Esbo stads evenemang."
+  },
+  "nav": {
+    "candidate": "För arbetssökande",
+    "company": "För företag",
+    "city": "Esbo stad",
+    "login": "Logga in",
+    "signup": "Kom igång",
+    "language": "Språk",
+    "logout": "Logga ut"
+  },
   "landing": {
-    "eyebrow": "Esbos rekryteringsevenemang på ett nytt sätt",
-    "title": "Visa vad du kan. Inte vad en AI skrev åt dig.",
-    "subtitle": "Ett kort samtal om verkliga problem från företaget du vill träffa. Svara på svenska, finska eller engelska, med röst eller text. Företagen ser belägg för hur du tänker. Människor fattar varje beslut.",
-    "ctaCandidate": "Gör ett färdighetstest",
-    "ctaCompany": "Beskriv ett behov",
+    "eyebrow": "Esbo stads rekryteringsevenemang",
+    "title": "Inget CV. Inget personligt brev. Visa vad du kan.",
+    "subtitle": "Gör ett kort kunskapstest på plats i ett EXAM-rum hos staden. Samla SkillCheck-märken och träffa företagen du vill jobba för på Esbo stads rekryteringsevenemang.",
+    "ctaCandidate": "Hitta ett evenemang",
+    "ctaCompany": "Gå med som företag",
     "howTitle": "Så fungerar det",
     "steps": [
-      { "title": "Företaget beskriver ett verkligt behov", "text": "Klistra in er webbplats eller jobbannons. AI:n skissar behovet, ni bekräftar det." },
-      { "title": "Talangen gör ett färdighetstest", "text": "Ett samtal på 6 till 8 minuter om hur du skulle lösa företagets problem. Med röst eller text, på ditt starkaste språk." },
-      { "title": "Belägg, inte CV:n", "text": "Företaget ser matchning, säkerhet och citat ur samtalet. Hela samtalet går också att läsa." },
-      { "title": "Människor beslutar, sedan träffas ni", "text": "Företaget väljer vem det vill träffa. Du får en tid och ett rum på Esbos evenemang." }
+      {
+        "title": "Välj evenemang och företag",
+        "text": "Se vilka företag som kommer till nästa evenemang i Esbo och vad vart och ett efterfrågar."
+      },
+      {
+        "title": "Boka en tid i ett EXAM-rum",
+        "text": "30 minuter vid en dator hos staden, upp till tre kunskapstest per besök. Ta med originalen av intyg och kort som jobbet kräver."
+      },
+      {
+        "title": "Gör ett kort kunskapstest",
+        "text": "En AI-intervjuare frågar om verkliga arbetssituationer. Svara på finska, svenska eller engelska, med röst eller text. Personuppgifter tas bort före bedömningen."
+      },
+      {
+        "title": "Få märken och träffa företag",
+        "text": "En människa granskar resultatet. Godkända test blir märken på ditt evenemangskort och ett möte på 15 minuter på evenemanget."
+      }
     ],
-    "rolesTitle": "En plattform, tre parter",
+    "rolesTitle": "En tjänst, tre parter",
     "roles": {
-      "candidate": { "title": "Arbetssökande", "text": "Bli sedd för hur du tänker, inte för hur polerat ditt CV är. Inget namn eller foto förrän båda säger ja." },
-      "company": { "title": "Företag", "text": "Färre men bättre samtal. Varje kandidat ni träffar har visat relevant kunnande." },
-      "city": { "title": "Esbo stad", "text": "Evenemang med verklig signal, mänsklig granskning där det behövs och full spårbarhet." }
+      "candidate": {
+        "title": "Arbetssökande",
+        "text": "Inget CV eller personligt brev att skriva. Företagen ser hur du arbetar, inte ditt namn eller foto, tills du själv delar dem."
+      },
+      "company": {
+        "title": "Företag",
+        "text": "Träffa personer som redan visat den kompetens du behöver. Mindre gallring, bättre samtal."
+      },
+      "city": {
+        "title": "Esbo stad",
+        "text": "Evidensbaserade evenemang i stor skala, med mänsklig granskning och fullständig logg."
+      }
     },
     "privacyTitle": "Byggt för förtroende",
     "privacy": [
-      "AI samlar belägg. Människor fattar varje beslut.",
-      "Din röst och dina ord behandlas i Finland.",
-      "Personuppgifter tas bort innan någon AI bedömer dina svar.",
-      "Bedömningen gäller resonemang, aldrig brytning eller grammatik."
+      "AI samlar bevis. Människor fattar varje beslut.",
+      "Personuppgifter tas bort innan någon AI ser eller bedömer dina svar.",
+      "Bedömningen gäller vad du kan, aldrig accent, grammatik, ålder eller bakgrund.",
+      "Testet görs på plats, så ingen kan fuska med AI."
     ]
   },
   "dashboard": {
-    "candidate": { "title": "Dina färdighetstester", "empty": "Inga färdighetstester ännu. Välj ett företag på nästa evenemang för att börja." },
-    "company": { "title": "Era kompetensbehov", "empty": "Inga behov ännu. Lägg till ert första behov för att få belägg." },
-    "city": { "title": "Översikt över evenemang", "empty": "Inga evenemang ännu. Skapa det första evenemanget." }
+    "candidate": {
+      "title": "Dina färdighetstester",
+      "empty": "Inga färdighetstester ännu. Välj ett företag på nästa evenemang för att börja."
+    },
+    "company": {
+      "title": "Era kompetensbehov",
+      "empty": "Inga behov ännu. Lägg till ert första behov för att få belägg."
+    },
+    "city": {
+      "title": "Översikt över evenemang",
+      "empty": "Inga evenemang ännu. Skapa det första evenemanget."
+    }
   },
-  "footer": { "made": "Gjort på Junction 2026 för Esbo stad." }
+  "footer": {
+    "made": "Gjort på Junction 2026 för Esbo stad."
+  }
 }
