@@ -10,6 +10,8 @@ Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 S
 - Kiosk: City enrolls a computer, only the booked person can log in, check only runs there, auto logout
 - Adaptive interview (difficulty, company question bank, easy filter mode, covers every skill)
 - BARS scoring: anchors, verified quotes, two runs, computed match/level/confidence. Fairness: fluent vs non-native 7.0 vs 6.7
+- Privacy guard follows the Non-Discrimination Act (age, origin, religion, family… and revealing dates removed, durations kept)
+- Optional language requirement per need (CEFR), one question in that language, own score, never mixed into the match
 - Privacy: pseudonymised answers, companies see alias only, contact sharing by consent, City reveals identity only with a reason
 - Decisions: City and company can both accept, company "no" only for itself. Stamps on the lanyard card (consent)
 - Events: companies apply → City approves → confirm ≥ 1 week before; required/optional/not needed per company; City can make an event open
