@@ -1,24 +1,75 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
-import { getDictionary } from "@/i18n/get-dictionary";
+import { companyCandidates } from "@/lib/services/checks";
+import { latestDecisions, myMeetings, myNeeds } from "@/lib/services/company";
+import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
 
-// Skeleton: real data arrives once the database is connected (SPEC.md §2).
-export default async function Page({ params }: PageProps<"/[lang]/company">) {
+const DECISION: Record<string, string> = { invite: "Invited", not_now: "Not now", needs_review: "Sent to City" };
+
+export default async function CompanyPage({ params }: PageProps<"/[lang]/company">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  await requireRole(lang, "company");
-  const t = (await getDictionary(lang)).dashboard.company;
+  const me = await requireRole(lang, "company");
+  const [needs, candidates, meetings] = await Promise.all([myNeeds(me), companyCandidates(me), myMeetings(me)]);
+  const decided = await latestDecisions(candidates.map((c) => c.checkId));
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="mb-6 text-3xl font-semibold">{t.title}</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t.title}</CardTitle>
-          <CardDescription>{t.empty}</CardDescription>
-        </CardHeader>
-      </Card>
+    <div className="mx-auto max-w-5xl px-4 py-12">
+      <PageTitle kicker={me.name} title="Candidates">
+        People who took a skill check for your needs, best match first. Names stay hidden until they book a meeting with you.
+      </PageTitle>
+
+      <Section title="Ready to review">
+        {candidates.length ? (
+          <table className="w-full text-sm">
+            <thead className="text-left text-muted-foreground">
+              <tr className="border-b"><th className="py-2 font-normal">Candidate</th><th className="font-normal">Need</th><th className="font-normal">Match</th><th className="font-normal">Level</th><th className="font-normal">Confidence</th><th className="font-normal">Your decision</th></tr>
+            </thead>
+            <tbody>
+              {candidates.map((c) => (
+                <tr key={c.checkId} className="border-b hover:bg-muted/50">
+                  <td className="py-3"><Link href={`/${lang}/company/candidates/${c.checkId}`} className="font-medium text-primary hover:underline">{c.alias}</Link></td>
+                  <td>{c.needTitle}</td>
+                  <td className="font-semibold">{c.match}/10</td>
+                  <td className="capitalize">{c.level}</td>
+                  <td>{Math.round(c.confidence * 100)}%</td>
+                  <td className="text-muted-foreground">{DECISION[decided.get(c.checkId) ?? ""] ?? "Open"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <Empty>No evaluated candidates yet.</Empty>
+        )}
+      </Section>
+
+      <Section title="Meetings at the event">
+        {meetings.length ? (
+          <ul className="divide-y border-y text-sm">
+            {meetings.map((m) => (
+              <li key={m.checkId} className="flex justify-between gap-6 py-3">
+                <span><strong>{fmtTime(m.startsAt)}</strong>, {m.room} · {m.need}</span>
+                <span className="text-muted-foreground">{m.email}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Empty>No meetings booked yet.</Empty>
+        )}
+      </Section>
+
+      <Section title="Your needs" action={<Link href={`/${lang}/company/needs/new`} className="text-sm text-primary hover:underline">Add a need</Link>}>
+        <ul className="divide-y border-y text-sm">
+          {needs.map((n) => (
+            <li key={n.id} className="flex justify-between gap-6 py-3">
+              <span><span className="font-medium">{n.title}</span> <span className="text-muted-foreground">· {n.skills.join(", ")}</span></span>
+              <span className="shrink-0 text-muted-foreground">{n.ready} ready</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
     </div>
   );
 }
