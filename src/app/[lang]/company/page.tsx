@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PagedList, PagedRows } from "@/components/app/paged";
 import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
@@ -45,6 +46,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
               <tr className="border-b"><th className="py-2 font-normal">Candidate</th><th className="hidden font-normal sm:table-cell">Need</th><th className="font-normal">Match</th><th className="hidden font-normal sm:table-cell">Level</th><th className="font-normal">Confidence</th><th className="font-normal">Decision</th></tr>
             </thead>
             <tbody>
+            <PagedRows columns={6}>
               {candidates.map((c) => (
                 <tr key={c.checkId} className="border-b hover:bg-muted/50">
                   <td className="py-3"><Link href={`/${lang}/company/candidates/${c.checkId}`} className="font-medium text-primary hover:underline">{c.alias}</Link></td>
@@ -55,7 +57,8 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
                   <td className="text-muted-foreground">{DECISION[decided.get(c.checkId) ?? ""] ?? "Open"}</td>
                 </tr>
               ))}
-            </tbody>
+            </PagedRows>
+          </tbody>
           </table>
         ) : (
           <Empty>No evaluated candidates yet.</Empty>
@@ -78,7 +81,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
       </Section>
 
       <Section title="Your needs" action={<Link href={`/${lang}/company/needs/new`} className="text-sm text-primary hover:underline">Add a need</Link>}>
-        <ul className="divide-y border-y text-sm">
+        <PagedList className="divide-y border-y text-sm" noun="needs">
           {needs.map((n) => (
             <li key={n.id} className="py-3">
               <div className="flex justify-between gap-6">
@@ -98,7 +101,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
               )}
             </li>
           ))}
-        </ul>
+        </PagedList>
       </Section>
     </div>
   );

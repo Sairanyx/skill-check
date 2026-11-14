@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PagedList } from "@/components/app/paged";
 import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
@@ -77,7 +78,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
 
       <Section title="Your results" action={<span className="flex gap-4 text-sm"><Link href={`/${lang}/candidate/card`} className="text-primary hover:underline">Event card</Link><Link href={`/${lang}/candidate/proofs`} className="text-primary hover:underline">Proofs</Link><Link href={`/${lang}/candidate/privacy`} className="text-primary hover:underline">Your data</Link></span>}>
         {checks.length ? (
-          <ul className="divide-y border-y">
+          <PagedList className="divide-y border-y" noun="results">
             {checks.map((c) => (
               <li key={c.id}>
                 <Link href={`/${lang}/candidate/checks/${c.id}`} className="flex items-center justify-between gap-6 py-4 hover:text-primary">
@@ -89,7 +90,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
                 </Link>
               </li>
             ))}
-          </ul>
+          </PagedList>
         ) : (
           <Empty>Your results appear here after your skill check.</Empty>
         )}

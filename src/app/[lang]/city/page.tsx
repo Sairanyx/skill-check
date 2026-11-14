@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PagedList } from "@/components/app/paged";
 import { notFound } from "next/navigation";
 import { hasLocale } from "@/i18n/config";
 import { requireRole } from "@/lib/session";
@@ -64,7 +65,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
 
       <Section title="Matching">
         {matching.length ? (
-          <ul className="divide-y border-y text-sm">
+          <PagedList className="divide-y border-y text-sm" noun="matches">
             {matching.map((m) => (
               <li key={m.checkId}>
                 <Link href={`/${lang}/city/review/${m.checkId}`} className="flex justify-between gap-6 py-3 hover:text-primary">
@@ -73,7 +74,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
                 </Link>
               </li>
             ))}
-          </ul>
+          </PagedList>
         ) : (
           <Empty>Results appear here after skill checks. Accept them for the company, or leave it to the company.</Empty>
         )}
@@ -81,7 +82,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
 
       <Section title="Human review queue" action={<Link href={`/${lang}/city/audit`} className="text-sm text-primary hover:underline">Audit log</Link>}>
         {queue.length ? (
-          <ul className="divide-y border-y text-sm">
+          <PagedList className="divide-y border-y text-sm" noun="items to review">
             {queue.map((q) => (
               <li key={q.checkId}>
                 <Link href={`/${lang}/city/review/${q.checkId}`} className="flex justify-between gap-6 py-3 hover:text-primary">
@@ -90,7 +91,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
                 </Link>
               </li>
             ))}
-          </ul>
+          </PagedList>
         ) : (
           <Empty>Nothing to review. Low-confidence or flagged results appear here before any company sees them.</Empty>
         )}
@@ -98,7 +99,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
 
       <Section title="Proofs to check at the desk">
         {proofQueue.length ? (
-          <ul className="divide-y border-y text-sm">
+          <PagedList className="divide-y border-y text-sm" noun="proofs to check">
             {proofQueue.map((p) => (
               <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-3">
                 <span>
@@ -109,7 +110,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
                 <VerifyProof id={p.id} howToCheck={p.howToCheck ?? "Original seen"} />
               </li>
             ))}
-          </ul>
+          </PagedList>
         ) : (
           <Empty>Nothing to check.</Empty>
         )}
