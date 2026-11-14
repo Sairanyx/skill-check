@@ -101,6 +101,7 @@ Switch the thinking model with one setting: `INTERVIEW_PROVIDER=gemma | gemini`.
 | Business rules | Needs, checks, sessions (venue rule), decisions, bookings, company views | `src/lib/services/*.ts` |
 | GDPR | Access log, export, erasure | `src/lib/services/audit.ts`, `privacy.ts`, `/api/v1/me/*` |
 | AI | Whisper, guard, interviewer, evaluator + fairness | `src/lib/ai/*.ts` |
+| Open data | ESCO skills mapping | `src/lib/esco.ts` |
 | Jobseeker portal | Sessions, room check-in, skill check, results, meeting booking, my data | `src/app/[lang]/candidate/` |
 | Company portal | Ranked anonymous candidates, evidence view, decisions, needs | `src/app/[lang]/company/` |
 | City portal | KPIs, sessions + room screen, review queue, audit log | `src/app/[lang]/city/` |
@@ -122,20 +123,20 @@ Switch the thinking model with one setting: `INTERVIEW_PROVIDER=gemma | gemini`.
 - Venue rule: no session, no room code, no skill check (13 API tests)
 - Full journey across the three roles (25+ API tests, browser tests for each portal)
 - Privacy guard in fi / sv / en, speech to text in fi / sv / en
-- GDPR: access log, append-only audit (database refuses changes), export, erasure
+- GDPR: access log, append-only audit (database refuses UPDATE, DELETE and TRUNCATE), export, erasure
+- Live on https://65.108.32.183.compute.verda.run (Verda, Finland) with automatic HTTPS
+- Need skills mapped to ESCO with fi / sv labels (6 of 9 demo skills matched, 1 wrong pick by Gemma 12B)
 - Role separation: each role has its own portal and API permissions
 
 ### Still needed
 | Priority | Item | Why |
 |---|---|---|
-| Must | Live link on Verda with HTTPS | Judges and teammate can use it |
 | Must | Reset Aiven password + IP allowlist | Password appeared in a screenshot |
-| Must | Clean demo data before judging | Test runs left duplicates |
+| Must | Re-run `npm run db:reset -- --yes && npm run db:seed` right before judging | Fresh session times and clean data |
 | Must | Portal texts in fi / sv | Landing is translated, portals are English |
 | Must | README, pitch video ≤ 2 min, deck PDF, Verda process post, repo public | Submission rules |
-| Should | Gemini Pro as the thinking model | Best Use of Gemini prize, better calibration |
+| Should | Gemini Pro as the thinking model (waiting for API key) | Best Use of Gemini prize, better scoring and ESCO matching |
 | Should | Context.dev: company pastes website → AI drafts the need → company confirms | Context.dev prize, easier for companies |
-| Should | ESCO skills mapping | Uses the challenge's suggested open data |
 | Could | Modal sandbox code task for tech roles | Best use of Modal prize |
 | Could | Video-of-work path for hands-on roles | Inclusion |
 | Could | Inbound JWT verification for partner systems (Brella, Tavata) | Platform story |
