@@ -1,0 +1,37 @@
+{
+  "meta": { "title": "Skill Check", "description": "Visa vad du kan. Inte vad en AI skrev åt dig." },
+  "nav": { "candidate": "För arbetssökande", "company": "För företag", "city": "Esbo stad", "login": "Logga in", "signup": "Kom igång", "language": "Språk" },
+  "landing": {
+    "eyebrow": "Esbos rekryteringsevenemang på ett nytt sätt",
+    "title": "Visa vad du kan. Inte vad en AI skrev åt dig.",
+    "subtitle": "Ett kort samtal om verkliga problem från företaget du vill träffa. Svara på svenska, finska eller engelska, med röst eller text. Företagen ser belägg för hur du tänker. Människor fattar varje beslut.",
+    "ctaCandidate": "Gör ett färdighetstest",
+    "ctaCompany": "Beskriv ett behov",
+    "howTitle": "Så fungerar det",
+    "steps": [
+      { "title": "Företaget beskriver ett verkligt behov", "text": "Klistra in er webbplats eller jobbannons. AI:n skissar behovet, ni bekräftar det." },
+      { "title": "Talangen gör ett färdighetstest", "text": "Ett samtal på 6 till 8 minuter om hur du skulle lösa företagets problem. Med röst eller text, på ditt starkaste språk." },
+      { "title": "Belägg, inte CV:n", "text": "Företaget ser matchning, säkerhet och citat ur samtalet. Hela samtalet går också att läsa." },
+      { "title": "Människor beslutar, sedan träffas ni", "text": "Företaget väljer vem det vill träffa. Du får en tid och ett rum på Esbos evenemang." }
+    ],
+    "rolesTitle": "En plattform, tre parter",
+    "roles": {
+      "candidate": { "title": "Arbetssökande", "text": "Bli sedd för hur du tänker, inte för hur polerat ditt CV är. Inget namn eller foto förrän båda säger ja." },
+      "company": { "title": "Företag", "text": "Färre men bättre samtal. Varje kandidat ni träffar har visat relevant kunnande." },
+      "city": { "title": "Esbo stad", "text": "Evenemang med verklig signal, mänsklig granskning där det behövs och full spårbarhet." }
+    },
+    "privacyTitle": "Byggt för förtroende",
+    "privacy": [
+      "AI samlar belägg. Människor fattar varje beslut.",
+      "Din röst och dina ord behandlas i Finland.",
+      "Personuppgifter tas bort innan någon AI bedömer dina svar.",
+      "Bedömningen gäller resonemang, aldrig brytning eller grammatik."
+    ]
+  },
+  "dashboard": {
+    "candidate": { "title": "Dina färdighetstester", "empty": "Inga färdighetstester ännu. Välj ett företag på nästa evenemang för att börja." },
+    "company": { "title": "Era kompetensbehov", "empty": "Inga behov ännu. Lägg till ert första behov för att få belägg." },
+    "city": { "title": "Översikt över evenemang", "empty": "Inga evenemang ännu. Skapa det första evenemanget." }
+  },
+  "footer": { "made": "Gjort på Junction 2026 för Esbo stad." }
+}

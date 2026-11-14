@@ -1,0 +1,37 @@
+{
+  "meta": { "title": "Skill Check", "description": "Show what you can do, not what an AI wrote for you." },
+  "nav": { "candidate": "For jobseekers", "company": "For companies", "city": "City of Espoo", "login": "Log in", "signup": "Get started", "language": "Language" },
+  "landing": {
+    "eyebrow": "Espoo recruitment events, reimagined",
+    "title": "Show what you can do. Not what an AI wrote for you.",
+    "subtitle": "A short conversation about real problems from the company you want to meet. Answer in English, Finnish or Swedish, by voice or text. Companies see evidence of how you think. People make every decision.",
+    "ctaCandidate": "Take a skill check",
+    "ctaCompany": "Post a need",
+    "howTitle": "How it works",
+    "steps": [
+      { "title": "Companies describe a real need", "text": "Paste your website or job description. AI drafts the need, you confirm it." },
+      { "title": "Talent takes a skill check", "text": "A 6 to 8 minute conversation about how you would solve the company's problems. Voice or text, in your strongest language." },
+      { "title": "Evidence, not CVs", "text": "Companies see a match score, confidence and quotes from the conversation. They can read the full transcript too." },
+      { "title": "Humans decide, then you meet", "text": "The company chooses who to meet. You get a time slot and room at the Espoo event." }
+    ],
+    "rolesTitle": "One platform, three sides",
+    "roles": {
+      "candidate": { "title": "Jobseekers", "text": "Get noticed for how you think, not how polished your CV is. No name or photo until you both say yes." },
+      "company": { "title": "Companies", "text": "Fewer, better conversations. Every candidate you meet has shown relevant skills." },
+      "city": { "title": "City of Espoo", "text": "Run events with real signal, human review where it matters and a full audit trail." }
+    },
+    "privacyTitle": "Built for trust",
+    "privacy": [
+      "AI gathers evidence. People make every decision.",
+      "Your voice and words are processed in Finland.",
+      "Personal details are removed before any AI scores your answers.",
+      "Scored on reasoning, never on accent or grammar."
+    ]
+  },
+  "dashboard": {
+    "candidate": { "title": "Your skill checks", "empty": "No skill checks yet. Pick a company at the next event to start." },
+    "company": { "title": "Your talent needs", "empty": "No needs yet. Post your first need to start receiving evidence." },
+    "city": { "title": "Event overview", "empty": "No events yet. Create the first event." }
+  },
+  "footer": { "made": "Made at Junction 2026 for the City of Espoo." }
+}

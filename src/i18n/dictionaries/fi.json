@@ -1,0 +1,37 @@
+{
+  "meta": { "title": "Skill Check", "description": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi." },
+  "nav": { "candidate": "Työnhakijoille", "company": "Yrityksille", "city": "Espoon kaupunki", "login": "Kirjaudu", "signup": "Aloita", "language": "Kieli" },
+  "landing": {
+    "eyebrow": "Espoon rekrytointitapahtumat uudella tavalla",
+    "title": "Näytä, mitä osaat. Ei sitä, mitä tekoäly kirjoitti puolestasi.",
+    "subtitle": "Lyhyt keskustelu todellisista ongelmista yritykseltä, jonka haluat tavata. Vastaa suomeksi, ruotsiksi tai englanniksi, puhuen tai kirjoittaen. Yritykset näkevät näyttöä siitä, miten ajattelet. Ihmiset tekevät jokaisen päätöksen.",
+    "ctaCandidate": "Tee osaamistesti",
+    "ctaCompany": "Kerro tarpeesi",
+    "howTitle": "Näin se toimii",
+    "steps": [
+      { "title": "Yritys kuvaa todellisen tarpeen", "text": "Liitä verkkosivusi tai työpaikkailmoitus. Tekoäly luonnostelee tarpeen, sinä vahvistat sen." },
+      { "title": "Osaaja tekee osaamistestin", "text": "Noin 7 minuutin keskustelu siitä, miten ratkaisisit yrityksen ongelmia. Puhuen tai kirjoittaen, vahvimmalla kielelläsi." },
+      { "title": "Näyttöä, ei CV:itä", "text": "Yritys näkee osuvuuden, varmuuden ja lainauksia keskustelusta. Koko keskustelun voi myös lukea." },
+      { "title": "Ihmiset päättävät, sitten tavataan", "text": "Yritys valitsee, kenet se tapaa. Saat ajan ja huoneen Espoon tapahtumassa." }
+    ],
+    "rolesTitle": "Yksi alusta, kolme osapuolta",
+    "roles": {
+      "candidate": { "title": "Työnhakijat", "text": "Tule huomatuksi ajattelusi, ei hiotun CV:n perusteella. Ei nimeä eikä kuvaa ennen kuin molemmat sanovat kyllä." },
+      "company": { "title": "Yritykset", "text": "Vähemmän mutta parempia keskusteluja. Jokainen tapaamasi ehdokas on osoittanut osaamisensa." },
+      "city": { "title": "Espoon kaupunki", "text": "Tapahtumia, joissa on todellista signaalia, ihmisen arviointi tarvittaessa ja täysi kirjausketju." }
+    },
+    "privacyTitle": "Rakennettu luottamukselle",
+    "privacy": [
+      "Tekoäly kerää näyttöä. Ihmiset tekevät jokaisen päätöksen.",
+      "Puheesi ja sanasi käsitellään Suomessa.",
+      "Henkilötiedot poistetaan ennen kuin tekoäly arvioi vastauksesi.",
+      "Arvioinnissa ratkaisee ajattelu, ei koskaan aksentti tai kielioppi."
+    ]
+  },
+  "dashboard": {
+    "candidate": { "title": "Osaamistestisi", "empty": "Ei vielä osaamistestejä. Valitse yritys seuraavasta tapahtumasta aloittaaksesi." },
+    "company": { "title": "Osaamistarpeenne", "empty": "Ei vielä tarpeita. Lisää ensimmäinen tarve saadaksesi näyttöä." },
+    "city": { "title": "Tapahtumien yleiskatsaus", "empty": "Ei vielä tapahtumia. Luo ensimmäinen tapahtuma." }
+  },
+  "footer": { "made": "Tehty Junction 2026 -hackathonissa Espoon kaupungille." }
+}
