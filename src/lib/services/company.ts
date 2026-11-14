@@ -6,7 +6,9 @@ import { loadNeed } from "./needs";
 import { audit } from "./audit";
 import { aliasFor } from "@/lib/alias";
 import { sharedContact } from "./privacy";
-import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, events, eventNeeds, eventCompanies, needEquivalences, type QuestionBank } from "@/db";
+import { db, companies, needs, skillChecks, decisions, bookings, meetingSlots, meetingRooms, events, eventNeeds, eventCompanies, needEquivalences, CEFR, type QuestionBank, type LanguageRequirement, type ProofRequirement } from "@/db";
+import { proofType } from "@/lib/proofs";
+import type { SkillAnchors } from "@/lib/ai/rubric";
 import type { ApiUser } from "@/lib/api";
 
 /** The company's own needs with how many candidates are ready for review. */
@@ -174,11 +176,44 @@ export async function effectiveCheckMode(companyId: string): Promise<CheckMode> 
 
 /* ---------- need settings: check mode + optional question bank (screened) ---------- */
 
-export async function updateNeedSettings(actor: ApiUser, needId: string, input: { checkMode?: "required" | "optional" | "off"; questionBank?: QuestionBank | null }) {
+export type NeedSettingsInput = {
+  checkMode?: "required" | "optional" | "off";
+  questionBank?: QuestionBank | null;
+  languageRequirements?: LanguageRequirement[] | null;
+  proofRequirements?: ProofRequirement[] | null;
+  anchors?: SkillAnchors[];
+};
+
+export async function updateNeedSettings(actor: ApiUser, needId: string, input: NeedSettingsInput) {
   const need = await loadNeed(needId);
   if (need.ownerId !== actor.id) throw new ApiError(404, "Need not found");
   const patch: Partial<typeof needs.$inferInsert> = {};
-  if (input.checkMode) patch.checkMode = input.checkMode;
+  if (input.checkMode && ["required", "optional", "off"].includes(input.checkMode)) patch.checkMode = input.checkMode;
+  if (input.languageRequirements !== undefined) {
+    patch.languageRequirements = (input.languageRequirements ?? [])
+      .filter((r) => ["fi", "sv", "en"].includes(r.language) && (CEFR as readonly string[]).includes(r.level))
+      .map((r) => ({ language: r.language, level: r.level, proof: r.proof === "required" ? ("required" as const) : ("optional" as const) }));
+    if (!patch.languageRequirements.length) patch.languageRequirements = null;
+  }
+  if (input.proofRequirements !== undefined) {
+    patch.proofRequirements = (input.proofRequirements ?? []).filter((r) => proofType(r.code) && proofType(r.code)!.kind !== "language").map((r) => ({ code: r.code, required: !!r.required }));
+    if (!patch.proofRequirements.length) patch.proofRequirements = null;
+  }
+  if (input.anchors) {
+    // Companies may sharpen the scoring anchors, but the skills stay the same and the text is screened for bias.
+    const bySkill = new Map(input.anchors.map((a) => [a.skill, a]));
+    const current = need.anchors ?? [];
+    const next = current.map((c) => {
+      const a = bySkill.get(c.skill);
+      const t = (x: unknown, fallback: string) => (typeof x === "string" && x.trim() ? x.trim() : fallback);
+      return a
+        ? { skill: c.skill, anchors: { "1": t(a.anchors?.["1"], c.anchors["1"]), "3": t(a.anchors?.["3"], c.anchors["3"]), "5": t(a.anchors?.["5"], c.anchors["5"]) }, checklist: (a.checklist ?? c.checklist).map((x) => String(x).trim()).filter(Boolean).slice(0, 6) }
+        : c;
+    });
+    const review = await screenQuestions(next.flatMap((a) => [a.anchors["1"], a.anchors["3"], a.anchors["5"], ...a.checklist]));
+    if (!review.ok) throw new ApiError(400, `Anchors not saved: ${review.problems.join(" ")}`);
+    patch.anchors = next;
+  }
   if (input.questionBank !== undefined) {
     const clean = input.questionBank
       ? (Object.fromEntries(
@@ -190,7 +225,7 @@ export async function updateNeedSettings(actor: ApiUser, needId: string, input: 
     patch.questionBankReview = all.length ? await screenQuestions(all) : null;
   }
   const [row] = await db.update(needs).set(patch).where(eq(needs.id, needId)).returning();
-  await audit(actor, "need.settings_updated", { targetType: "need", targetId: needId, meta: { checkMode: row.checkMode, questions: !!row.questionBank } });
+  await audit(actor, "need.settings_updated", { targetType: "need", targetId: needId, meta: { checkMode: row.checkMode, questions: !!row.questionBank, language: !!row.languageRequirements, proofs: !!row.proofRequirements, anchors: !!input.anchors } });
   return row;
 }
 
@@ -239,6 +274,16 @@ export async function acceptEquivalent(actor: ApiUser, myNeedId: string, otherNe
   const [row] = await db.insert(needEquivalences).values({ needId: myNeedId, acceptsNeedId: otherNeedId, acceptedBy: actor.id }).returning();
   await audit(actor, "need.equivalence_accepted", { targetType: "need", targetId: myNeedId, meta: { acceptsNeedId: otherNeedId } });
   return row;
+}
+
+/** Needs this need already accepts as equivalent. */
+export async function acceptedFor(needId: string) {
+  return db
+    .select({ id: needs.id, title: needs.title, company: companies.name })
+    .from(needEquivalences)
+    .innerJoin(needs, eq(needEquivalences.acceptsNeedId, needs.id))
+    .innerJoin(companies, eq(needs.companyId, companies.id))
+    .where(eq(needEquivalences.needId, needId));
 }
 
 /** Need ids whose results this company may see because it accepted them as equivalent. */
