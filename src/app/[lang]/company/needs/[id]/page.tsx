@@ -22,7 +22,7 @@ export default async function EditNeedPage({ params }: PageProps<"/[lang]/compan
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <Link href={`/${lang}/company`} className="text-sm text-muted-foreground hover:text-foreground">← Your needs</Link>
+      <Link href={`/${lang}/company`} className="text-sm font-medium text-primary hover:underline">← Your needs</Link>
       <div className="mt-6">
         <PageTitle kicker={need.title} title="Edit need">
           {need.summary}

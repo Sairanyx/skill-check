@@ -42,7 +42,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
   }
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
+      <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title={reschedule ? "Change your time" : "Book a skill check"} />
       </div>

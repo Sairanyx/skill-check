@@ -22,7 +22,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href={`/${lang}/company`} className="text-sm text-muted-foreground hover:text-foreground">← Candidates</Link>
+      <Link href={`/${lang}/company`} className="text-sm font-medium text-primary hover:underline">← Candidates</Link>
       <div className="mt-6">
         <PageTitle kicker={check.need.title} title={check.candidate.alias}>
           Skill check in {check.language.toUpperCase()}, taken at a City of Espoo session. Personal details were removed before AI read the answers.

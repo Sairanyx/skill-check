@@ -39,7 +39,7 @@ export default async function EventPage({ params }: PageProps<"/[lang]/candidate
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
+      <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle kicker={`${eventMode(event.mode)} · ${fmtTime(event.startsAt)}${event.location ? ` · ${event.location}` : ""}`} title={event.title}>
           Choose the companies you want to meet. You see what each one asks for. Then book the skill checks you need, in one visit to an EXAM room.

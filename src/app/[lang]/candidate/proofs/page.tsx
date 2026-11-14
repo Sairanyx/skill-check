@@ -17,7 +17,7 @@ export default async function ProofsPage({ params }: PageProps<"/[lang]/candidat
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground">← Skill checks</Link>
+      <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title="Proofs">
           No CV, no cover letter. Add only official proofs that a job asks for, like a hygiene passport, a nurse licence or a language certificate. City staff check the original (or the public register) before you can book a skill check that needs it. Companies only see that it is verified.

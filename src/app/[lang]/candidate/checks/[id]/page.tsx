@@ -37,10 +37,10 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href={`/${lang}/${onKiosk ? "kiosk" : "candidate"}`} className="text-sm text-muted-foreground hover:text-foreground">← {onKiosk ? "Back" : "Skill checks"}</Link>
+      <Link href={`/${lang}/${onKiosk ? "kiosk" : "candidate"}`} className="text-sm font-medium text-primary hover:underline">← {onKiosk ? "Back" : "Skill checks"}</Link>
       <div className="mt-6">
         <PageTitle kicker={check.need.company} title={check.need.title}>
-          {check.status === "in_progress" ? "About 6 short questions. Answer by voice or text." : statusLabel(check.status)}
+          {check.status === "in_progress" ? "Answer by voice or text. The interview ends when the panel has heard enough." : statusLabel(check.status)}
         </PageTitle>
       </div>
 
