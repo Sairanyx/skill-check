@@ -30,7 +30,7 @@ export const roleEnum = pgEnum("role", ["candidate", "company", "city"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(), // pseudonymous alias for candidates, e.g. "Candidate 7F2A"
+  name: text("name").notNull(), // real name. Companies never see it, they get an alias (lib/alias.ts)
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),

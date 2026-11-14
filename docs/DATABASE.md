@@ -46,7 +46,7 @@ erDiagram
 
   user {
     text id PK
-    text name "alias for jobseekers"
+    text name "real name, never shown to companies"
     text email UK
     enum role "candidate | company | city"
   }

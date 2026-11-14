@@ -16,7 +16,7 @@ const MEETING_MIN = 15; // same as Espoo's TalentMatch meetings
 const MIN = 60_000;
 
 const people = [
-  { email: "aino@demo.skillcheck.fi", name: "Candidate 7F2A", role: "candidate" },
+  { email: "aino@demo.skillcheck.fi", name: "Aino Mäkelä", role: "candidate" },
   { email: "recruiter@kauklahtiparcel.demo", name: "Kauklahti Parcel", role: "company" },
   { email: "recruiter@tapiolacloud.demo", name: "Tapiola Cloud", role: "company" },
   { email: "hello@kivenlahtibakery.demo", name: "Kivenlahti Bakery", role: "company" },
