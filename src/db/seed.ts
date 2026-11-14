@@ -78,6 +78,7 @@ async function main() {
       summary: "Lead the 5:00 morning shift in our Espoo bakery shop.",
       skills: ["team leadership", "food hygiene", "customer service"], level: "junior" as const,
       checkMode: "off" as const, questionBank: null, questionBankReview: null, owner: bakery.id,
+      proofRequirements: [{ code: "card-hygiene", required: true }, { code: "card-first-aid", required: false }], // hygiene passport: required by law for unpacked food
     },
   ];
   for (const { owner, ...n } of needRows) {

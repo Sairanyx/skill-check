@@ -22,6 +22,7 @@ import { loadNeed } from "@/lib/services/needs";
 import { decide, book } from "@/lib/services/decisions";
 import { setContactShare } from "@/lib/services/privacy";
 import { setShowOnCard } from "@/lib/services/checks";
+import { declareProof, verifyProof } from "@/lib/services/proofs";
 import type { ApiUser } from "@/lib/api";
 import type { Locale } from "@/i18n/config";
 import type { LanguageRequirement } from "@/db/schema";
@@ -196,6 +197,16 @@ async function main() {
       await decide(comp, r.check.id, "not_now", "Not enough evidence for this role yet.");
     }
   }
+  // Official proofs: a few jobseekers declared language certificates. Some are verified at the desk, some still wait.
+  let n = 0;
+  for (const r of results.filter((x) => x.check.needId === "health-customer-success")) {
+    const cand = actor({ id: r.u.id, name: r.p.name, email: "", role: "candidate" });
+    const sv = r.p.mother === "Swedish" ? "C2" : r.p.mother === "Finnish" ? "B1" : "A2";
+    const proof = await declareProof(cand, { code: "language-sv", level: sv });
+    if (n++ % 2 === 0) await verifyProof(cityActor, proof.id, { verified: true, method: "Original YKI certificate seen" });
+  }
+  for (const r of results.slice(0, 3)) await declareProof(actor({ id: r.u.id, name: r.p.name, email: "", role: "candidate" }), { code: "card-hygiene" });
+
   // Two results a company sent to the City for review
   for (const r of results.filter((x) => !x.needsReview).slice(-2)) await decide(await companyActor(r.check.needId), r.check.id, "needs_review", "Please take a second look.");
 
