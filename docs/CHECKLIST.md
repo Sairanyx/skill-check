@@ -31,6 +31,13 @@ Status: **Sat 14 Nov, 19:30**. Live: https://skillcheck.fi
 - **Mobile check:** no page scrolls sideways at phone width, header and candidate table tidied
 - Rate limits on login and AI, 15-minute meetings, `npm run demo:now`, README, operations guide (`infra/README.md` §7)
 
+## 🧭 Plan for the rest of Saturday (in this order)
+1. **Check how it all works:** walk through every flow as jobseeker, company and City, write down bugs and confusing spots
+2. **Look and UX:** fix that list, then the visual refresh (on its own branch first)
+3. **Benchmarks:** re-run on the final version and record the numbers for the deck
+4. **Clean up:** remaining dev-tool vulnerabilities, demo password, temporary files, secrets check. Shorter docs and new diagrams
+5. **Story:** video script and deck (draft in `docs/SUBMISSION.md`)
+
 ## 🔴 Must (before the video)
 | # | Item | Who |
 |---|---|---|
