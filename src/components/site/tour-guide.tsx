@@ -109,6 +109,12 @@ export function TourGuide() {
       </div>
       <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{step.title}</h2>
       <p className="mt-2 text-base leading-relaxed text-foreground/80 md:text-lg">{onPage ? step.text : "Opening the next page…"}</p>
+      {onPage && step.evidence && (
+        <p className="mt-3 border-l-2 border-primary pl-3 text-sm text-muted-foreground">
+          <span className="font-medium text-primary">Research: </span>
+          {step.evidence}
+        </p>
+      )}
       {n === tour.steps.length - 1 && (
         <div className="mt-5 grid gap-2 sm:grid-cols-3">
           {(["candidate", "company", "city"] as const).map((r) => (
