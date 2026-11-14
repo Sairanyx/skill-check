@@ -1,14 +1,14 @@
 # SkillCheck: build spec
 
 **Challenge:** City of Espoo, "Rethinking Recruitment" (+ tech challenges: Verda, Gemma, Gemini API, Modal, Context.dev, Aiven)
-**One-liner:** Show what you can do, not what an AI wrote for you. An AI-led skill check in English, Finnish or Swedish gives companies evidence; **people make every decision**.
+**One-liner:** Show what you can do, not what an AI wrote for you. An AI-led skill check in English, Finnish or Swedish gives companies evidence. **people make every decision**.
 
 ---
 
 ## 1. Demo story (what the judges see, ~2 min)
 1. **City admin** creates the event *"Espoo Tech Talent Day"* (rooms, time slots) and invites companies.
 2. **Company** (e.g. *Kauklahti Parcel Oy*) adds a need. It pastes its website → **Context.dev** pulls company data → **Gemini** drafts the need + skill list → the company edits and confirms.
-3. **Jobseeker "Aino"** signs up (pseudonymous), picks the company, chooses **Finnish**, and takes the **skill check**: a 6–8 turn conversation with the interviewer (**Gemma on Verda, Helsinki**), plus a small code task run in a **Modal Sandbox**.
+3. **Jobseeker "Aino"** signs up (pseudonymous), picks the company, chooses **Finnish**, and takes the **skill check**: a 6 to 8 turn conversation with the interviewer (**Gemma on Verda, Helsinki**), plus a small code task run in a **Modal Sandbox**.
 4. Gemma anonymises the transcript → **Gemini** scores it: *match 7/10, mid-level, confidence 0.82*, with quotes as evidence → the fairness check passes.
 5. **Company** sees anonymous candidates ranked by match, opens Aino's transcript, reads two answers, clicks **Invite to meet** (human decision, logged).
 6. Aino gets a **10-min slot, Room B, 13:20** + QR ticket. Her name is revealed to the company only now (mutual opt-in).
@@ -57,9 +57,9 @@ Routes are prefixed with the language: `/en`, `/fi`, `/sv`.
 **B. Skill check:**
 1. Create `skill_check` (candidate, need, language).
 2. Gemini generates a question plan + rubric from the need (cached per need, no personal data).
-3. Loop (6–8 turns): candidate answer → **Gemma (Verda)** asks the next question, following up on the answer.
+3. Loop (6 to 8 turns): candidate answer → **Gemma (Verda)** asks the next question, following up on the answer.
 4. Optional code task → **Modal Sandbox** runs the code against hidden tests → pass/fail + output stored.
-5. End → **Gemma** anonymises the transcript → **Gemini evaluator** → JSON `{match 0–10, level, confidence 0–1, rubric[{criterion, score, evidence_quotes[]}], strengths[], gaps[]}` → **Gemini fairness auditor** → `{flags[], explanation}`.
+5. End → **Gemma** anonymises the transcript → **Gemini evaluator** → JSON `{match 0 to 10, level, confidence 0 to 1, rubric[{criterion, score, evidence_quotes[]}], strengths[], gaps[]}` → **Gemini fairness auditor** → `{flags[], explanation}`.
 6. Routing: confidence ≥ 0.6 and no flags → visible to the company. Otherwise → city review queue first.
 
 **C. Decision:** company or city clicks a decision → row in `decisions` (who, role, decision, ai_followed, note). Never automatic.
@@ -95,7 +95,7 @@ Candidate speaks (mic) or types
   → candidate sees their own transcript and can correct it before sending (accuracy + transparency)
   → Gemini Pro receives ONLY the pseudonymised text → asks the next question
   → end: Gemini Pro scores + fairness check on the pseudonymised transcript
-Raw audio is never stored by default; raw text is kept only in our Helsinki DB (for the candidate + human reviewers).
+Raw audio is never stored by default. Raw text is kept only in our database in Finland (for the candidate + human reviewers).
 ```
 - **Gemma 4 12B** (audio + text, ~24 GB in bf16, fits the A100 80 GB with room for embeddings). Fallback for speech recognition: Whisper large-v3-turbo on the same GPU, if Gemma's Finnish/Swedish transcription is weaker.
 - Redaction = deterministic regex first (emails, phones, URLs) + Gemma for names/orgs/places. Belt and braces.
@@ -143,11 +143,11 @@ Every AI output stores the model name + version for the audit trail.
 - **Exam-room model:** all skill checks in person at City testing rooms (like university EXAM rooms). Booking = venue → room → workstation → 30-min slot. The workstation is a kiosk that only lets the booked person log in during their slot (10 min grace) and logs out at the end.
 - **Up to 3 company needs per booking.**
 - **Reschedule** until 2 h before start, max 2 times. **No penalty for no-shows** (for now).
-- **Results on the profile:** match 0–10, AI confidence, candidate level, question difficulty reached (low/medium/high). Interviewer adapts difficulty.
-- **Visibility:** candidate + City always; company only for its own need; other companies only if the candidate opts in to sharing.
-- **Retention:** results auto-deleted after 12 months; candidate can delete earlier.
+- **Results on the profile:** match 0 to 10, AI confidence, candidate level, question difficulty reached (low/medium/high). Interviewer adapts difficulty.
+- **Visibility:** candidate + City always. Company only for its own need. Other companies only if the candidate opts in to sharing.
+- **Retention:** results auto-deleted after 12 months. Candidate can delete earlier.
 - **Company profile:** optional question bank per seniority level (screened by the fairness agent). Per need: skill check required / optional / off.
-- **Events:** City sets an RSVP deadline; companies confirm attendance and pick needs. Without company questions, the AI builds slightly-below-average questions from the company description/website to filter only very weak answers.
+- **Events:** City sets an RSVP deadline. Companies confirm attendance and pick needs. Without company questions, the AI builds slightly-below-average questions from the company description/website to filter only very weak answers.
 - **Event card:** printable, opt-in emblems "Skill check completed for <company>" (never "passed", never failures) + QR for recruiters.
-- **Transferable checks:** platform suggests similar needs via ESCO overlap; company accepts equivalence; candidate consents to sharing.
+- **Transferable checks:** platform suggests similar needs via ESCO overlap. Company accepts equivalence. Candidate consents to sharing.
 - **Update:** no QR code on the card. A stamp appears only when the company accepts the result (human decision). No review or a rejection = no stamp. Failures are never shown. Companies confirm attendance at least 1 week before the event. Minimal effort for everyone: this is step 1 of hiring.

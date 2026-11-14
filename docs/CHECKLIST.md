@@ -1,6 +1,6 @@
 # SkillCheck: checklist
 
-Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00–24:00 Saturday, then video + presentation (Eduard). Teammate continues building in the night/morning.
+Deadline: **Sun 15 Nov, 10:00** (submission). Plan: build until ~22:00 to 24:00 Saturday, then video + presentation (Eduard). Teammate continues building in the night/morning.
 Status: **Sat 14 Nov, 17:00**. Live: https://skillcheck.fi
 
 ## ✅ Done
@@ -18,10 +18,10 @@ Status: **Sat 14 Nov, 17:00**. Live: https://skillcheck.fi
 - **Official proofs instead of a CV**: jobseeker adds them, City desk verifies in person, companies see "Verified by the City" only
 - Privacy: pseudonymised answers, companies see alias only, contact sharing by consent, City reveals identity only with a reason
 - Decisions: City and company can both accept, company "no" only for itself. Stamps on the lanyard card (consent)
-- Events: companies apply → City approves → confirm ≥ 1 week before; required/optional/not needed per company; City can make an event open
+- Events: companies apply → City approves → confirm ≥ 1 week before. Required/optional/not needed per company. City can make an event open
 - GDPR: append-only audit (UPDATE/DELETE/TRUNCATE blocked), export, erasure, "who used my data"
 - ESCO skills, robust JSON retry, retries on rate limits
-- Docs: handover (for the teammate), repository, database, architecture + capacity estimate, decisions D1–D18, research, Espoo questions
+- Docs: handover (for the teammate), repository, database, architecture + capacity estimate, decisions D1 to D18, research, Espoo questions
 
 ## ⏳ In progress
 | Item | State | Who |
@@ -68,8 +68,8 @@ Status: **Sat 14 Nov, 17:00**. Live: https://skillcheck.fi
 - [ ] Fresh demo data: `npm run db:fresh` (~5 min)
 - [ ] Pitch video, max 2:00, **name the exact models** (record a backup screen recording of the demo too)
 - [ ] Pitch deck PDF (Prezi export tool)
-- [ ] Verda process summary posted in their Discord (required for the Verda prize; mention the Spot + no-internet workaround)
+- [ ] Verda process summary posted in their Discord (required for the Verda prize. Mention the Spot + no-internet workaround)
 - [ ] Repo public (check no secrets: `.env.local` is git-ignored)
 - [ ] Submission form: Espoo + tech challenges (Verda, Gemma, Gemini, Modal, Context.dev, Aiven, CRACI), set to **FINAL** before 10:00
-- [ ] All team members at peer review 10:30–14:00
-- [ ] After the final ceremony: delete **both** Verda instances, the Aiven service; Gemini account is deleted by Google
+- [ ] All team members at peer review 10:30 to 14:00
+- [ ] After the final ceremony: delete **both** Verda instances, the Aiven service. Gemini account is deleted by Google

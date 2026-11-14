@@ -18,19 +18,19 @@ Every important design choice, with the research behind it (Finland first), how 
 - **➕** Fairness (the scorer cannot be swayed by a name or a famous employer) and privacy (raw text never leaves Finland).
 - **➖** A redaction can miss something (we show the candidate exactly what the AI saw). Tags can remove useful context ("worked at a large logistics company"). It is pseudonymisation, not anonymisation: still personal data under GDPR.
 
-## D3. Companies never see identity; the City holds it
+## D3. Companies never see identity. The City holds it
 **Decision:** companies see a generated alias, scores, evidence and pseudonymised answers. Contact details only if the candidate shares them. The City can reveal identity only with a recorded reason.
-- **Finland:** the Helsinki pilot found anonymity works when it is **mandatory**; when managers could opt in, self-selection weakened it.
-- **Industry / law:** GDPR data minimisation; blind-hiring practice; EU AI Act transparency and human oversight for recruitment AI (high-risk, obligations from 2 Dec 2027).
+- **Finland:** the Helsinki pilot found anonymity works when it is **mandatory**. When managers could opt in, self-selection weakened it.
+- **Industry / law:** GDPR data minimisation. Blind-hiring practice. EU AI Act transparency and human oversight for recruitment AI (high-risk, obligations from 2 Dec 2027).
 - **➕** Companies decide on how people think, not who they are. Jobseekers control who can contact them. The City, already the public employment service, is the trusted middle.
 - **➖** Companies lose the ability to pre-screen by CV and may feel less in control. At the in-person meeting identity is visible anyway, so anonymity protects step 1, not the whole process.
 
 ## D4. AI gathers evidence, people decide
 **Decision:** the AI gives match, level, confidence and quotes. Only a person (company, or City reviewer) accepts, declines or releases a result. Stamps exist only after a company accepts.
-- **Finland / public sector:** the World Bank warns AI cannot replace core skills assessment in public employment services; Austria's AMS chatbot faced backlash over discrimination.
+- **Finland / public sector:** the World Bank warns AI cannot replace core skills assessment in public employment services. Austria's AMS chatbot faced backlash over discrimination.
 - **Industry:** recruiters followed biased AI recommendations about 90% of the time in one study, so a human in the loop alone is not enough.
 - **➕** Legally safer (no automated decisions about people). We show evidence, not just a number, and measure how often people agree with the AI.
-- **➖** Slower than full automation. People can still rubber-stamp; we track "decisions matching AI" to spot that.
+- **➖** Slower than full automation. People can still rubber-stamp. We track "decisions matching AI" to spot that.
 
 ## D5. Structured, adaptive interview instead of CVs
 **Decision:** about 6 questions about the company's real problem, following up on each answer, with difficulty moving one step up or down.
@@ -44,7 +44,7 @@ Every important design choice, with the research behind it (Finland first), how 
 - **Industry:** "sovereign AI" and self-hosted open-weight models for sensitive data.
 - **Test result (12B → 26B):** strong vs weak answers separated clearly (9 vs 1), better ESCO matching, better Finnish questions.
 - **➕** No candidate data goes to an external AI company. The City controls the infrastructure.
-- **➖** We run and pay for a GPU. Open models are weaker than the largest closed models; confidence is still poorly calibrated (fix: D8).
+- **➖** We run and pay for a GPU. Open models are weaker than the largest closed models. Confidence is still poorly calibrated (fix: D8).
 
 ## D7. Gemini as an optional second brain, on pseudonymised text only
 **Decision:** the 3 agents can switch to Gemini with one setting. In production via Vertex AI in an EU region. Free-tier key only with synthetic demo data.
@@ -60,11 +60,11 @@ Every important design choice, with the research behind it (Finland first), how 
   | Answers | Before | After BARS |
   |---|---|---|
   | Strong | 3 to 6, inconsistent | **7.0** |
-  | Strong, written in non-native English | – | **6.7** (fluency barely matters) |
-  | Medium | – | **2.8** |
+  | Strong, written in non-native English | n/a | **6.7** (fluency barely matters) |
+  | Medium | n/a | **2.8** |
   | Weak | 1 | **2.3** |
-  | Confidence | always 100% | 0.78–0.9, lower when skills were not shown |
-  | Agreement between the two runs | – | 0.96–1.0 |
+  | Confidence | always 100% | 0.78 to 0.9, lower when skills were not shown |
+  | Agreement between the two runs | n/a | 0.96 to 1.0 |
 - **➕** Consistent, explainable (quote + reason per skill), defensible. Evidence can't be invented. Skills that were never asked don't lower the score.
 - **➖** Anchors are AI-written (the company can review them). Still needs calibration against human recruiters' ratings in a pilot. Two scoring runs cost a few extra seconds.
 
@@ -75,17 +75,17 @@ Every important design choice, with the research behind it (Finland first), how 
 - **➖** Can create a two-class feeling at the event (with and without stamps). → opt-in, positive only, no score shown.
 
 ## D10. Transferable checks between similar needs
-**Decision:** the platform suggests similar needs (shared ESCO skills); a company accepts them as equivalent; the candidate consents to sharing.
+**Decision:** the platform suggests similar needs (shared ESCO skills). A company accepts them as equivalent. The candidate consents to sharing.
 - **EU:** ESCO is the EU's common skills language, already used by Europass and EURES.
 - **➕** Fewer repeated tests for jobseekers, more candidates for companies.
 - **➖** "Similar" is not "the same". → the company decides, and the candidate decides whether to share.
 
 ## D11. Both the City and the company can accept
-**Decision:** the City decides by default; the company can also decide. Accepted = the company accepted, or the City accepted and the company did not decline. A company "no" only affects that company.
+**Decision:** the City decides by default. The company can also decide. Accepted = the company accepted, or the City accepted and the company did not decline. A company "no" only affects that company.
 - **Finland:** the challenge says companies are hard to engage and doubt the City's candidate pool. The City runs employment services, so it can carry the matching work while companies keep control over who they meet.
-- **Industry:** most AI hiring tools leave every decision to the employer; public employment services usually pre-select. We combine both.
+- **Industry:** most AI hiring tools leave every decision to the employer. Public employment services usually pre-select. We combine both.
 - **➕** Minimal work for companies (the City's decision stands if they do nothing). Companies keep control of their own time. "Yes" from either side leans toward giving people a chance.
-- **➖** More work for City staff. Two decision-makers can disagree; the rule above settles it, and the candidate never sees a "no" from anyone in public.
+- **➖** More work for City staff. Two decision-makers can disagree. The rule above settles it, and the candidate never sees a "no" from anyone in public.
 
 ## D12. Skill check per company and per event, open events allowed
 **Decision:** each company chooses per event: skill check required / optional / not needed. The City can make a whole event open (no skill checks). Stamps on the lanyard card show who verified the person for which company.
@@ -99,8 +99,8 @@ Every important design choice, with the research behind it (Finland first), how 
 
 ## D13. Fail safe to a human
 **Decision:** if any automatic safety step cannot run (for example the fairness agent returns an unreadable answer), the result is **not** released to companies. It goes to the City's human review queue with the flag "automatic fairness check could not run". Bad AI output is logged (length and edges only, no candidate text) so the cause can be found.
-- **Industry / law:** "fail safe" is standard in safety engineering; the EU AI Act requires human oversight and robustness for high-risk systems.
-- **Found in testing:** while generating 30 demo checks, the fairness agent once returned broken JSON twice. Replaying all 29 stored checks gave 0 failures, so the cause was rare (most likely an answer cut off at the length limit; the limit was doubled).
+- **Industry / law:** "fail safe" is standard in safety engineering. The EU AI Act requires human oversight and robustness for high-risk systems.
+- **Found in testing:** while generating 30 demo checks, the fairness agent once returned broken JSON twice. Replaying all 29 stored checks gave 0 failures, so the cause was rare (most likely an answer cut off at the length limit. The limit was doubled).
 - **➕** No result ever skips the fairness check silently. Problems become visible instead of hidden.
 - **➖** A few more items for City reviewers when the AI misbehaves.
 
@@ -113,21 +113,21 @@ Every important design choice, with the research behind it (Finland first), how 
 **Decision:** the guard removes everything on the grounds protected by the **Non-Discrimination Act (1325/2014)** and the **Equality Act (609/1986)**: age, origin, nationality, mother tongue, religion, belief, opinion, political and union activity, family, health, disability, sexual orientation, gender. Calendar years that reveal age or life events ("born 1985", "graduated 1998", "moved here in 2022") become `[YEAR]`. **Durations stay** ("3 years of SQL", "a 6-month project"), and so do tools and versions ("Python 3.12").
 - **Finland:** the Act lists exactly these grounds. A graduation year is a well-known proxy for age, an arrival year for origin.
 - **Research:** LLMs change scores by name, dialect, age and gender (RESEARCH.md table). Removing the signal is more reliable than asking the model to ignore it.
-- **Tested:** Finnish, Swedish and English sentences, about 0.3–0.5 s each on our own server.
+- **Tested:** Finnish, Swedish and English sentences, about 0.3 to 0.5 s each on our own server.
 - **➕** The categories are the law's, not our own invention. Easy to explain to the City's lawyers.
 - **➖** Some context is lost ("experience since 2010" becomes "since [YEAR]"). Durations keep most of the value.
 
 ## D16. Optional language requirement per need, scored separately
 **Decision:** a company may mark a language as a real requirement of the job, with a CEFR level (for example Swedish B2). Then the interviewer asks **one question in that language** (placed in code, always the third question), and a separate assessment gives a CEFR level with verified quotes: "Swedish, B2 required: B2, meets". **It is never part of the skill match.** All other scores keep ignoring grammar and fluency. Without a requirement, nothing changes.
-- **Finland / law:** the Non-Discrimination Act allows different treatment when it is based on a **genuine and determining requirement of the work** and is proportionate. A blanket "fluent Finnish" demand for work that does not need it can be discrimination, so the requirement is per need, optional, and shown openly. CEFR is the scale Finland already uses: the national language certificate **YKI** has levels 1–6 that match A1–C2.
+- **Finland / law:** the Non-Discrimination Act allows different treatment when it is based on a **genuine and determining requirement of the work** and is proportionate. A blanket "fluent Finnish" demand for work that does not need it can be discrimination, so the requirement is per need, optional, and shown openly. CEFR is the scale Finland already uses: the national language certificate **YKI** has levels 1 to 6 that match A1 to C2.
 - **Industry:** job ads in Finland commonly name a language level. The usual problem is that it is checked by gut feeling in the interview, mixed with everything else.
 - **Tested:** a strong answer in Swedish was rated B2 (meets), a broken one A1 (below). The skill match came from the content only.
 - **➕** Honest about what the job needs. Keeps the language judgement visible and separate instead of hidden inside every score. Swedish-speaking Espoo customers are a real need (Espoo is bilingual).
 - **➖** One question is a small sample, so it is evidence for a person, not a certificate. Companies could over-ask: the City sees which needs set a requirement and can question it.
 
 ## D17. No CV or cover letter: only official proofs the job requires, verified in person
-**Decision:** a need can require (or accept) official proofs from a fixed list: language certificates (CEFR level), licences for regulated professions (nurse, practical nurse, doctor, attorney), work cards (hygiene passport, occupational safety card, first aid, driving licence C) and degrees. The jobseeker declares what they have. **City staff verify it at the testing-room visit**, by seeing the original or searching the public register (JulkiTerhikki for health professionals, run by the Finnish Supervisory Agency since 1 Jan 2026; the Finnish Bar Association register for attorneys). Only the result and the method are stored, **no copy of the document**. Companies see only "Swedish certificate B2: verified by the City", never the document, issuer or date.
-- **Finland / law:** regulated professions must be checked by the employer against the register; a hygiene passport is required by law for work with unpacked perishable food. These are genuine occupational requirements, so asking for them is allowed (Non-Discrimination Act). A degree year or school name would reveal age and origin, so we never pass them on.
+**Decision:** a need can require (or accept) official proofs from a fixed list: language certificates (CEFR level), licences for regulated professions (nurse, practical nurse, doctor, attorney), work cards (hygiene passport, occupational safety card, first aid, driving licence C) and degrees. The jobseeker declares what they have. **City staff verify it at the testing-room visit**, by seeing the original or searching the public register (JulkiTerhikki for health professionals, run by the Finnish Supervisory Agency since 1 Jan 2026. The Finnish Bar Association register for attorneys). Only the result and the method are stored, **no copy of the document**. Companies see only "Swedish certificate B2: verified by the City", never the document, issuer or date.
+- **Finland / law:** regulated professions must be checked by the employer against the register. A hygiene passport is required by law for work with unpacked perishable food. These are genuine occupational requirements, so asking for them is allowed (Non-Discrimination Act). A degree year or school name would reveal age and origin, so we never pass them on.
 - **Industry:** skills-based hiring drops the degree filter unless the job legally needs it. Background-check services verify licences against registers, but they store copies of documents.
 - **➕** No CV or cover letter to write (and nothing for an AI to be biased by). Proof is checked once, by a trusted public body, in person. Data minimisation: no document copies.
 - **➖** The jobseeker must bring the original to the visit. Foreign degrees need a recognition decision first, which takes time. Staff need a few minutes per proof.

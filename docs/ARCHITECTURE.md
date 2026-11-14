@@ -65,7 +65,7 @@ sequenceDiagram
     I-->>J: Follow-up question
   end
   App->>V: Pseudonymised transcript + rubric
-  V-->>App: Match 0–10, level, confidence, quotes as evidence
+  V-->>App: Match 0 to 10, level, confidence, quotes as evidence
   App->>F: Transcript + evaluation
   F-->>App: Bias flags + note
   alt Low confidence or any flag
@@ -83,8 +83,8 @@ sequenceDiagram
 |---|---|---|---|---|---|
 | Helper | **Speech to text** | Whisper large-v3-turbo, Verda | Audio (max 30 s) | Text the candidate can edit | Store audio |
 | Helper | **Privacy guard** | Gemma 4 12B, Verda | Raw answer | Same text with personal details as tags | Change skills or numbers |
-| Agent 1 | **Interviewer** | Gemma 4 12B (Gemini Pro when enabled) | Need + pseudonymised history | Next question, follows up on the answer | Ask about age, origin, family; judge out loud |
-| Agent 2 | **Evaluator** | same | Pseudonymised transcript + rubric | Match, level, confidence, quotes per skill | Decide; score grammar or accent |
+| Agent 1 | **Interviewer** | Gemma 4 26B-A4B (judges: Gemma + Mistral Small 3.2 + Gemini) | Need + pseudonymised history | Next question, follows up on the answer | Ask about age, origin, family. Judge out loud |
+| Agent 2 | **Evaluator** | same | Pseudonymised transcript + rubric | Match, level, confidence, quotes per skill | Decide. Score grammar or accent |
 | Agent 3 | **Fairness auditor** | same | Transcript + evaluation | Flags + note → routes to human review | Decide |
 
 Switch the thinking model with one setting: `INTERVIEW_PROVIDER=gemma | gemini`.
@@ -148,7 +148,7 @@ Espoo is the employment authority for ~30,000 jobseekers, but not all of them ne
 |---|---|
 | Skill checks | ~50 a day (250 a week), at most ~12,000 a year. People with a valid badge do not come back |
 | Testing-room computers | 30-minute slots, ~7 h a day = 14 checks per computer → **4 computers = one room** |
-| Peak before an event | e.g. +300 people in the last 2 weeks = +30 a day → 2–3 more computers for those weeks |
+| Peak before an event | e.g. +300 people in the last 2 weeks = +30 a day → 2 to 3 more computers for those weeks |
 | AI (one GPU) | the demo ran 30 full checks in 5 minutes. 50 a day is a few minutes of GPU work |
 | Database | 11 MB for 30 checks today → well under 1 GB a year |
 

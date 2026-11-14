@@ -1,7 +1,7 @@
 # Handover: start here
 
 Welcome! This page gets you from zero to productive in about 15 minutes. Status: **Saturday 14 Nov, 16:00**.
-Submission: **Sunday 15 Nov, 10:00** (video ≤ 2 min, deck PDF, public repo, form set to FINAL). Peer review Sun 10:30–14:00, everyone attends.
+Submission: **Sunday 15 Nov, 10:00** (video ≤ 2 min, deck PDF, public repo, form set to FINAL). Peer review Sun 10:30 to 14:00, everyone attends.
 
 **Live site:** https://skillcheck.fi (password for every demo account: `junction2026`)
 
@@ -28,7 +28,7 @@ Judging: impact 45%, innovation and UX 35%, responsible and feasible 20%.
 
 ## 3. Read these (in this order)
 1. `docs/CHECKLIST.md`: what is done and what is next. **Your items are marked "Teammate".**
-2. `docs/DECISIONS.md`: every design choice with the research behind it (D1–D18). Good pitch material.
+2. `docs/DECISIONS.md`: every design choice with the research behind it (D1 to D18). Good pitch material.
 3. `docs/REPOSITORY.md`: how the code is organised (layers diagram).
 4. `docs/ARCHITECTURE.md`: diagrams, agents, full API, capacity estimate.
 5. `docs/DATABASE.md`: all 27 tables.
