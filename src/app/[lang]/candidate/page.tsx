@@ -5,7 +5,9 @@ import { requireRole } from "@/lib/session";
 import { myAppointments, MAX_RESCHEDULES, RESCHEDULE_DEADLINE_MS } from "@/lib/services/testing";
 import { myChecks } from "@/lib/services/checks";
 import { buttonVariants } from "@/components/ui/button";
-import { PageTitle, Section, Empty, statusLabel, fmtTime, fmtClock } from "@/components/app/ui";
+import { PageTitle, Section, Empty, statusLabel, fmtTime, fmtClock, eventMode } from "@/components/app/ui";
+import { asc, gt } from "drizzle-orm";
+import { db, events } from "@/db";
 import { CancelAppointment } from "@/components/app/candidate-actions";
 import { ExamRoomStart } from "@/components/app/exam-room-start";
 
@@ -19,7 +21,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const me = await requireRole(lang, "candidate");
-  const [appts, checks] = await Promise.all([myAppointments(me), myChecks(me)]);
+  const [appts, checks, upcomingEvents] = await Promise.all([myAppointments(me), myChecks(me), db.select().from(events).where(gt(events.startsAt, new Date())).orderBy(asc(events.startsAt))]);
   // A time that has passed without a check is simply missed: no penalty, the jobseeker can book again.
   const upcoming = appts.filter((a) => (a.status === "booked" || a.status === "in_progress") && !hasPassed(a.endsAt));
 
@@ -28,6 +30,21 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
       <PageTitle kicker="City of Espoo" title="Skill checks">
         A short conversation about real problems from the companies you want to meet, on a City computer in an EXAM room, like the ones Finnish universities use for exams.
       </PageTitle>
+
+      <Section title="Recruitment events">
+        <p className="mb-4 text-sm text-muted-foreground">Choose an event to see which companies come and what each one asks for.</p>
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {upcomingEvents.map((e) => (
+            <li key={e.id}>
+              <Link href={`/${lang}/candidate/events/${e.id}`} className="block h-full rounded-lg border p-4 transition-colors hover:border-primary">
+                <span className="rounded-full border px-2 py-0.5 text-xs">{eventMode(e.mode)}</span>
+                <span className="mt-2 block font-medium">{e.title}</span>
+                <span className="block text-sm text-muted-foreground">{fmtTime(e.startsAt)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
       <Section title="Your testing time" action={!upcoming.length ? <Link href={`/${lang}/candidate/book`} className={buttonVariants({ size: "sm" })}>Book a time</Link> : undefined}>
         {upcoming.length ? (

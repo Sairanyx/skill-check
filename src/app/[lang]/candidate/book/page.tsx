@@ -11,7 +11,9 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   await requireRole(lang, "candidate");
-  const reschedule = (await searchParams).reschedule as string | undefined;
+  const sp = await searchParams;
+  const reschedule = sp.reschedule as string | undefined;
+  const initialNeeds = typeof sp.needs === "string" ? sp.needs.split(",").filter(Boolean) : []; // from the event page
   const [needs, slots] = await Promise.all([listNeeds(), freeTestSlots()]);
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
@@ -19,7 +21,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
       <div className="mt-6">
         <PageTitle title={reschedule ? "Change your time" : "Book a skill check"} />
       </div>
-      <BookingForm lang={lang} needs={needs} slots={slots} rescheduleId={reschedule} />
+      <BookingForm lang={lang} needs={needs} slots={slots} rescheduleId={reschedule} initialNeeds={initialNeeds} />
     </div>
   );
 }

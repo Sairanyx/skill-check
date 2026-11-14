@@ -22,9 +22,9 @@ const day = (d: string | Date) => new Date(d).toLocaleDateString("en-GB", { week
 const time = (d: string | Date) => new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Helsinki" });
 
 /** Booking: 1) choose up to 3 needs, 2) choose a place and time. Reschedule skips step 1. */
-export function BookingForm({ lang, needs, slots, rescheduleId }: { lang: string; needs: Need[]; slots: Slot[]; rescheduleId?: string }) {
+export function BookingForm({ lang, needs, slots, rescheduleId, initialNeeds = [] }: { lang: string; needs: Need[]; slots: Slot[]; rescheduleId?: string; initialNeeds?: string[] }) {
   const router = useRouter();
-  const [picked, setPicked] = useState<string[]>([]);
+  const [picked, setPicked] = useState<string[]>(initialNeeds.filter((id) => needs.some((n) => n.id === id)).slice(0, 3));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const ready = rescheduleId || picked.length > 0;
