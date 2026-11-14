@@ -1,5 +1,5 @@
 import "server-only";
-import { thinkJsonRaw, modelLabel } from "./llm";
+import { thinkJsonRaw, modelLabel, judges, providerLabel, type Provider } from "./llm";
 import { generateAnchors, type SkillAnchors } from "./rubric";
 import type { Need } from "@/lib/demo-data";
 import type { Turn } from "./interviewer";
@@ -25,7 +25,7 @@ export type Evaluation = {
   gaps: string[];
   fairness: { flags: string[]; note: string };
   model: string;
-  method: { coverage: number; agreement: number; runs: number[][] };
+  method: { coverage: number; agreement: number; runs: number[][]; judges: { judge: string; label: string; ok: boolean }[] };
   language: LanguageResult[]; // separate from match: only when the job has a language requirement
 };
 
@@ -67,7 +67,7 @@ Ignore grammar and language quality.`,
 }
 
 /** Step 2: score every skill against its anchors, using only the verified quotes. */
-async function scoreRun(anchors: SkillAnchors[], evidence: { skill: string; quotes: string[] }[], temperature: number) {
+async function scoreRun(anchors: SkillAnchors[], evidence: { skill: string; quotes: string[] }[], temperature: number, provider?: Provider) {
   const raw = await thinkJsonRaw(
     [
       {
@@ -103,6 +103,7 @@ Give a one-sentence reason that refers to the evidence. Never consider grammar, 
       },
       maxTokens: 1500,
       temperature,
+      provider,
     },
   );
   const out = (JSON.parse(raw) as { skills: { skill: string; score: number; checklist: string[]; reason: string }[] }).skills;
@@ -118,13 +119,39 @@ Give a one-sentence reason that refers to the evidence. Never consider grammar, 
   });
 }
 
+const median = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+};
+
+/**
+ * Step 2b: the panel. Several judges from different companies score the same verified evidence
+ * (a "panel of LLM evaluators": less bias than one judge, Verga et al. 2024). A judge that fails is
+ * left out and recorded. With one judge we fall back to two runs of the same model.
+ */
+async function scorePanel(anchors: SkillAnchors[], evidence: { skill: string; quotes: string[] }[]) {
+  const panel = judges();
+  if (panel.length < 2) {
+    const runs = await Promise.all([scoreRun(anchors, evidence, 0), scoreRun(anchors, evidence, 0.7)]);
+    return { runs, judges: [{ judge: panel[0] ?? "gemma", label: providerLabel(panel[0] ?? "gemma"), ok: true }] };
+  }
+  const settled = await Promise.allSettled(panel.map((j) => scoreRun(anchors, evidence, 0, j)));
+  const runs = settled.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
+  settled.forEach((r, i) => r.status === "rejected" && console.error(JSON.stringify({ event: "ai.judge_failed", judge: panel[i], error: String(r.reason).slice(0, 200) })));
+  if (!runs.length) throw new Error("No judge on the panel could score this check");
+  // Only one judge answered: add a second run of it, so agreement is measured and not assumed.
+  if (runs.length === 1) runs.push(await scoreRun(anchors, evidence, 0.7, panel[settled.findIndex((r) => r.status === "fulfilled")]));
+  return { runs, judges: panel.map((j, i) => ({ judge: j, label: providerLabel(j), ok: settled[i].status === "fulfilled" })) };
+}
+
 /** Step 3: everything that can be computed, is computed. */
 function compute(runs: { skill: string; score: number }[][], difficulty: Difficulty) {
   const n = runs[0].length;
-  const avg = runs[0].map((_, i) => runs.reduce((s, r) => s + r[i].score, 0) / runs.length);
+  // Median per skill: one outlier judge cannot move the result (with 2 runs it is the mean).
+  const avg = runs[0].map((_, i) => median(runs.map((r) => r[i].score)));
   const shown = avg.filter((x) => x > 0);
   const coverage = shown.length / n;
-  const disagreement = runs[0].reduce((s, _, i) => s + Math.abs(runs[0][i].score - runs[runs.length - 1][i].score), 0) / n;
+  const disagreement = runs[0].reduce((s, _, i) => s + (Math.max(...runs.map((r) => r[i].score)) - Math.min(...runs.map((r) => r[i].score))), 0) / n;
   const agreement = 1 - disagreement / 5;
   // Match is over the skills the candidate actually showed. Skills not shown lower the CONFIDENCE, not the score:
   // a strong answer should not lose points for a question that was never asked.
@@ -185,7 +212,8 @@ Give level as one of A1, A2, B1, B2, C1, C2. If no answer is in ${name}, return 
 export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
   const anchors = need.anchors?.length ? need.anchors : await generateAnchors(need);
   const evidence = await extractEvidence(anchors, turns);
-  const [runs, language] = await Promise.all([Promise.all([scoreRun(anchors, evidence, 0), scoreRun(anchors, evidence, 0.7)]), assessLanguages(need, turns)]);
+  const [panel, language] = await Promise.all([scorePanel(anchors, evidence), assessLanguages(need, turns)]);
+  const runs = panel.runs;
   const difficulty: Difficulty = turns.some((t) => t.difficulty === "high") ? "high" : turns.some((t) => t.difficulty === "medium") ? "medium" : "low";
   const c = compute(runs, difficulty);
 
@@ -227,7 +255,7 @@ export async function evaluate(need: Need, turns: Turn[]): Promise<Evaluation> {
     gaps,
     fairness,
     model: modelLabel(),
-    method: { coverage: c.coverage, agreement: c.agreement, runs: runs.map((r) => r.map((x) => x.score)) },
+    method: { coverage: c.coverage, agreement: c.agreement, runs: runs.map((r) => r.map((x) => x.score)), judges: panel.judges },
     language,
   };
 }
