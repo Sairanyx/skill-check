@@ -71,6 +71,14 @@ services:
       - ASR_MODEL=whisper
     depends_on: [gemma, whisper]
 
+  # Interview panel (panel/, docs/PANEL_API.md): three Gemini 4 models deliberate after every answer.
+  # Internal only (no published port). The app uses it when .env has PANEL_URL=http://panel:8010 and PANEL_API_KEY.
+  # Needs GEMINI_API_KEY, PANEL_API_KEY and DATABASE_URL in .env (it adds one table, panel_interview).
+  panel:
+    build: ./app/panel
+    restart: unless-stopped
+    env_file: .env
+
   # HTTPS (ports 80/443 are the only ones open in the firewall besides SSH).
   caddy:
     image: caddy:2
