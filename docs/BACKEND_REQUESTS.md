@@ -47,3 +47,12 @@ export async function POST(req: Request, { params }: RouteContext<"/api/v1/appoi
 ```
 
 **Then:** `npx next typegen`, add `DEMO_MODE=true` to the server `.env`, deploy. Remove or set `DEMO_MODE=false` for a real pilot.
+
+## 2. Scoring and bias with the panel (parked, to discuss)
+**Problem:** with the panel scoring, two responsible-AI layers are off: the separate fairness check (fairness flags are always empty) and the measured benchmark (D20 measured our scoring, not the panel's). The panel's three judges are all Google models and use the mean.
+**Proposal (option 1):** the panel interviews, our evaluator scores. When the panel returns `done`, call `evaluate(need, agentTurns(turns))` in `answerCheck` instead of waiting for `panelReport()`. Keep the panel report as a second opinion in `method.panel` when it arrives. Brings back judges from three companies, the median, the fairness check, and keeps D20 valid. Faster too (about 10 s instead of 1 to 3 min).
+**Minimum alternative:** keep the panel scoring and run our fairness auditor on the transcript plus the panel scores.
+
+## 3. Two small messages
+- When the testing time is over, answering says "This workstation is reserved for someone else right now". Better: "Your testing time has ended."
+- The panel ignores small talk ("Oh hello!") and repeats the question. Better: one short friendly sentence, then the question (Chris is on it).
