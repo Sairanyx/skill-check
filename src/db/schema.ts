@@ -147,6 +147,34 @@ export const slots = pgTable("slots", {
   endsAt: timestamp("ends_at").notNull(),
 });
 
+/**
+ * Skill-check sessions run by the City of Espoo. Checks can ONLY be taken during a session,
+ * at the agreed venue/room (or a City-hosted online room), unlocked with the room code shown there.
+ */
+export const checkSessions = pgTable("check_sessions", {
+  id: id(),
+  title: text("title").notNull(),
+  mode: text("mode").notNull().default("on_site"), // on_site | online
+  venue: text("venue").notNull(), // e.g. "Espoo Employment Services, Leppävaara"
+  room: text("room").notNull(), // e.g. "Room 2" or the online room link
+  startsAt: timestamp("starts_at").notNull(),
+  endsAt: timestamp("ends_at").notNull(),
+  capacity: integer("capacity").notNull().default(10),
+  accessCode: text("access_code"), // set when City staff open the session, shown only in the room
+  openedAt: timestamp("opened_at"),
+  closedAt: timestamp("closed_at"),
+  createdBy: text("created_by").references(() => user.id),
+  createdAt: createdAt(),
+});
+
+export const sessionBookings = pgTable("session_bookings", {
+  id: id(),
+  sessionId: text("session_id").notNull().references(() => checkSessions.id, { onDelete: "cascade" }),
+  candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  checkedInAt: timestamp("checked_in_at"), // set when the candidate enters the room code
+  createdAt: createdAt(),
+});
+
 /* ------------------------------------------------------------------ *
  * 4. Skill checks and AI evidence
  * ------------------------------------------------------------------ */
@@ -160,6 +188,7 @@ export const skillChecks = pgTable(
     id: id(),
     candidateId: text("candidate_id").notNull().references(() => user.id, { onDelete: "cascade" }),
     needId: text("need_id").notNull().references(() => needs.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => checkSessions.id), // where it was taken (venue rule)
     language: text("language").notNull(),
     status: checkStatusEnum("status").notNull().default("in_progress"),
     // `said` = what the candidate wrote/said (stays in Finland). `seen` = pseudonymised text the AI got.
@@ -247,5 +276,3 @@ export const videoSubmissions = pgTable("video_submissions", {
   createdAt: createdAt(),
 });
 
-// keep `integer` import used for future counters
-export type _Unused = typeof integer;
