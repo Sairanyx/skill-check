@@ -164,6 +164,7 @@ export const skillChecks = pgTable(
     status: checkStatusEnum("status").notNull().default("in_progress"),
     // `said` = what the candidate wrote/said (stays in Finland). `seen` = pseudonymised text the AI got.
     turns: jsonb("turns").$type<StoredTurn[]>().notNull().default([]),
+    pendingQuestion: text("pending_question"), // the question currently waiting for an answer
     codeResult: jsonb("code_result"),
     startedAt: createdAt(),
     finishedAt: timestamp("finished_at"),
@@ -201,6 +202,28 @@ export const decisions = pgTable("decisions", {
   note: text("note"),
   createdAt: createdAt(),
 });
+
+/**
+ * GDPR audit trail: every access to or change of personal data (Art. 5(2) accountability, Art. 30 records).
+ * Append-only: a database trigger blocks UPDATE and DELETE (see src/db/sql/immutable-audit.sql).
+ * actorId has no foreign key on purpose, so the trail survives account erasure.
+ */
+export const auditEvents = pgTable(
+  "audit_events",
+  {
+    id: id(),
+    at: timestamp("at").notNull().defaultNow(),
+    actorId: text("actor_id"), // null = system (e.g. the AI agents)
+    actorRole: text("actor_role").notNull(), // candidate | company | city | system
+    action: text("action").notNull(), // e.g. check.viewed, decision.created, data.exported, account.erased
+    subjectId: text("subject_id"), // whose personal data was touched (candidate user id)
+    targetType: text("target_type"), // skill_check | booking | user | ...
+    targetId: text("target_id"),
+    purpose: text("purpose"), // why (GDPR purpose limitation), e.g. "recruitment event matching"
+    meta: jsonb("meta"),
+  },
+  (t) => [index("audit_subject_idx").on(t.subjectId), index("audit_at_idx").on(t.at)],
+);
 
 export const bookings = pgTable("bookings", {
   id: id(),

@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx --env-file=.env.local --conditions=react-server src/db/seed.ts"
+    "db:seed": "tsx --env-file=.env.local --conditions=react-server src/db/seed.ts",
+    "db:audit": "tsx --env-file=.env.local src/db/apply-sql.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
