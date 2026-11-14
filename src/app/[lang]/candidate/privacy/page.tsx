@@ -31,7 +31,7 @@ export default async function PrivacyPage({ params }: PageProps<"/[lang]/candida
   const trail = await auditTrail({ subjectId: me.id });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title="Your data">

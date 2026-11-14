@@ -10,7 +10,7 @@ export default async function NewNeed({ params }: PageProps<"/[lang]/company/nee
   if (!hasLocale(lang)) notFound();
   await requireRole(lang, "company");
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/company`} className="text-sm font-medium text-primary hover:underline">← Candidates</Link>
       <div className="mt-6">
         <PageTitle title="Add a need">Describe the problem you need solved. The skill check questions are built from this.</PageTitle>

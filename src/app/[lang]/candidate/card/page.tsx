@@ -16,7 +16,7 @@ export default async function CardPage({ params }: PageProps<"/[lang]/candidate/
   const consent = stamps.length > 0 && stamps.every((s) => s.showOnCard);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm text-muted-foreground hover:text-foreground print:hidden">← Skill checks</Link>
       <div className="mt-6 print:hidden">
         <PageTitle title="Lanyard card">Printed for your badge at the event. A stamp appears when the company or the City of Espoo has accepted your skill check for that company.</PageTitle>

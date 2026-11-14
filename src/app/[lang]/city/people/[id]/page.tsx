@@ -34,7 +34,7 @@ export default async function PersonPage({ params }: PageProps<"/[lang]/city/peo
   ]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/city`} className="text-sm font-medium text-primary hover:underline">← City overview</Link>
       <div className="mt-6">
         <PageTitle kicker={`Jobseeker · shown to companies as ${aliasFor(id)}`} title={person.name}>

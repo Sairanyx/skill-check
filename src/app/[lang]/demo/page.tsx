@@ -8,7 +8,7 @@ export default async function DemoPage({ params }: PageProps<"/[lang]/demo">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <PageTitle kicker="Demo" title="Try a skill check">
         In real life the check only runs on a City computer in an EXAM room, set up by City staff. This page does those steps for you in this browser. The demo passwords are in the submission.
       </PageTitle>

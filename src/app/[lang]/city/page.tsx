@@ -31,7 +31,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
   const venues = [...new Set(stations.map((s) => `${s.venue} · ${s.room}`))];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <PageTitle kicker="City of Espoo" title="Espoo Tech Talent Day" />
 
       <div className="grid grid-cols-2 gap-8 md:grid-cols-6">

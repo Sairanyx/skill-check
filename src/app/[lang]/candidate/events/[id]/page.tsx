@@ -38,7 +38,7 @@ export default async function EventPage({ params }: PageProps<"/[lang]/candidate
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle kicker={`${eventMode(event.mode)} · ${fmtTime(event.startsAt)}${event.location ? ` · ${event.location}` : ""}`} title={event.title}>

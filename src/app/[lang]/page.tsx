@@ -11,7 +11,7 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
   const roles = ["candidate", "company", "city"] as const;
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
+    <div className="mx-auto max-w-6xl px-4">
       <section className="py-20 md:py-28">
         <p className="text-sm font-medium text-primary">{t.eyebrow}</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">{t.title}</h1>

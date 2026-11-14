@@ -13,7 +13,7 @@ export default async function AuditPage({ params }: PageProps<"/[lang]/city/audi
   await requireRole(lang, "city");
   const [access, decisions] = await Promise.all([auditTrail(), auditLog()]);
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/city`} className="text-sm font-medium text-primary hover:underline">← Overview</Link>
       <div className="mt-6">
         <PageTitle title="Audit log">

@@ -41,7 +41,7 @@ export default async function BookPage({ params, searchParams }: PageProps<"/[la
     if (gaps.length) missing[r.id] = gaps;
   }
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/candidate`} className="text-sm font-medium text-primary hover:underline">← Skill checks</Link>
       <div className="mt-6">
         <PageTitle title={reschedule ? "Change your time" : "Book your EXAM room time"} />

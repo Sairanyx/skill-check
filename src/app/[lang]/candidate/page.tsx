@@ -26,7 +26,7 @@ export default async function CandidatePage({ params }: PageProps<"/[lang]/candi
   const upcoming = appts.filter((a) => (a.status === "booked" || a.status === "in_progress") && !hasPassed(a.endsAt));
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <PageTitle kicker="City of Espoo" title="Skill checks">
         A short conversation about real problems from the companies you want to meet, on a City computer in an EXAM room, like the ones Finnish universities use for exams.
       </PageTitle>

@@ -39,7 +39,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
   const open = event ? await freeSlots(event.id) : [];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/${onKiosk ? "kiosk" : "candidate"}`} className="text-sm font-medium text-primary hover:underline">← {onKiosk ? "Back" : "Skill checks"}</Link>
       <div className="mt-6">
         <PageTitle kicker={check.need.company} title={check.need.title}>

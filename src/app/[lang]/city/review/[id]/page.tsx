@@ -18,7 +18,7 @@ export default async function ReviewPage({ params }: PageProps<"/[lang]/city/rev
   if (!check || !check.evaluation) notFound();
   const flagged = check.status === "needs_review";
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/city`} className="text-sm font-medium text-primary hover:underline">← Overview</Link>
       <div className="mt-6">
         <PageTitle kicker={`${check.need.company} · ${check.need.title}`} title={flagged ? "Human review" : check.candidate.alias}>

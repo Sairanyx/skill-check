@@ -53,7 +53,7 @@ export function TourGuide() {
   const pathname = usePathname();
   const raw = useSyncExternalStore(subscribe, snapshot, () => null);
   const tour = useMemo<TourState | null>(() => (raw ? JSON.parse(raw) : null), [raw]);
-  const setTour = (t: TourState | null) => save(t);
+
   const lit = useRef<Element | null>(null);
   const step = tour?.steps[tour.step];
   const onPage = !!step && pathname === `/${tour!.lang}${step.path.split("?")[0]}`.replace(/\/$/, "");

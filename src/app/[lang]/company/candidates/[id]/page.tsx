@@ -22,7 +22,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
   const cityView = cityLast ? (cityLast.decision === "invite" ? "accepted" : "not this time") : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/company`} className="text-sm font-medium text-primary hover:underline">← Candidates</Link>
       <div className="mt-6">
         <PageTitle kicker={check.need.title} title={check.candidate.alias}>
