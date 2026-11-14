@@ -10,12 +10,14 @@ import { EventPolicyToggle, ApproveCompany } from "@/components/app/event-action
 import { testingOverview } from "@/lib/services/testing";
 import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
 import { EnrollHere } from "@/components/app/city-actions";
+import { VerifyProof } from "@/components/app/proof-actions";
+import { proofsToVerify } from "@/lib/services/proofs";
 
 export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-  await requireRole(lang, "city");
-  const [stats, queue, stations, matching, events] = await Promise.all([cityStats(), reviewQueue(), testingOverview(), cityMatchingList(), db.select().from(eventsTable).orderBy(eventsTable.startsAt)]);
+  const me = await requireRole(lang, "city");
+  const [stats, queue, stations, matching, events, proofQueue] = await Promise.all([cityStats(), reviewQueue(), testingOverview(), cityMatchingList(), db.select().from(eventsTable).orderBy(eventsTable.startsAt), proofsToVerify(me)]);
   const applications = await Promise.all(events.map((e) => eventApplications(e.id)));
   const decided = stats.decisions.aiFollowed + stats.decisions.aiOverridden;
   const tiles = [
@@ -91,6 +93,25 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
           </ul>
         ) : (
           <Empty>Nothing to review. Low-confidence or flagged results appear here before any company sees them.</Empty>
+        )}
+      </Section>
+
+      <Section title="Proofs to check at the desk">
+        {proofQueue.length ? (
+          <ul className="divide-y border-y text-sm">
+            {proofQueue.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-3">
+                <span>
+                  <strong>{p.candidate}</strong> · {p.label}
+                  {p.level ? `, ${p.level}` : ""}
+                  <span className="block text-xs text-muted-foreground">{p.howToCheck}</span>
+                </span>
+                <VerifyProof id={p.id} howToCheck={p.howToCheck ?? "Original seen"} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Empty>Nothing to check.</Empty>
         )}
       </Section>
 
