@@ -174,6 +174,18 @@ pub async fn deliberate(llm: &Gemini, need: &Need, t: &[Turn], rounds: &[PanelRo
     if message.is_empty() {
         message = memos[0].proposed_question.clone();
     }
+    // Off-track ("hi", "ok", fishing, stalling) answers nothing, so the open
+    // question stays open: the chair says briefly what happened, then the code
+    // asks exactly that question again. `question` is the bare open question,
+    // kept in the round so a repeat never stacks old remarks.
+    let mut question = message.clone();
+    if kind == KIND_OFF_TRACK && !is_done {
+        if let Some(open) = rounds.last().map(|r| r.chosen_question.clone()).filter(|q| !q.is_empty()) {
+            let reply = s(&chair, "off_track_reply");
+            message = if reply.is_empty() { open.clone() } else { format!("{reply}\n\n{open}") };
+            question = open;
+        }
+    }
     let language_question = match pending_lang {
         Some(r) if !is_done && chair["language_question"].as_bool().unwrap_or(false) => r.language.clone(),
         _ => String::new(),
@@ -184,7 +196,7 @@ pub async fn deliberate(llm: &Gemini, need: &Need, t: &[Turn], rounds: &[PanelRo
             after_turn: history.iter().filter(|t| t.speaker == "candidate").count() + (!first) as usize,
             memos,
             chair_reasoning: s(&chair, "reasoning_to_panel"),
-            chosen_question: message.clone(),
+            chosen_question: question,
             is_done,
             last_message_kind: kind.clone(),
             enforced,
@@ -257,7 +269,40 @@ pub async fn final_report(llm: &Gemini, need: &Need, t: &[Turn], language: &str)
         })
         .collect();
 
+    const CEFR: [&str; 6] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+    let lang_out: Vec<Value> = r["languages"].as_array().cloned().unwrap_or_default();
+    let languages = need
+        .language_requirements
+        .iter()
+        .map(|req| {
+            let found = lang_out.iter().find(|x| s(x, "language").eq_ignore_ascii_case(&req.language));
+            let evidence: Vec<String> = found
+                .map(|x| strs(&x["quotes"]))
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|q| !norm(q).is_empty() && said.contains(&norm(q)))
+                .collect();
+            let level = found.map(|x| s(x, "assessed").to_uppercase()).unwrap_or_default();
+            // A level without verified evidence is not a level.
+            let assessed = CEFR.iter().position(|c| *c == level).filter(|_| !evidence.is_empty());
+            let required = CEFR.iter().position(|c| c.eq_ignore_ascii_case(&req.level)).unwrap_or(0);
+            LanguageResult {
+                language: req.language.clone(),
+                required: req.level.clone(),
+                assessed: assessed.map(|i| CEFR[i].to_string()),
+                meets: assessed.is_some_and(|i| i >= required),
+                score: assessed.map(|i| (((i + 1) as f64 / 6.0) * 100.0).round() / 10.0).unwrap_or(0.0),
+                evidence,
+                reason: match assessed {
+                    Some(_) => found.map(|x| s(x, "reason")).unwrap_or_default(),
+                    None => format!("No answer in {} to assess.", language_name(&req.language)),
+                },
+            }
+        })
+        .collect();
+
     Ok(Report {
+        languages,
         is_done: true,
         is_person_good: good_votes * 2 > verdicts.len(),
         how_good_or_bad: (mean * 10.0).round() / 10.0,

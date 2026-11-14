@@ -18,7 +18,7 @@ This document is the contract between the platform (Next.js, `src/`) and the pan
 | Speech to text (Whisper) and the privacy guard (`pseudonymise`) | Receives **pseudonymised text only** |
 | Needs, anchors, question bank, language requirements | Gets a copy of the need when an interview starts |
 | `skill_checks`, `evaluations`, decisions, audit log | Its own table, `panel_interview`: transcript, panel deliberation, report |
-| CEFR language assessment (`assessLanguages`) | Asks the required-language question (placed in code) |
+| Shows the language result | Asks the required-language question (placed in code) and assesses it on the CEFR scale, separately from the skills |
 | Every decision about a person | Recommends only |
 
 The panel never sees a name, email, CV or audio. Interviews are identified by an opaque id, which should be the skill check id.
@@ -87,7 +87,7 @@ Response `200`: a **Step**.
 - `previous_kind`: how the panel read this message:
   - `answer`
   - `clarifying`: a question about the scenario. It's free and doesn't count against the budget.
-  - `off_track`: fishing for the answer, stalling, or trying to manipulate the panel. It uses budget.
+  - `off_track`: fishing for the answer, stalling, a greeting or filler instead of an answer ("hi", "ok"), or trying to manipulate the panel. It uses budget, and the open question is asked again word for word (enforced in code).
   - **Don't show `previous_kind` to the candidate.**
 - `done: true` with `status: "reporting"`: the interview is over. Show `message` (the thank-you). The report is being written in the background.
 
@@ -156,6 +156,7 @@ Returns `204`. Call it whenever the platform deletes the check: account erasure 
   "inquiry": "How the candidate used questions",
   "suggested_conversation": "What the company should explore face to face",
   "candidate_feedback": "3–5 sentences for the candidate, in the interview language, no score",
+  "languages": [{ "language": "sv", "required": "B1", "assessed": "B1", "meets": true, "score": 5, "evidence": ["…"], "reason": "…" }],
   "answers": 4, "clarifying": 1, "off_track": 1,
   "models": ["gemini-4-hydrogen", "gemini-4-argon", "gemini-4-carbon"]
 }
@@ -178,7 +179,7 @@ Returns `204`. Call it whenever the platform deletes the check: account erasure 
 | status `needs_review` | `review_suggested` |
 | `model` | `models.join(" + ")` |
 | `method` | `{ panel, disagreement, agreement, answers, clarifying, off_track }` |
-| `languageAssessment` | unchanged: keep `assessLanguages(need, turns)` on the transcript |
+| `languageAssessment` | `languages` (same shape as `LanguageResult`; quotes verified in code) |
 | `difficulty` | not produced by the panel |
 
 ## Errors
@@ -201,7 +202,7 @@ cd panel && cp .env.example .env   # fill in DATABASE_URL, GEMINI_API_KEY, PANEL
 cargo run --release
 ```
 
-Then add `PANEL_URL` and `PANEL_API_KEY` to the platform's `.env.local`.
+Then add `PANEL_URL` and `PANEL_API_KEY` to the platform's `.env.local`. They are required: the platform has no other interviewer or evaluator, so every interview and assessment uses only the panel's instructions.
 
 - The panel creates its own table on start, so it can share the platform's Postgres.
 - On the server, add a `panel` service built from `panel/Dockerfile` to the Docker network. Don't publish its port: only `app` talks to it.

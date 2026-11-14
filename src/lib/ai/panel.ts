@@ -4,11 +4,9 @@ import type { LanguageResult } from "@/db/schema";
 
 /**
  * Client for the interview panel service (`panel/`, contract in docs/PANEL_API.md).
- * Three Gemini 4 models deliberate after every answer and decide when they have enough.
- * On when PANEL_URL and PANEL_API_KEY are set; otherwise the built-in interviewer runs.
- * The panel only ever receives pseudonymised text (`seen`).
+ * The panel runs the whole interview and the assessment with its own instructions; the platform
+ * only passes the need and the candidate's pseudonymised words (`seen`). Requires PANEL_URL and PANEL_API_KEY.
  */
-export const panelEnabled = () => Boolean(process.env.PANEL_URL && process.env.PANEL_API_KEY);
 
 export type PanelStep = { interview_id: string; message: string; previous_kind: string; done: boolean; status: string };
 export type PanelReport = {
@@ -28,6 +26,7 @@ export type PanelReport = {
   answers: number;
   clarifying: number;
   off_track: number;
+  languages: LanguageResult[];
   models: string[];
 };
 type PanelInterview = { status: string; report: PanelReport | null; report_error: string };
@@ -40,6 +39,7 @@ class PanelError extends Error {
 export const isPanelError = (e: unknown): e is PanelError => e instanceof PanelError;
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+  if (!process.env.PANEL_URL || !process.env.PANEL_API_KEY) throw new Error("PANEL_URL and PANEL_API_KEY must be set");
   const res = await fetch(`${process.env.PANEL_URL}/v1${path}`, {
     method,
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.PANEL_API_KEY}` },
@@ -91,7 +91,7 @@ export async function panelReport(interviewId: string, maxWaitMs = 6 * 60_000): 
 }
 
 /** The panel report in the shape of the platform's `evaluations` row. */
-export function panelEvaluation(r: PanelReport, language: LanguageResult[]) {
+export function panelEvaluation(r: PanelReport) {
   const mean = r.skills.filter((s) => s.score > 0).reduce((a, s, _, xs) => a + s.score / xs.length, 0);
   return {
     match: r.how_good_or_bad,
@@ -115,7 +115,7 @@ export function panelEvaluation(r: PanelReport, language: LanguageResult[]) {
       suggested_conversation: r.suggested_conversation,
       candidate_feedback: r.candidate_feedback,
     },
-    language,
+    language: r.languages,
     reviewSuggested: r.review_suggested,
   };
 }

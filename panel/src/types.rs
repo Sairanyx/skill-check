@@ -171,10 +171,27 @@ pub struct Report {
     pub suggested_conversation: String,
     /// Shown to the candidate, in the interview language. No score.
     pub candidate_feedback: String,
+    /// One per language requirement (empty if the job has none). Separate from every skill score.
+    pub languages: Vec<LanguageResult>,
     pub answers: usize,
     pub clarifying: usize,
     pub off_track: usize,
     pub models: Vec<String>,
+}
+
+/// Same shape as the platform's `LanguageResult`.
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct LanguageResult {
+    pub language: String,
+    pub required: String,
+    /// CEFR level, or null when nothing was said in that language.
+    pub assessed: Option<String>,
+    pub meets: bool,
+    /// 0-10: A1 1.7 … C2 10.
+    pub score: f64,
+    /// The candidate's exact sentences in that language (verified in code).
+    pub evidence: Vec<String>,
+    pub reason: String,
 }
 
 // ── API payloads ────────────────────────────────────────────────────────────
