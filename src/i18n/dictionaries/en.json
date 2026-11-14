@@ -1,6 +1,6 @@
 {
   "meta": { "title": "SkillCheck", "description": "Show what you can do, not what an AI wrote for you." },
-  "nav": { "candidate": "For jobseekers", "company": "For companies", "city": "City of Espoo", "login": "Log in", "signup": "Get started", "language": "Language" },
+  "nav": { "candidate": "For jobseekers", "company": "For companies", "city": "City of Espoo", "login": "Log in", "signup": "Get started", "language": "Language", "logout": "Log out" },
   "landing": {
     "eyebrow": "Espoo recruitment events, reimagined",
     "title": "Show what you can do. Not what an AI wrote for you.",

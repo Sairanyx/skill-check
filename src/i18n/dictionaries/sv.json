@@ -1,6 +1,6 @@
 {
   "meta": { "title": "SkillCheck", "description": "Visa vad du kan. Inte vad en AI skrev åt dig." },
-  "nav": { "candidate": "För arbetssökande", "company": "För företag", "city": "Esbo stad", "login": "Logga in", "signup": "Kom igång", "language": "Språk" },
+  "nav": { "candidate": "För arbetssökande", "company": "För företag", "city": "Esbo stad", "login": "Logga in", "signup": "Kom igång", "language": "Språk", "logout": "Logga ut" },
   "landing": {
     "eyebrow": "Esbos rekryteringsevenemang på ett nytt sätt",
     "title": "Visa vad du kan. Inte vad en AI skrev åt dig.",

@@ -16,7 +16,7 @@ export async function SiteHeader({ lang, nav }: { lang: Locale; nav: Dictionary[
         </Link>
         <div className="ml-auto flex items-center gap-6 text-sm">
           <Suspense fallback={null}>
-            <Account lang={lang} />
+            <Account lang={lang} nav={nav} />
           </Suspense>
           <Suspense fallback={null}>
             <LanguageSwitcher lang={lang} label={nav.language} />
@@ -27,13 +27,13 @@ export async function SiteHeader({ lang, nav }: { lang: Locale; nav: Dictionary[
   );
 }
 
-async function Account({ lang }: { lang: Locale }) {
+async function Account({ lang, nav }: { lang: Locale; nav: Dictionary["nav"] }) {
   const u = await currentUser();
-  if (!u) return <Link href={`/${lang}/login`} className="text-muted-foreground hover:text-foreground">Log in</Link>;
+  if (!u) return <Link href={`/${lang}/login`} className="text-muted-foreground hover:text-foreground">{nav.login}</Link>;
   return (
     <form action={signOut.bind(null, lang)} className="flex items-center gap-4">
       <Link href={`/${lang}/${u.role}`} className="hidden text-muted-foreground hover:text-foreground sm:inline">{u.name}</Link>
-      <button className="whitespace-nowrap text-muted-foreground hover:text-foreground">Log out</button>
+      <button className="whitespace-nowrap text-muted-foreground hover:text-foreground">{nav.logout}</button>
     </form>
   );
 }
