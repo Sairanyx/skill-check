@@ -30,11 +30,11 @@
       },
       {
         "title": "Take a short skill check",
-        "text": "An AI interviewer asks about real work situations. Answer in Finnish, Swedish or English, by voice or text. Personal details are removed before scoring."
+        "text": "An AI interviewer asks about real work situations. Answer in Finnish, Swedish or English, by voice or text. Personal details are removed first, and the feedback shows whether you have the basics for the job."
       },
       {
         "title": "Get badges, meet companies",
-        "text": "A person reviews the result. Accepted checks become badges on your event card and a 15-minute meeting at the event."
+        "text": "Companies see the feedback and decide whether to meet you. City staff check unclear cases. Accepted checks become badges on your event card and a 15-minute meeting at the event."
       }
     ],
     "rolesTitle": "One platform, three sides",
@@ -54,7 +54,7 @@
     },
     "privacyTitle": "Built for trust",
     "privacy": [
-      "AI gathers evidence. People make every decision.",
+      "AI models give evidence-based feedback. City staff check unclear cases, and companies choose who they meet.",
       "Personal details are removed before any AI sees or scores your answers.",
       "Scored on what you can do, never on accent, grammar, age or origin.",
       "Checked in person, so nobody can cheat with AI."

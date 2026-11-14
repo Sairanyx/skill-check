@@ -30,11 +30,11 @@
       },
       {
         "title": "Tee lyhyt osaamistesti",
-        "text": "Tekoälyhaastattelija kysyy oikeista työtilanteista. Vastaa suomeksi, ruotsiksi tai englanniksi, puhuen tai kirjoittaen. Henkilötiedot poistetaan ennen arviointia."
+        "text": "Tekoälyhaastattelija kysyy oikeista työtilanteista. Vastaa suomeksi, ruotsiksi tai englanniksi, puhuen tai kirjoittaen. Henkilötiedot poistetaan ensin, ja palaute näyttää, onko sinulla työn perustaidot."
       },
       {
         "title": "Saat merkit ja tapaat yritykset",
-        "text": "Ihminen tarkistaa tuloksen. Hyväksytyistä testeistä tulee merkkejä tapahtumakorttiisi ja 15 minuutin tapaaminen tapahtumassa."
+        "text": "Yritykset näkevät palautteen ja päättävät, tapaavatko sinut. Kaupungin työntekijät tarkistavat epäselvät tapaukset. Hyväksytyistä testeistä tulee merkkejä tapahtumakorttiisi ja 15 minuutin tapaaminen tapahtumassa."
       }
     ],
     "rolesTitle": "Yksi palvelu, kolme osapuolta",
@@ -54,7 +54,7 @@
     },
     "privacyTitle": "Luotettava palvelu",
     "privacy": [
-      "Tekoäly kerää näyttöä. Ihmiset tekevät jokaisen päätöksen.",
+      "Tekoälymallit antavat näyttöön perustuvaa palautetta. Kaupungin työntekijät tarkistavat epäselvät tapaukset, ja yritykset valitsevat, keitä ne tapaavat.",
       "Henkilötiedot poistetaan ennen kuin mikään tekoäly näkee tai arvioi vastauksesi.",
       "Arvioinnissa ratkaisee osaaminen, ei koskaan aksentti, kielioppi, ikä tai tausta.",
       "Testi tehdään paikan päällä, joten tekoälyllä huijaaminen ei onnistu."

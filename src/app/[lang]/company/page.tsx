@@ -21,7 +21,7 @@ export default async function CompanyPage({ params }: PageProps<"/[lang]/company
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <PageTitle kicker={me.name} title="Candidates">
-        People who took a skill check for your needs, best match first. Names and contact details stay with the City of Espoo. Candidates can choose to share their contact with you.
+        People who took a skill check for your needs, with the AI feedback on each. It shows who has the basics for the job. You decide whom to meet. Names and contact details stay with the City of Espoo. Candidates can choose to share their contact with you.
       </PageTitle>
 
       <Section title="City of Espoo events">

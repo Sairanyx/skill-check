@@ -30,11 +30,11 @@
       },
       {
         "title": "Gör ett kort kunskapstest",
-        "text": "En AI-intervjuare frågar om verkliga arbetssituationer. Svara på finska, svenska eller engelska, med röst eller text. Personuppgifter tas bort före bedömningen."
+        "text": "En AI-intervjuare frågar om verkliga arbetssituationer. Svara på finska, svenska eller engelska, med röst eller text. Personuppgifter tas bort först, och återkopplingen visar om du har grunderna för jobbet."
       },
       {
         "title": "Få märken och träffa företag",
-        "text": "En människa granskar resultatet. Godkända test blir märken på ditt evenemangskort och ett möte på 15 minuter på evenemanget."
+        "text": "Företagen ser återkopplingen och bestämmer om de vill träffa dig. Stadens personal granskar oklara fall. Godkända test blir märken på ditt evenemangskort och ett möte på 15 minuter på evenemanget."
       }
     ],
     "rolesTitle": "En tjänst, tre parter",
@@ -54,7 +54,7 @@
     },
     "privacyTitle": "Byggt för förtroende",
     "privacy": [
-      "AI samlar bevis. Människor fattar varje beslut.",
+      "AI-modeller ger evidensbaserad återkoppling. Stadens personal granskar oklara fall, och företagen väljer vilka de träffar.",
       "Personuppgifter tas bort innan någon AI ser eller bedömer dina svar.",
       "Bedömningen gäller vad du kan, aldrig accent, grammatik, ålder eller bakgrund.",
       "Testet görs på plats, så ingen kan fuska med AI."
