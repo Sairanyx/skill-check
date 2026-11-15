@@ -77,13 +77,13 @@
 
 <EspooHero
 	title="No CV. No cover letter. Just talk about your skills."
-	lead="Take a short skill check in a City EXAM room, in Finnish, Swedish or English. People decide whom to meet."
+	lead="Take a short skill check in an Espoo EXAM room, in Finnish, Swedish or English. People decide whom to meet."
 >
 	{#snippet aside()}
 		<ol class="steps">
 			<li>
 				<strong>Come to the EXAM room</strong>
-				<span>A supervised City computer. Just you and a real task from the company.</span>
+				<span>A supervised computer in Espoo. Just you and a real task from the company.</span>
 			</li>
 			<li>
 				<strong>Talk about your skills</strong>

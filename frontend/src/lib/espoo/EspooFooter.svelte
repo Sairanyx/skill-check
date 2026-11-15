@@ -13,7 +13,7 @@
 			<a class="espoo-arrow-link footer__espoo" href="https://www.espoo.fi/en" target="_blank" rel="noreferrer">espoo.fi</a>
 		</div>
 		<p class="footer__text">
-			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemma 4 privacy guard in Finland, then Gemini 4 Hydrogen, Argon and Carbon.
+			Made at Junction 2026 for Espoo. Synthetic data only. AI: Gemma 4 privacy guard in Finland, then Gemini 4 Hydrogen, Argon and Carbon.
 		</p>
 	</div>
 </footer>

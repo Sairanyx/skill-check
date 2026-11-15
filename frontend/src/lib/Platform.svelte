@@ -22,7 +22,7 @@
 		{
 			as: 'city',
 			who: 'City of Espoo',
-			open: 'Open the City portal',
+			open: 'Open the Espoo portal',
 			name: 'Event staff',
 			does: ['Approves companies and runs the EXAM rooms', 'Reviews unclear results', 'Every decision and data access in the audit log']
 		}

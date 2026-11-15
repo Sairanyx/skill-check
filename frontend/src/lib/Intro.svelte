@@ -13,12 +13,12 @@
 	const SLIDES = [
 		{
 			title: 'The problem, and where SkillCheck fits',
-			text: 'City of Espoo events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. A short, supervised skill check helps them filter down to the jobseekers who show the skills, and spend their time on those conversations.',
+			text: 'Espoo's recruitment events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. A short, supervised skill check helps them filter down to the jobseekers who show the skills, and spend their time on those conversations.',
 			source: { text: 'Espoo TalentMatch events bring 200 to 1,000 jobseekers and 5 to 50 employers together.', name: 'City of Espoo', href: 'https://www.espoo.fi/en/talentmatch-events' }
 		},
 		{
-			title: 'Our answer: a skill check in rooms the City already has',
-			text: 'Instead of a CV, jobseekers talk through a real task on a supervised computer. It runs in City spaces that already host recruitment events, so no new buildings are needed.',
+			title: 'Our answer: a skill check in rooms Espoo already has',
+			text: 'Instead of a CV, jobseekers talk through a real task on a supervised computer. It runs in Espoo's own spaces that already host recruitment events, so no new buildings are needed.',
 			source: { text: '29 Finnish universities already run exams this way, in supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
 		},
 		{
@@ -140,12 +140,12 @@
 					{:else if index === 1}
 						<div class="node node--exam node--big rise ring" style={delay(0.1)}>
 							<span class="node__title">{@render icon('chat')} EXAM room</span>
-							<span class="node__text">A supervised computer in a space the City already uses</span>
+							<span class="node__text">A supervised computer in a space Espoo already uses</span>
 						</div>
 						<ul class="places">
 							{#each [
-								{ name: 'Sello library', what: 'Already hosts City employer meet-ups' },
-								{ name: 'Lippulaiva library', what: 'Already hosts City employer meet-ups' },
+								{ name: 'Sello library', what: 'Already hosts Espoo employer meet-ups' },
+								{ name: 'Lippulaiva library', what: 'Already hosts Espoo employer meet-ups' },
 								{ name: 'Espoo Talent Hub, Otaniemi', what: 'Already runs employer speed dating' }
 							] as place, n (place.name)}
 								<li class="rise" style={delay(0.7 + n * 0.3)}>
