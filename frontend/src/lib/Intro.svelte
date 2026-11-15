@@ -173,6 +173,7 @@
 						<div class="panel">
 							{#each PANEL as name, n (name)}
 								<div class="card card--model rise" style={delay(3.4 + n * 0.2)}>
+									<span class="gemini">Gemini 4</span>
 									<strong>{name}</strong>
 									<span>{PANELIST_FOCUS[name]}</span>
 								</div>
@@ -251,7 +252,7 @@
 	@media (min-width: 58em) {
 		.slide {
 			grid-template-columns: 5fr 6fr;
-			min-height: 35rem; /* every slide the same height, so the buttons never move */
+			min-height: 36.75rem; /* every slide the same height, so the buttons never move */
 		}
 	}
 
@@ -586,6 +587,16 @@
 		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--espoo-blue);
+	}
+
+	.card .gemini {
+		margin-bottom: 0.2rem;
+		padding: 0.1rem 0.6rem;
+		border-radius: 1rem;
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
+		font-size: var(--text-xs);
+		font-weight: 600;
 	}
 
 	.card--model {
