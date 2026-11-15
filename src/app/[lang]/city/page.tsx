@@ -7,9 +7,9 @@ import { cityStats } from "@/lib/services/decisions";
 import { reviewQueue, cityMatchingList } from "@/lib/services/checks";
 import { eventApplications } from "@/lib/services/company";
 import { db, events as eventsTable } from "@/db";
-import { EventPolicyToggle, ApproveCompany } from "@/components/app/event-actions";
+import { EventCompanies } from "@/components/app/event-companies";
 import { testingOverview } from "@/lib/services/testing";
-import { PageTitle, Section, Empty, fmtTime, eventMode } from "@/components/app/ui";
+import { PageTitle, Section, Empty, fmtTime } from "@/components/app/ui";
 import { EnrollHere } from "@/components/app/city-actions";
 import { proofsToVerify } from "@/lib/services/proofs";
 
@@ -46,18 +46,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
       <Section title="Events">
         {events.map((e, i) => (
           <div key={e.id} className="mb-6">
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
-              <p className="font-medium">{e.title} <span className="ml-2 rounded-full border px-2 py-0.5 text-xs font-normal">{eventMode(e.mode)}</span> <span className="font-normal text-muted-foreground">· {fmtTime(e.startsAt)}</span></p>
-              <EventPolicyToggle eventId={e.id} policy={e.checkPolicy} />
-            </div>
-            <ul className="divide-y border-y text-sm">
-              {applications[i].map((a) => (
-                <li key={a.id} className="flex items-center justify-between gap-4 py-2">
-                  <span>{a.company} <span className="text-muted-foreground">· {a.checkMode === "off" ? "no skill check needed" : `skill check ${a.checkMode}`}</span></span>
-                  {a.confirmedAt ? <span className="text-primary">Confirmed</span> : a.approvedAt ? <span className="text-muted-foreground">Approved, waiting for confirmation</span> : <ApproveCompany eventId={e.id} appId={a.id} />}
-                </li>
-              ))}
-            </ul>
+            <EventCompanies event={e} applications={applications[i]} />
           </div>
         ))}
       </Section>

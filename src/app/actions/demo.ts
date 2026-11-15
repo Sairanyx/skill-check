@@ -8,7 +8,7 @@ import { ApiError } from "@/lib/api";
 import { hasLocale } from "@/i18n/config";
 import { allow, clientIp } from "@/lib/rate-limit";
 import { startCheck } from "@/lib/services/checks";
-import { DEMO_VISIT_MINUTES, openDemoVisit, pickDemoNeed } from "@/lib/services/demo";
+import { DEMO_VISIT_MINUTES, discardDemoVisit, openDemoVisit, panelReachable, pickDemoNeed } from "@/lib/services/demo";
 import { KIOSK_COOKIE } from "@/lib/services/testing";
 
 export type DemoState = { error?: string };
@@ -28,7 +28,11 @@ export async function startDemoCheck(_: DemoState, form: FormData): Promise<Demo
   if (!allow(`demo:ip:${clientIp(await headers())}`, 20, HOUR) || !allow("demo:all", 300, 24 * HOUR))
     return { error: "The demo is busy. Please try again in a few minutes." };
 
+  if (!panelReachable()) return { error: "Skill checks run on the live server. Try it at skillcheck.fi/demo." };
+
   let checkId: string;
+  let visitorId: string | null = null;
+  let workstationId: string | null = null;
   try {
     // A random job unless one is chosen, so every visitor starts with one click. Checked before an account is made.
     const needId = await pickDemoNeed(form.get("needId") ? String(form.get("needId")) : null);
@@ -39,7 +43,10 @@ export async function startDemoCheck(_: DemoState, form: FormData): Promise<Demo
       headers: await headers(),
     }); // also logs this browser in as the visitor
     const visitor = { id: user.id, name: user.name, email, role: "candidate" as const };
-    const token = await openDemoVisit(visitor, needId);
+    visitorId = visitor.id;
+    const visit = await openDemoVisit(visitor, needId);
+    workstationId = visit.workstationId;
+    const token = visit.token;
     // The EXAM room mark lasts only for the visit, so the browser is normal again afterwards.
     (await cookies()).set(KIOSK_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/", maxAge: (DEMO_VISIT_MINUTES + 15) * 60 });
     ({ checkId } = await startCheck(visitor, needId, language, token));
@@ -47,6 +54,7 @@ export async function startDemoCheck(_: DemoState, form: FormData): Promise<Demo
     // Leave the browser as it was: no EXAM room mark, no half-made visitor login.
     (await cookies()).delete(KIOSK_COOKIE);
     await auth.api.signOut({ headers: await headers() }).catch(() => undefined);
+    if (visitorId) await discardDemoVisit(visitorId, workstationId).catch((err) => console.error("demo cleanup failed", err));
     if (e instanceof ApiError && e.status === 503) return { error: "The AI panel is busy right now. Please try again in a moment." };
     return { error: e instanceof Error ? e.message : "Could not start the skill check. Please try again." };
   }

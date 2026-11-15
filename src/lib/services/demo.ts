@@ -52,6 +52,9 @@ async function demoRoom() {
   return room.id;
 }
 
+/** The interview panel runs only on the server (Docker network). Without it a check cannot start, so nothing is created. */
+export const panelReachable = () => !!process.env.PANEL_URL && !!process.env.PANEL_API_KEY;
+
 /** Books `visitor` into a slot starting now on a new demo computer. Returns the kiosk token for this browser. */
 export async function openDemoVisit(visitor: ApiUser, needId: string) {
   await pickDemoNeed(needId); // only demo jobs
@@ -69,5 +72,11 @@ export async function openDemoVisit(visitor: ApiUser, needId: string) {
   await audit(visitor, "appointment.booked", { subjectId: visitor.id, targetType: "appointment", targetId: booking.id, meta: { slotId: slot.id, needIds: [needId], demo: true } });
 
   const { token } = await enrollWorkstation({ id: city.id, name: city.name, email: city.email, role: "city" }, ws.id);
-  return token;
+  return { token, workstationId: ws.id };
+}
+
+/** A visit that could not start leaves nothing behind: the visitor (with its booking) and its demo computer (with its slot). */
+export async function discardDemoVisit(visitorId: string, workstationId: string | null) {
+  await db.delete(user).where(eq(user.id, visitorId));
+  if (workstationId) await db.delete(workstations).where(eq(workstations.id, workstationId));
 }
