@@ -10,5 +10,5 @@ git archive --format=tar HEAD | ssh "$HOST" \
 scp -q infra/docker-compose.yml infra/Caddyfile "$HOST":/opt/skill-check/
 # Fail loudly if the build fails (a full disk once made deploys silently keep the old version),
 # and clear the build cache afterwards: the disk is small next to the AI models.
-ssh "$HOST" 'set -o pipefail; cd /opt/skill-check && docker compose build app panel demo 2>&1 | tail -3 && docker compose up -d app panel demo caddy 2>&1 | tail -2; status=$?; docker builder prune -af >/dev/null 2>&1; df -h / | tail -1 | awk "{print \"disk free: \" \$4}"; exit $status'
+ssh "$HOST" 'set -o pipefail; cd /opt/skill-check && docker compose build app panel demo 2>&1 | tail -3 && docker compose up -d app panel demo caddy 2>&1 | tail -2 && docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile >/dev/null 2>&1; status=$?; docker builder prune -af >/dev/null 2>&1; df -h / | tail -1 | awk "{print \"disk free: \" \$4}"; exit $status'
 echo "Live: https://skillcheck.fi"

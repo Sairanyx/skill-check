@@ -8,7 +8,8 @@
 
 <p align="center"><b>No CV. No cover letter. Just talk about your skills.</b><br>
 Fair skill checks for City of Espoo recruitment events.<br>
-Junction 2026 · City of Espoo challenge "Rethinking Recruitment" · Team SkillCheck</p>
+Junction 2026 · City of Espoo challenge "Rethinking Recruitment"<br>
+Team SkillCheck: Eduard Rednic and Chris Petaroudis</p>
 
 <p align="center"><a href="https://skillcheck.fi"><b>skillcheck.fi</b></a> · synthetic data only</p>
 
@@ -89,6 +90,6 @@ Set `GUARD_BASE_URL` to a Gemma server so names are removed before Gemini reads 
 | [Panel API](docs/PANEL_API.md) | The interview panel service |
 | [Demo server API](demo/SERVER_API.md) | The demo server and its privacy guard |
 
-## License
+## Team and license
 
-MIT. See [LICENSE](LICENSE).
+Team SkillCheck: Eduard Rednic and Chris Petaroudis. MIT license, see [LICENSE](LICENSE).
