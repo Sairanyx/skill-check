@@ -43,7 +43,7 @@ export const FALLBACK_ROLES = [
 
 /** What each panelist listens for, keyed by the `panelist` name in memos and verdicts. */
 export const PANELIST_FOCUS = {
-	Carbon: 'Chair · lived experience',
+	Carbon: 'Lived experience',
 	Hydrogen: 'Hands-on craft',
 	Argon: 'Problem solving'
 };

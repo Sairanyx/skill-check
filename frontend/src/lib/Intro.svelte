@@ -169,17 +169,18 @@
 								<Redacted text="My name is [NAME], I am [PERSONAL] and I worked at [EMPLOYER] in [PLACE] until [YEAR]. First I check the level with a laser." from={1.6} />
 							</p>
 						</div>
+						<p class="panel__label rise" style={delay(3.2)}>Three Gemini 4 models read only this</p>
 						<div class="panel">
 							{#each PANEL as name, n (name)}
-								<div class="card card--model pop" style={delay(3.4 + n * 0.25)}>
-									<strong>Gemini 4 {name}</strong>
-									<span class="eyebrow">{PANELIST_FOCUS[name]}</span>
+								<div class="card card--model rise" style={delay(3.4 + n * 0.2)}>
+									<strong>{name}</strong>
+									<span>{PANELIST_FOCUS[name]}</span>
 								</div>
 							{/each}
 						</div>
 					{:else}
 						<div class="card card--result pop" style={delay(0.1)}>
-							<span class="eyebrow">Candidate 31F1 · Data analyst · no name, no photo</span>
+							<span class="eyebrow">Candidate 31F1 · data analyst · no name, no photo</span>
 							<span class="score pop" style={delay(0.6)}>8.8<small>/10</small></span>
 							<span class="badge pop" style={delay(1)}>Meet this candidate</span>
 							<p class="quote rise" style={delay(1.4)}>“isolate the incomplete journeys instead of guessing timestamps”</p>
@@ -250,7 +251,7 @@
 	@media (min-width: 58em) {
 		.slide {
 			grid-template-columns: 5fr 6fr;
-			min-height: 34rem; /* every slide the same height, so the buttons never move */
+			min-height: 35rem; /* every slide the same height, so the buttons never move */
 		}
 	}
 
@@ -351,8 +352,6 @@
 
 	.eyebrow {
 		font-size: var(--text-xs) !important;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
 	}
 
 	.said {
@@ -580,6 +579,18 @@
 		background-color: var(--espoo-blue);
 		color: var(--espoo-on-blue);
 		font-size: var(--text-sm);
+	}
+
+	.panel__label {
+		text-align: center;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--espoo-blue);
+	}
+
+	.card--model {
+		justify-items: center;
+		text-align: center;
 	}
 
 	.panel {

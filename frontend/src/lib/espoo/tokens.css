@@ -33,7 +33,7 @@
 	--espoo-ease: 0.15s ease;
 
 	/* One type scale for every screen, six sizes only. Lato for headings, Work Sans for text. */
-	--text-xs: 0.75rem; /* 12px: small uppercase labels only */
+	--text-xs: 0.75rem; /* 12px: small labels only */
 	--text-sm: 0.875rem; /* 14px: captions, sources, badges */
 	--text-base: 1rem; /* 16px: all normal text, leads and card titles (bold) */
 	--text-lg: 1rem; /* same as base: one size for text */
