@@ -3,6 +3,7 @@
 		EspooAccordion,
 		EspooAlert,
 		EspooBadge,
+		EspooBar,
 		EspooButton,
 		EspooCard,
 		EspooSpinner
@@ -71,9 +72,7 @@
 							<strong>{skill.skill}</strong>
 							<EspooBadge {tone}>{skill.score}/10</EspooBadge>
 						</div>
-						<div class="bar" aria-hidden="true">
-							<span class="bar__fill bar__fill--{tone}" style:width="{skill.score * 10}%"></span>
-						</div>
+						<EspooBar value={skill.score * 10} {tone} />
 						<p>{skill.reason}</p>
 						{#each skill.quotes as quote (quote)}
 							<blockquote>“{quote}”</blockquote>
@@ -221,28 +220,6 @@
 		justify-content: space-between;
 		gap: 0.75rem;
 		color: var(--espoo-apricot);
-	}
-
-	.bar {
-		height: 0.4rem;
-		background-color: var(--espoo-navy);
-	}
-
-	.bar__fill {
-		display: block;
-		height: 100%;
-	}
-
-	.bar__fill--apricot {
-		background-color: var(--espoo-apricot);
-	}
-
-	.bar__fill--outline {
-		background-color: var(--espoo-blue);
-	}
-
-	.bar__fill--alert {
-		background-color: var(--espoo-coral);
 	}
 
 	blockquote {

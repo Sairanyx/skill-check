@@ -1,26 +1,21 @@
 <script>
 	import { onDestroy, tick } from 'svelte';
-	import {
-		EspooAlert,
-		EspooButton,
-		EspooCard,
-		EspooField,
-		EspooHero,
-		EspooSpinner
-	} from './espoo/index.js';
+	import { EspooAlert, EspooButton, EspooCard, EspooField, EspooSpinner } from './espoo/index.js';
+	import BoothSetup from './BoothSetup.svelte';
+	import ReadinessMeter from './ReadinessMeter.svelte';
 	import RoundNotes from './RoundNotes.svelte';
 	import Transcript from './Transcript.svelte';
 	import { api, waitForReport } from './api.js';
-	import { LANGUAGES } from './format.js';
 	import { SAMPLE_ANSWERS } from './samples.js';
 
-	let { roles } = $props();
+	let { roles, onaddrole } = $props();
 
 	/** @type {'setup' | 'starting' | 'active' | 'sending' | 'reporting' | 'done' | 'failed'} */
 	let status = $state('setup');
 	let roleId = $state('');
-	let language = $state('en');
 	let interviewId = $state('');
+	/** How close the panel is to a result (0–100); null if the server doesn't say. */
+	let progress = $state(null);
 	/** @type {Array<{ speaker: 'interviewer' | 'candidate', text: string }>} */
 	let transcript = $state([]);
 	let latestRound = $state(null);
@@ -39,14 +34,20 @@
 
 	onDestroy(() => reportWait?.abort());
 
-	async function start(event) {
-		event.preventDefault();
+	/** Keeps the last known value when an older server sends no `progress`. */
+	function updateProgress(value) {
+		if (typeof value === 'number') progress = value;
+	}
+
+	async function start(chosenRoleId, language) {
 		error = '';
+		roleId = chosenRoleId;
 		status = 'starting';
 		try {
-			const { id, message } = await api.startInterview(role.id, language);
-			interviewId = id;
-			transcript = [{ speaker: 'interviewer', text: message }];
+			const step = await api.startInterview(chosenRoleId, language);
+			interviewId = step.id;
+			transcript = [{ speaker: 'interviewer', text: step.message }];
+			updateProgress(step.progress);
 			status = 'active';
 			refreshPanelNotes();
 			await tick();
@@ -68,10 +69,11 @@
 		transcript = [...transcript, { speaker: 'candidate', text }];
 		scrollToEnd();
 		try {
-			const { message, done } = await api.sendMessage(interviewId, text);
-			transcript = [...transcript, { speaker: 'interviewer', text: message }];
+			const step = await api.sendMessage(interviewId, text);
+			transcript = [...transcript, { speaker: 'interviewer', text: step.message }];
+			updateProgress(step.progress);
 			refreshPanelNotes();
-			if (done) awaitReport();
+			if (step.done) awaitReport();
 			else status = 'active';
 		} catch (e) {
 			transcript = transcript.slice(0, -1);
@@ -113,6 +115,7 @@
 		reportWait?.abort();
 		status = 'setup';
 		interviewId = '';
+		progress = null;
 		transcript = [];
 		latestRound = null;
 		feedback = '';
@@ -131,80 +134,10 @@
 	}
 </script>
 
-{#snippet errorAlert()}
-	{#if error}<EspooAlert variant="alert">{error}</EspooAlert>{/if}
-{/snippet}
-
 {#if status === 'setup' || status === 'starting'}
-	<EspooHero
-		title="Show what you can do, not what your CV says"
-		lead="Solve real problems from the job you want, in your own words. No CV, no phone, no points for grammar — only your skill counts."
-	>
-		{#snippet aside()}
-			<ol class="steps">
-				<li>
-					<strong>Come to the booth</strong>
-					<span>Just you and a real work scenario. Nothing else in the room, so it's really you.</span>
-				</li>
-				<li>
-					<strong>Talk it through</strong>
-					<span>Three AI panelists listen and agree together on each next question.</span>
-				</li>
-				<li>
-					<strong>People decide</strong>
-					<span>The employer gets a report backed by your own words, and chooses whom to meet.</span>
-				</li>
-			</ol>
-		{/snippet}
-	</EspooHero>
-
-	<section class="espoo-container band">
-		<form class="setup" onsubmit={start}>
-			<h2 id="role-heading">Which job are you here for?</h2>
-
-			<div class="roles" role="radiogroup" aria-labelledby="role-heading">
-				{#each roles as r (r.id)}
-					<label class="role" class:selected={r.id === role.id}>
-						<input
-							class="visually-hidden"
-							type="radio"
-							name="role"
-							value={r.id}
-							checked={r.id === role.id}
-							disabled={status === 'starting'}
-							onchange={() => (roleId = r.id)}
-						/>
-						<span class="espoo-muted role__company">{r.company}</span>
-						<strong class="role__title">{r.title}</strong>
-						<span>{r.summary}</span>
-						<span class="espoo-muted role__skills">Assessed: {r.skills.join(' · ')}</span>
-					</label>
-				{/each}
-			</div>
-
-			<div class="setup__go">
-				<EspooField label="Interview language" for="language">
-					<select id="language" class="espoo-input" bind:value={language} disabled={status === 'starting'}>
-						{#each LANGUAGES as lang (lang.value)}
-							<option value={lang.value}>{lang.label}</option>
-						{/each}
-					</select>
-				</EspooField>
-				<EspooButton type="submit" disabled={status === 'starting'}>
-					{status === 'starting' ? 'Starting…' : 'Start interview'}
-				</EspooButton>
-			</div>
-
-			{#if status === 'starting'}
-				<EspooSpinner>The panel is preparing your first question. This takes about 15 seconds.</EspooSpinner>
-			{/if}
-			{@render errorAlert()}
-		</form>
-
-		<a class="espoo-arrow-link" href="#review">No time for an interview? Read a finished sample report</a>
-	</section>
+	<BoothSetup {roles} starting={status === 'starting'} {error} {onaddrole} onstart={start} />
 {:else}
-	<section class="espoo-container band interview">
+	<section class="espoo-container espoo-section interview">
 		<div class="chat">
 			<header class="chat__head">
 				<div>
@@ -216,12 +149,16 @@
 				{/if}
 			</header>
 
+			{#if progress !== null}
+				<ReadinessMeter value={status === 'reporting' || status === 'done' ? 100 : progress} />
+			{/if}
+
 			<Transcript turns={transcript} candidateName="You" />
 
 			{#if status === 'sending'}
 				<EspooSpinner>The panel is discussing your answer. This takes about 15 seconds.</EspooSpinner>
 			{/if}
-			{@render errorAlert()}
+			{#if error}<EspooAlert variant="alert">{error}</EspooAlert>{/if}
 
 			{#if status === 'active' || status === 'sending'}
 				<form class="composer" onsubmit={send}>
@@ -294,101 +231,6 @@
 {/if}
 
 <style>
-	.band {
-		display: grid;
-		gap: 2rem;
-		padding-block: 3rem;
-	}
-
-	.steps {
-		display: grid;
-		gap: 1.25rem;
-		max-width: 26rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		counter-reset: step;
-	}
-
-	.steps li {
-		display: grid;
-		grid-template-columns: 2.25rem 1fr;
-		column-gap: 0.85rem;
-		counter-increment: step;
-	}
-
-	.steps li::before {
-		content: counter(step);
-		grid-row: span 2;
-		display: grid;
-		place-items: center;
-		width: 2.25rem;
-		height: 2.25rem;
-		border: 1.5px solid var(--espoo-apricot);
-		border-radius: 50%;
-		font-family: var(--espoo-font-heading);
-		font-weight: 700;
-		color: var(--espoo-apricot);
-	}
-
-	.steps span {
-		color: var(--espoo-text-muted);
-		font-size: 0.95rem;
-	}
-
-	.setup {
-		display: grid;
-		gap: 1.5rem;
-	}
-
-	.roles {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-		gap: 1rem;
-	}
-
-	.role {
-		display: grid;
-		align-content: start;
-		gap: 0.4rem;
-		padding: 1.25rem 1.4rem;
-		background-color: var(--espoo-midnight);
-		border: 2px solid transparent;
-		cursor: pointer;
-		transition: border-color var(--espoo-ease);
-	}
-
-	.role:hover {
-		border-color: var(--espoo-border-strong);
-	}
-
-	.role.selected {
-		border-color: var(--espoo-apricot);
-	}
-
-	.role:has(:focus-visible) {
-		outline: 2px solid var(--espoo-apricot);
-		outline-offset: 2px;
-	}
-
-	.role__company,
-	.role__skills {
-		font-size: 0.85rem;
-	}
-
-	.role__title {
-		font-family: var(--espoo-font-heading);
-		font-size: 1.25rem;
-		color: var(--espoo-apricot);
-	}
-
-	.setup__go {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-end;
-		gap: 1rem;
-	}
-
 	.interview {
 		align-items: start;
 	}

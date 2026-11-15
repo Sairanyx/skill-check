@@ -6,48 +6,9 @@
 //! verdicts independently and the chair writes the report people read.
 
 use crate::gemini::Gemini;
+use crate::roles::Role;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-
-// ── Roles (synthetic demo data) ─────────────────────────────────────────────
-
-#[derive(Serialize)]
-pub struct Role {
-    pub id: &'static str,
-    pub company: &'static str,
-    pub title: &'static str,
-    /// What the person will actually do.
-    pub summary: &'static str,
-    pub skills: &'static [&'static str],
-}
-
-pub static ROLES: &[Role] = &[
-    Role {
-        id: "bricklayer",
-        company: "Tiilitalo Rakennus Oy (synthetic)",
-        title: "Bricklayer",
-        summary: "Lay brick and block walls and facades on residential sites in Espoo, from setting out the first course to finishing joints, working in a small crew.",
-        skills: &["Setting out and levelling", "Mortar and materials", "Openings and structure", "Safety and teamwork"],
-    },
-    Role {
-        id: "backend-developer",
-        company: "Otaniemi Robotics (synthetic)",
-        title: "Backend developer",
-        summary: "Build and run the API that coordinates a fleet of warehouse robots: services, Postgres, message queues, on-call for production incidents.",
-        skills: &["System design", "Debugging production", "Data and SQL", "Collaboration"],
-    },
-    Role {
-        id: "practical-nurse",
-        company: "Leppävaara Care Home (synthetic)",
-        title: "Practical nurse",
-        summary: "Daily care of elderly residents: medication rounds, hygiene, mobility help, noticing changes in condition and reporting them to the nurse in charge.",
-        skills: &["Observing and escalating", "Safe medication and hygiene", "Dignity and communication"],
-    },
-];
-
-pub fn role(id: &str) -> Option<&'static Role> {
-    ROLES.iter().find(|r| r.id == id)
-}
 
 // ── What gets stored ────────────────────────────────────────────────────────
 
@@ -116,7 +77,8 @@ pub struct Memo {
     pub reads_last_message_as: String,
     pub observations: String,
     pub proposed_question: String,
-    pub enough_info: bool,
+    /// 0-100: how sure this panelist is that they could already defend a score for every skill.
+    pub readiness: f64,
     pub provisional_score: f64,
 }
 
@@ -127,10 +89,20 @@ pub struct Round {
     pub chair_reasoning: String,
     /// The open question after this round (without any remark before it).
     pub question: String,
+    /// The panelists' readiness, weighted (0-100).
+    pub readiness: f64,
     pub is_done: bool,
-    /// Set when the code overruled the chair.
+    /// Why it ended, once it has: the panel was ready, or a limit was reached.
     #[serde(default)]
-    pub overruled: String,
+    pub ended_because: String,
+}
+
+impl Round {
+    /// 0-100 for the candidate: how close the panel is to a result. 100 only
+    /// once it's over; the panel's threshold counts as 100.
+    pub fn progress(&self) -> u8 {
+        if self.is_done { 100 } else { (self.readiness / READY_AT * 100.0).min(99.0) as u8 }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -177,14 +149,27 @@ struct Panelist {
     name: &'static str,
     model: &'static str,
     lens: &'static str,
+    /// How much this panelist counts in every panel decision and score.
+    weight: f64,
 }
 
+/// The chair comes first.
 static PANEL: [Panelist; 3] = [
+    Panelist {
+        name: "Carbon",
+        model: "gemini-4-carbon",
+        lens: "Your lens is authenticity: are the answers grounded in lived experience (specific, \
+with the messy details) or generic textbook phrasing? Propose follow-ups a person who really did \
+the work could answer easily and a bluffer could not.",
+        // In testing, the best at telling what's true from what only sounds right.
+        weight: 1.5,
+    },
     Panelist {
         name: "Hydrogen",
         model: "gemini-4-hydrogen",
-        lens: "You chair the panel. Your lens is hands-on job knowledge: does the candidate actually \
-know how this work is done, step by step, with the real tools, materials and constraints?",
+        lens: "Your lens is hands-on job knowledge: does the candidate actually know how this work \
+is done, step by step, with the real tools, materials and constraints?",
+        weight: 1.0,
     },
     Panelist {
         name: "Argon",
@@ -192,21 +177,28 @@ know how this work is done, step by step, with the real tools, materials and con
         lens: "Your lens is HOW the candidate thinks: do they break a problem down, notice what \
 matters, handle the unexpected, reason about trade-offs, and know when to ask for help? Someone \
 who reasons well but lacks vocabulary should still score well here.",
-    },
-    Panelist {
-        name: "Carbon",
-        model: "gemini-4-carbon",
-        lens: "Your lens is authenticity: are the answers grounded in lived experience (specific, \
-with the messy details) or generic textbook phrasing? Propose follow-ups a person who really did \
-the work could answer easily and a bluffer could not.",
+        weight: 1.0,
     },
 ];
+const CHAIR: &Panelist = &PANEL[0];
+
+fn one_decimal(x: f64) -> f64 {
+    (x * 10.0).round() / 10.0
+}
+
+/// The weighted mean of one value per panelist, given in PANEL order.
+fn weighted(values: impl IntoIterator<Item = f64>) -> f64 {
+    let total: f64 = PANEL.iter().map(|p| p.weight).sum();
+    PANEL.iter().zip(values).map(|(p, v)| p.weight * v).sum::<f64>() / total
+}
 
 // Thinking: LOW during the interview to keep turns quick, HIGH for the verdict.
 const TURN_THINKING: &str = "LOW";
 const VERDICT_THINKING: &str = "HIGH";
 
-/// Real answers needed before the panel may finish.
+/// The interview ends as soon as the panel's weighted readiness reaches this.
+const READY_AT: f64 = 85.0;
+/// Real answers needed before the panel may finish, however ready it says it is.
 const MIN_ANSWERS: usize = 3;
 /// Answers + off-track turns. Clarifying questions are free.
 const MAX_BUDGET: usize = 14;
@@ -264,7 +256,8 @@ fn transcript_block(t: &[Turn]) -> String {
 }
 
 fn system(p: &Panelist) -> String {
-    format!("{BASE}\n\n{RULES}\n\nYOU ARE PANELIST {}. {}", p.name, p.lens)
+    let chair = if std::ptr::eq(p, CHAIR) { " You chair the panel." } else { "" };
+    format!("{BASE}\n\n{RULES}\n\nYOU ARE PANELIST {}.{chair} {}", p.name, p.lens)
 }
 
 fn s(v: &Value, k: &str) -> String {
@@ -277,6 +270,14 @@ fn strs(v: &Value) -> Vec<String> {
 
 fn count(t: &[Turn], kind: Kind) -> usize {
     t.iter().filter(|t| t.kind == Some(kind)).count()
+}
+
+/// How the panel reads the latest message: the weighted vote of the memos.
+/// Unclear readings count as an answer, and so do ties: the conservative reading.
+fn panel_reads(memos: &[Memo]) -> Kind {
+    let read = |m: &Memo| serde_json::from_value(json!(m.reads_last_message_as)).unwrap_or(Kind::Answer);
+    let votes = |k: Kind| weighted(memos.iter().map(|m| (read(m) == k) as u8 as f64));
+    [Kind::OffTrack, Kind::Clarifying, Kind::Answer].into_iter().max_by(|a, b| votes(*a).total_cmp(&votes(*b))).unwrap()
 }
 
 /// Ask all three panelists at once. All three must answer: no partial panels.
@@ -302,14 +303,21 @@ pub async fn next_turn(llm: &Gemini, role: &Role, t: &[Turn], rounds: &[Round], 
     let answers = count(before, Kind::Answer);
     let used = answers + count(before, Kind::OffTrack);
     let messages = before.iter().filter(|t| t.speaker == Speaker::Candidate).count() + 1;
-    let status = format!("So far: {answers} answers, {used}/{MAX_BUDGET} budget used (answers and off-track count, clarifying questions don't).");
+    let last_readiness = rounds.last().map_or(0.0, |r| r.readiness);
+    let status = format!(
+        "So far: {answers} answers, {used}/{MAX_BUDGET} budget used (answers and off-track count, \
+clarifying questions don't). Panel readiness after the last message: {last_readiness:.0}/100. The \
+interview ends as soon as the panel's readiness reaches {READY_AT:.0} with at least {MIN_ANSWERS} answers."
+    );
 
     // 1. Three private memos, in parallel.
     let memo_task = format!(
         "{}\n\n{}\n\n{status}\n\n{}Write your private memo to the other two panelists. Cite the \
 candidate's own words. Propose the single best next question (in {lang}) for what the panel knows \
 least about yet. If the latest message is off_track, propose the same open question again. \
-enough_info = you could already defend a score for every skill. provisional_score: 0 (worst) to 10 (best).",
+readiness: 0-100, how sure you are that you could already defend a score for EVERY skill with \
+evidence from the transcript (100 = nothing important left to learn). Be honest both ways: don't \
+keep asking once you know, and don't stop before you do. provisional_score: 0 (worst) to 10 (best).",
         role_block(role),
         transcript_block(t),
         if first { "The interview hasn't started; reads_last_message_as = \"none\".\n\n" } else { "First, how do you read the candidate's LATEST message?\n\n" },
@@ -320,10 +328,10 @@ enough_info = you could already defend a score for every skill. provisional_scor
             "reads_last_message_as": { "type": "string", "enum": ["answer", "clarifying", "off_track", "none"] },
             "observations": { "type": "string" },
             "proposed_question": { "type": "string" },
-            "enough_info": { "type": "boolean" },
+            "readiness": { "type": "number" },
             "provisional_score": { "type": "number" }
         },
-        "required": ["reads_last_message_as", "observations", "proposed_question", "enough_info", "provisional_score"]
+        "required": ["reads_last_message_as", "observations", "proposed_question", "readiness", "provisional_score"]
     });
     let memos: Vec<Memo> = all_three(llm, &memo_task, &memo_schema, TURN_THINKING)
         .await?
@@ -333,67 +341,62 @@ enough_info = you could already defend a score for every skill. provisional_scor
             reads_last_message_as: s(&v, "reads_last_message_as"),
             observations: s(&v, "observations"),
             proposed_question: s(&v, "proposed_question"),
-            enough_info: v["enough_info"].as_bool().unwrap_or(false),
+            readiness: v["readiness"].as_f64().unwrap_or(0.0).clamp(0.0, 100.0),
             provisional_score: v["provisional_score"].as_f64().unwrap_or(0.0).clamp(0.0, 10.0),
         })
         .collect();
-    let memo_text: Vec<String> = memos
-        .iter()
-        .map(|m| format!("— {} —\nReads it as: {}\n{}\nProposed: {}\nEnough info: {}, score {}", m.panelist, m.reads_last_message_as, m.observations, m.proposed_question, m.enough_info, m.provisional_score))
-        .collect();
 
-    // 2. The chair decides. The code then holds it to the rules.
-    let chair = |rule: &str| {
-        let task = format!(
-            "{}\n\n{}\n\nPANEL MEMOS:\n{}\n\n{status}\n\n{rule}\n\nmessage: only what an \
-interviewer says next, in {lang}: ONE question, or the facts a clarifying question asked for. No \
-greeting, no explanation, no feedback. If finishing: a short thank-you only. If the latest message \
-is off_track, set remark to ONE short calm sentence saying what happened (e.g. that you can't give \
-the answer, or that this doesn't answer the question); if it has happened before, also say plainly \
-that replies like this count against the assessment. Otherwise leave remark empty.",
-            role_block(role),
-            transcript_block(t),
-            memo_text.join("\n\n"),
-        );
-        async move {
-            let schema = json!({
-                "type": "object",
-                "properties": {
-                    "last_message_is": { "type": "string", "enum": ["answer", "clarifying", "off_track", "none"] },
-                    "reasoning_to_panel": { "type": "string" },
-                    "is_done": { "type": "boolean" },
-                    "remark": { "type": "string" },
-                    "message": { "type": "string" }
-                },
-                "required": ["last_message_is", "reasoning_to_panel", "is_done", "remark", "message"]
-            });
-            llm.ask(PANEL[0].model, &system(&PANEL[0]), &task, &schema, TURN_THINKING).await
-        }
-    };
-    let free = if first {
-        "This is the opening: is_done = false.".to_string()
-    } else {
-        format!("You may finish (is_done = true) only with at least {MIN_ANSWERS} answers counting this message, and only when the panel majority can make a correct assessment. Finish as soon as that's true.")
-    };
-    let mut c = chair(&free).await?;
-
-    // Unclear ("none", missing) counts as an answer: the conservative reading.
-    let kind = (!first).then(|| serde_json::from_value(c["last_message_is"].clone()).unwrap_or(Kind::Answer));
+    // 2. The code decides from the memos: how the message counts, and whether it's over.
+    let kind = (!first).then(|| panel_reads(&memos));
     let answers_now = answers + (kind == Some(Kind::Answer)) as usize;
     let used_now = used + matches!(kind, Some(Kind::Answer | Kind::OffTrack)) as usize;
-    let mut done = c["is_done"].as_bool().unwrap_or(false);
-    let mut overruled = String::new();
+    let readiness = one_decimal(weighted(memos.iter().map(|m| m.readiness)));
+    let ended_because = if first {
+        String::new()
+    } else if answers_now >= MIN_ANSWERS && readiness >= READY_AT {
+        format!("panel ready ({readiness:.0}/100 after {answers_now} answers)")
+    } else if used_now >= MAX_BUDGET || messages >= MAX_MESSAGES {
+        format!("limit reached ({used_now}/{MAX_BUDGET} budget, {messages} messages)")
+    } else {
+        String::new()
+    };
+    let done = !ended_because.is_empty();
 
-    let must_finish = !first && (used_now >= MAX_BUDGET || messages >= MAX_MESSAGES);
-    if must_finish && !done {
-        overruled = format!("limit reached ({used_now}/{MAX_BUDGET} budget, {messages} messages)");
-        c = chair("MANDATORY: the interview ends now. is_done = true.").await?;
-        done = true;
-    } else if done && (first || answers_now < MIN_ANSWERS) && !must_finish {
-        overruled = format!("only {answers_now} of {MIN_ANSWERS} answers");
-        c = chair("MANDATORY: too few real answers yet. is_done = false: keep going.").await?;
-        done = false;
-    }
+    // 3. The chair says it to the candidate.
+    let memo_text: Vec<String> = memos
+        .iter()
+        .map(|m| format!("— {} —\nReads it as: {}\n{}\nProposed: {}\nReadiness {}, score {}", m.panelist, m.reads_last_message_as, m.observations, m.proposed_question, m.readiness, m.provisional_score))
+        .collect();
+    let decision = match kind {
+        None => "This is the opening: ask the first question.".to_string(),
+        Some(_) if done => "The panel has decided: the interview ends now. message = a short thank-you only.".to_string(),
+        Some(k) => format!(
+            "The panel reads the latest message as {}. Ask the next question: the best of the \
+proposed ones for what the panel knows least about. If the latest message is off_track, set remark \
+to ONE short calm sentence saying what happened (e.g. that you can't give the answer, or that this \
+doesn't answer the question); if it has happened before, also say plainly that replies like this \
+count against the assessment. Otherwise leave remark empty.",
+            k.as_str()
+        ),
+    };
+    let chair_task = format!(
+        "{}\n\n{}\n\nPANEL MEMOS:\n{}\n\n{status}\n\n{decision}\n\nmessage: only what an \
+interviewer says next, in {lang}: ONE question, or the facts a clarifying question asked for. No \
+greeting, no explanation, no feedback.",
+        role_block(role),
+        transcript_block(t),
+        memo_text.join("\n\n"),
+    );
+    let chair_schema = json!({
+        "type": "object",
+        "properties": {
+            "reasoning_to_panel": { "type": "string" },
+            "remark": { "type": "string" },
+            "message": { "type": "string" }
+        },
+        "required": ["reasoning_to_panel", "remark", "message"]
+    });
+    let c = llm.ask(CHAIR.model, &system(CHAIR), &chair_task, &chair_schema, TURN_THINKING).await?;
 
     let mut question = s(&c, "message");
     if question.is_empty() {
@@ -402,18 +405,19 @@ that replies like this count against the assessment. Otherwise leave remark empt
     let mut message = question.clone();
     // Off-track answers nothing, so the open question stays open: a short remark,
     // then exactly that question again. Enforced here, not left to the prompt.
-    if kind == Some(Kind::OffTrack) && !done {
-        if let Some(open) = rounds.last().map(|r| r.question.clone()) {
-            let remark = s(&c, "remark");
-            message = if remark.is_empty() { open.clone() } else { format!("{remark}\n\n{open}") };
-            question = open;
-        }
+    if kind == Some(Kind::OffTrack)
+        && !done
+        && let Some(open) = rounds.last().map(|r| r.question.clone())
+    {
+        let remark = s(&c, "remark");
+        message = if remark.is_empty() { open.clone() } else { format!("{remark}\n\n{open}") };
+        question = open;
     }
 
     Ok(Step {
         message,
         kind,
-        round: Round { memos, chair_reasoning: s(&c, "reasoning_to_panel"), question, is_done: done, overruled },
+        round: Round { memos, chair_reasoning: s(&c, "reasoning_to_panel"), question, readiness, is_done: done, ended_because },
     })
 }
 
@@ -484,7 +488,7 @@ sentences to the candidate in {}, no score. Everything else in English, short an
         },
         "required": ["summary", "skills", "strengths", "gaps", "inquiry", "suggested_conversation", "candidate_feedback"]
     });
-    let r = llm.ask(PANEL[0].model, &system(&PANEL[0]), &report_task, &report_schema, VERDICT_THINKING).await?;
+    let r = llm.ask(CHAIR.model, &system(CHAIR), &report_task, &report_schema, VERDICT_THINKING).await?;
 
     // Quotes must really be in what the candidate said.
     let norm = |x: &str| x.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect::<Vec<_>>().join(" ");
@@ -504,21 +508,50 @@ sentences to the candidate in {}, no score. Everything else in English, short an
         })
         .collect();
 
-    let scores: Vec<f64> = panel.iter().map(|v| v.how_good_or_bad).collect();
-    let mean = scores.iter().sum::<f64>() / scores.len() as f64;
-    let spread = scores.iter().cloned().fold(f64::MIN, f64::max) - scores.iter().cloned().fold(f64::MAX, f64::min);
+    let scores = || panel.iter().map(|v| v.how_good_or_bad);
+    let spread = scores().fold(f64::MIN, f64::max) - scores().fold(f64::MAX, f64::min);
     Ok(Report {
         is_done: true,
-        is_person_good: panel.iter().filter(|v| v.is_person_good).count() >= 2,
-        how_good_or_bad: (mean * 10.0).round() / 10.0,
+        is_person_good: weighted(panel.iter().map(|v| v.is_person_good as u8 as f64)) > 0.5,
+        how_good_or_bad: one_decimal(weighted(scores())),
         summary: s(&r, "summary"),
         skills,
         strengths: strs(&r["strengths"]),
         gaps: strs(&r["gaps"]),
-        disagreement: (spread * 10.0).round() / 10.0,
+        disagreement: one_decimal(spread),
         panel,
         inquiry: s(&r, "inquiry"),
         suggested_conversation: s(&r, "suggested_conversation"),
         candidate_feedback: s(&r, "candidate_feedback"),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn memo(reads: &str) -> Memo {
+        Memo { panelist: String::new(), reads_last_message_as: reads.into(), observations: String::new(), proposed_question: String::new(), readiness: 0.0, provisional_score: 0.0 }
+    }
+
+    fn reads(carbon: &str, hydrogen: &str, argon: &str) -> Kind {
+        panel_reads(&[memo(carbon), memo(hydrogen), memo(argon)])
+    }
+
+    #[test]
+    fn carbon_counts_more_but_two_others_outvote_it() {
+        assert_eq!(weighted([10.0, 0.0, 0.0]), 10.0 * 1.5 / 3.5);
+        assert!(reads("off_track", "clarifying", "answer") == Kind::OffTrack);
+        assert!(reads("off_track", "answer", "answer") == Kind::Answer);
+        assert!(reads("none", "clarifying", "garbage") == Kind::Answer);
+    }
+
+    #[test]
+    fn progress_reaches_100_only_when_done() {
+        let round = |readiness, is_done| Round { memos: vec![], chair_reasoning: String::new(), question: String::new(), readiness, is_done, ended_because: String::new() };
+        assert_eq!(round(0.0, false).progress(), 0);
+        assert_eq!(round(READY_AT / 2.0, false).progress(), 50);
+        assert_eq!(round(100.0, false).progress(), 99);
+        assert_eq!(round(10.0, true).progress(), 100);
+    }
 }

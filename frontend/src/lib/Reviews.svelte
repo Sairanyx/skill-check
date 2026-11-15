@@ -83,7 +83,7 @@
 	}
 </script>
 
-<section class="espoo-container reviews">
+<section class="espoo-container espoo-section">
 	<header class="reviews__head">
 		<h1>Interview reports</h1>
 		<p class="espoo-muted">The panel recommends. People decide whom to meet.</p>
@@ -126,12 +126,6 @@
 </section>
 
 <style>
-	.reviews {
-		display: grid;
-		gap: 1.75rem;
-		padding-block: 3rem;
-	}
-
 	.reviews__head {
 		display: grid;
 		gap: 0.4rem;

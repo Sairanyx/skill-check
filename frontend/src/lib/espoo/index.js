@@ -1,6 +1,7 @@
 export { default as EspooAccordion } from './EspooAccordion.svelte';
 export { default as EspooAlert } from './EspooAlert.svelte';
 export { default as EspooBadge } from './EspooBadge.svelte';
+export { default as EspooBar } from './EspooBar.svelte';
 export { default as EspooButton } from './EspooButton.svelte';
 export { default as EspooCard } from './EspooCard.svelte';
 export { default as EspooField } from './EspooField.svelte';

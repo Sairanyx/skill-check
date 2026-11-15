@@ -1,0 +1,23 @@
+[
+  {
+    "id": "bricklayer",
+    "company": "Tiilitalo Rakennus Oy (synthetic)",
+    "title": "Bricklayer",
+    "summary": "Lay brick and block walls and facades on residential sites in Espoo, from setting out the first course to finishing joints, working in a small crew.",
+    "skills": ["Setting out and levelling", "Mortar and materials", "Openings and structure", "Safety and teamwork"]
+  },
+  {
+    "id": "backend-developer",
+    "company": "Otaniemi Robotics (synthetic)",
+    "title": "Backend developer",
+    "summary": "Build and run the API that coordinates a fleet of warehouse robots: services, Postgres, message queues, on-call for production incidents.",
+    "skills": ["System design", "Debugging production", "Data and SQL", "Collaboration"]
+  },
+  {
+    "id": "practical-nurse",
+    "company": "Leppävaara Care Home (synthetic)",
+    "title": "Practical nurse",
+    "summary": "Daily care of elderly residents: medication rounds, hygiene, mobility help, noticing changes in condition and reporting them to the nurse in charge.",
+    "skills": ["Observing and escalating", "Safe medication and hygiene", "Dignity and communication"]
+  }
+]

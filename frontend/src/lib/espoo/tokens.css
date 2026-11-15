@@ -94,6 +94,12 @@ a {
 	padding-inline: var(--espoo-gutter);
 }
 
+.espoo-section {
+	display: grid;
+	gap: 2rem;
+	padding-block: 3rem;
+}
+
 .espoo-muted {
 	color: var(--espoo-text-muted);
 }

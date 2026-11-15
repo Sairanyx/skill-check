@@ -15,6 +15,7 @@ const post = (path, body) => request(path, { method: 'POST', body });
 
 export const api = {
 	roles: () => request('/roles'),
+	createRole: (role) => post('/roles', role),
 	startInterview: (roleId, language) => post('/interviews', { role_id: roleId, language }),
 	sendMessage: (id, text) => post(`/interviews/${id}/messages`, { text }),
 	finishInterview: (id) => post(`/interviews/${id}/finish`),

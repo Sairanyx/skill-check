@@ -45,7 +45,9 @@
 	<EspooHeader subtitle="SkillCheck Booth" {links} />
 	<main>
 		<!-- Kept mounted so an interview survives a look at the reports. -->
-		<div hidden={route.page !== 'booth'}><Booth {roles} /></div>
+		<div hidden={route.page !== 'booth'}>
+			<Booth {roles} onaddrole={(role) => (roles = [...roles, role])} />
+		</div>
 		{#if route.page === 'review'}
 			<Reviews {roles} selectedId={route.id} />
 		{/if}

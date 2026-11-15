@@ -175,26 +175,27 @@ _Keep this section up to date when we change how it works._
 **The booth.** The candidate sits alone in a supervised City room with no devices, picks the role and a language (Finnish, Swedish or English), and talks to the interviewer. There is no CV and no name: the candidate is just an interview id.
 
 **The panel.** Three Gemini 4 models interview together:
-- **Hydrogen** chairs the panel and looks at job knowledge.
+- **Carbon** chairs the panel and looks at whether the answers come from real experience. In testing it was the best at telling what's true from what only sounds right, so it counts 1.5× in every panel decision and score.
+- **Hydrogen** looks at job knowledge.
 - **Argon** looks at how the candidate reasons.
-- **Carbon** looks at whether the answers come from real experience.
 
-After every message, all three write a private note at the same time. Hydrogen reads the three notes and asks the next question, or ends the interview. The interview uses only our instructions: the prompt above, word for word, plus the rules in `src/panel.rs`.
+After every message, all three write a private note at the same time. Each note says how it reads the message (answer, clarifying or off-track) and how ready that panelist is to give a score, 0–100. The code combines the notes with the weights to decide how the message counts and whether the interview is over. Carbon then says the next thing to the candidate. The interview uses only our instructions: the prompt above, word for word, plus the rules in `src/panel.rs`.
 
-**Length.** The interview has no fixed number of questions. It ends when the panel can make a correct assessment.
-- At least 3 real answers are needed.
+**Length.** The interview has no fixed number of questions. It ends as soon as the panel has enough to make a correct assessment, so it can be short or long.
+- It ends when the weighted readiness reaches 85/100, with at least 3 real answers.
+- The candidate sees a progress bar: readiness, where 85 shows as 100%. It can go down if an answer raises new doubts.
 - Clarifying questions about the scenario are free, because asking the right questions is a skill.
 - "hi", fishing for the answer and stalling use up a budget of 14. Each one gets one short remark ("That doesn't answer the question.") and the same question again. From the second time on, it also says that these replies count against them.
 - The interview always stops after 30 messages.
 
-**The result.** The three give their verdicts independently, `{is_done, is_person_good, how_good_or_bad}`. The chair then writes a report:
+**The result.** The three give their verdicts independently, `{is_done, is_person_good, how_good_or_bad}`. They're combined with the same weights. The chair then writes a report:
 - a score per skill, with the candidate's exact words (quotes the candidate never said are removed by code)
 - strengths and gaps
 - how the candidate used questions
 - what the company should ask face to face
 - feedback for the candidate
 
-**Sorting, not a black box.** The point is sorting many candidates down to a short list the company meets in person. Nothing is a black box: staff can read the whole conversation and every note the panel wrote. It's not perfect and needs real-world data to tune, but it's far better than HR screening, and anyone can try to break it.
+**Sorting, not a black box.** The point is sorting many candidates down to a short list the company meets in person. Nothing is a black box: staff can read the whole conversation and every note the panel wrote. In the demo, review is open to anyone, so judges can watch the panel work live. For real use it would sit behind staff sign-in. It's not perfect and needs real-world data to tune, but it's far better than HR screening, and anyone can try to break it.
 
 **Models.** The interview runs on LOW thinking so turns stay quick (about 10–20 s). The verdicts and report run on HIGH. If a model call fails, the same model is retried. There is never a fallback to a weaker model.
 

@@ -10,13 +10,11 @@
 The site is reached through a Cloudflare tunnel (no open ports on the server),
 so every domain must be in a zone of the Cloudflare account you log in to.
 
-Secrets come from ~/.secrets/globals.json: GEMINI_API_KEY (required) and
-STAFF_KEY (the bearer key for staff routes; created there on first deploy).
+The only secret is GEMINI_API_KEY, read from ~/.secrets/globals.json.
 """
 
 import json
 import os
-import secrets as rand
 import signal
 import subprocess
 import sys
@@ -33,6 +31,7 @@ ROOT = Path(__file__).resolve().parent
 FRONTEND = ROOT / "frontend"
 SECRETS = Path.home() / ".secrets" / "globals.json"
 PORT = 8020
+VITE_PORT = 5180  # also in frontend/vite.config.js
 NAME = "skillcheck"   # tunnel + containers: skillcheck-prod, skillcheck-test, skillcheck-tunnel
 CF_DIR = Path.home() / ".cloudflared"
 
@@ -62,15 +61,9 @@ def remote(script: str, **kw):
     return sh("ssh", SERVER, script, **kw)
 
 
-def keys(create_staff: bool) -> dict[str, str]:
+def gemini_key() -> str:
     s = json.loads(SECRETS.read_text()) if SECRETS.exists() else {}
-    if not s.get("GEMINI_API_KEY"):
-        sys.exit(f"Add GEMINI_API_KEY to {SECRETS}.")
-    if not s.get("STAFF_KEY") and create_staff:
-        s["STAFF_KEY"] = rand.token_urlsafe(24)
-        SECRETS.write_text(json.dumps(s, indent=2) + "\n")
-        print(f"Created STAFF_KEY in {SECRETS}.")
-    return {"GEMINI_API_KEY": s["GEMINI_API_KEY"], "STAFF_KEY": s.get("STAFF_KEY") or "dev"}
+    return s.get("GEMINI_API_KEY") or sys.exit(f"Add GEMINI_API_KEY to {SECRETS}.")
 
 
 def build_frontend() -> None:
@@ -78,12 +71,29 @@ def build_frontend() -> None:
     sh("bun", "run", "build", cwd=FRONTEND)
 
 
+def free_ports(*ports: int) -> None:
+    """Stop whatever listens on these ports, usually a dev server left over from an earlier run."""
+    spec = [f"{p}/tcp" for p in ports]
+    if sh("fuser", "-k", "-TERM", *spec, capture_output=True, check=False).returncode != 0:
+        return  # nothing was there
+    print(f"Stopped what was running on port(s) {', '.join(map(str, ports))}.")
+    for _ in range(40):  # wait until they're really gone
+        if sh("fuser", *spec, capture_output=True, check=False).returncode != 0:
+            return
+        time.sleep(0.25)
+    sys.exit(f"Port(s) {', '.join(map(str, ports))} are still in use.")
+
+
 def dev() -> None:
     sh("bun", "install", cwd=FRONTEND)
-    env = {**keys(create_staff=False), "PORT": str(PORT), "DATA_DIR": str(ROOT / "data")}
+    free_ports(PORT, VITE_PORT)
+    env = {"GEMINI_API_KEY": gemini_key(), "PORT": str(PORT), "DATA_DIR": str(ROOT / "data")}
     procs = [subprocess.Popen(["cargo", "run"], cwd=ROOT, env={**os.environ, **env}, start_new_session=True),
              subprocess.Popen(["bun", "run", "dev"], cwd=FRONTEND, stdin=subprocess.DEVNULL, start_new_session=True)]
-    print("→ http://localhost:5180   (staff key in dev: STAFF_KEY from secrets, or 'dev')")
+    print(f"→ http://localhost:{VITE_PORT}")
+    # Closing the terminal or a kill must still stop both, or the server keeps the port.
+    for sig in (signal.SIGHUP, signal.SIGTERM):
+        signal.signal(sig, lambda *_: sys.exit(0))
     try:
         while all(p.poll() is None for p in procs):
             time.sleep(0.3)
@@ -112,8 +122,7 @@ def deploy(env_name: str) -> None:
     tar.wait()
 
     # Run it (its data lives in a named volume), then point the web server at it.
-    k = keys(create_staff=True)
-    remote(f"cd /opt/{NAME} && umask 077 && printf 'GEMINI_API_KEY=%s\\nSTAFF_KEY=%s\\n' '{k['GEMINI_API_KEY']}' '{k['STAFF_KEY']}' > {env_name}.env\n"
+    remote(f"cd /opt/{NAME} && umask 077 && printf 'GEMINI_API_KEY=%s\\n' '{gemini_key()}' > {env_name}.env\n"
            f"docker network create {NAME} 2>/dev/null; docker rm -f {container} >/dev/null 2>&1\n"
            f"docker run -d --restart unless-stopped --network {NAME} --name {container} --env-file {env_name}.env "
            f"-v {container}-data:/app/data {container} >/dev/null")

@@ -8,8 +8,8 @@
 </script>
 
 <div class="round">
-	{#if round.overruled}
-		<EspooAlert variant="note" title="The rules overruled the chair">{round.overruled}</EspooAlert>
+	{#if round.ended_because}
+		<EspooAlert variant="note" title="The interview ended here">{round.ended_because}</EspooAlert>
 	{/if}
 
 	<p><strong class="round__label">Chair's decision:</strong> {round.chair_reasoning}</p>
@@ -26,6 +26,7 @@
 				{#if kind}
 					<div class="memo__badges">
 						<EspooBadge tone={scoreTone(memo.provisional_score)}>{memo.provisional_score}/10 so far</EspooBadge>
+						{#if memo.readiness !== undefined}<EspooBadge>Ready: {memo.readiness}/100</EspooBadge>{/if}
 						<EspooBadge tone={kind.tone}>Read it as: {kind.label}</EspooBadge>
 					</div>
 				{/if}
