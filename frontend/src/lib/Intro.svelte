@@ -9,28 +9,24 @@
 	 * How it works, in four short slides with motion that leads the eye.
 	 * Facts and sources come from docs/RESEARCH.md on the dev branch.
 	 */
-	// The story follows the Espoo challenge and names the judging criterion each part answers.
+	// The story follows the Espoo challenge: problem, our answer, fair by design, the result.
 	const SLIDES = [
 		{
-			tag: 'Impact & Relevance · 45%',
 			title: 'The problem, and where SkillCheck fits',
 			text: 'City of Espoo events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. SkillCheck adds a short, supervised skill check in between.',
 			source: { text: 'Espoo TalentMatch events bring 200 to 1,000 jobseekers and 5 to 50 employers together.', name: 'City of Espoo', href: 'https://www.espoo.fi/en/talentmatch-events' }
 		},
 		{
-			tag: 'Innovation & UX · 35%',
 			title: 'Our answer: a skill check in an EXAM room',
 			text: 'Jobseekers book 30 minutes on a supervised City computer and talk through a real task from the company. No CV, no cover letter.',
 			source: { text: '29 Finnish universities already use booked, supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
 		},
 		{
-			tag: 'Responsible & Feasible · 20%',
 			title: 'Fair by design',
 			text: 'Gemma 4 removes personal details on our server in Finland. Three Gemini 4 models then judge only the skill, never the name, age or origin.',
 			source: { text: 'Language models rank identical CVs differently by name.', name: 'CUHK audit of 14 LLMs, 2026', href: 'https://arxiv.org/pdf/2606.28978' }
 		},
 		{
-			tag: 'Impact & Relevance · 45%',
 			title: 'The result: better matches at the event',
 			text: 'Companies get evidence under aliases and invite people to sit down at the event. People decide. An accepted check becomes a SkillCheck badge.',
 			source: { text: 'Recruitment AI is high-risk under the EU AI Act, so people stay in control.', name: 'DLA Piper', href: 'https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act' }
@@ -106,7 +102,6 @@
 				<div class="text rise">
 					<div class="slide__head">
 						<span class="number">{index + 1}</span>
-						<span class="tag">{slide.tag}</span>
 					</div>
 					<h1>{slide.title}</h1>
 					<p class="lead">{slide.text}</p>
@@ -266,17 +261,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-	}
-
-	.tag {
-		padding: 0.25rem 0.75rem;
-		border-radius: 1rem;
-		background-color: rgba(220, 232, 248, 0.15);
-		color: var(--espoo-glow);
-		font-size: var(--text-xs);
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
 	}
 
 	.number {
