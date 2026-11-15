@@ -1,0 +1,71 @@
+/*
+ * Mobile safety layer. Loaded after tokens.css on every screen.
+ * Rules here never change the desktop look: the general ones only stop content from
+ * growing wider than the screen, the rest only apply below 40em (640px).
+ */
+
+/* Media and long words never push the page wider than the screen. */
+img,
+svg,
+video,
+canvas,
+iframe {
+	max-width: 100%;
+}
+
+body {
+	overflow-wrap: break-word;
+}
+
+/* Grid and flex children may shrink below their content width (the default is "auto", which lets one long line blow out a column). */
+:where(main, header, footer) :where(*) {
+	min-width: 0;
+}
+
+/* Wide tables and code scroll inside themselves, not the page. */
+pre,
+table {
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+/* Last resort: nothing can make the page scroll sideways. "clip" keeps position: sticky working. */
+html,
+body {
+	overflow-x: clip;
+}
+
+@media (max-width: 40em) {
+	/* Long words such as model names or e-mail addresses break instead of overflowing. */
+	body {
+		overflow-wrap: anywhere;
+	}
+
+	.espoo-section {
+		gap: 1.5rem;
+		padding-block: 2rem;
+	}
+
+	/* Inputs at 16px or more, so iOS does not zoom in on focus. */
+	.espoo-input,
+	input,
+	select,
+	textarea {
+		font-size: max(1rem, 16px);
+	}
+
+	/* Layout helpers for any screen that needs them. */
+	.m-stack {
+		display: flex !important;
+		flex-direction: column !important;
+		align-items: stretch !important;
+	}
+
+	.m-full {
+		width: 100% !important;
+	}
+
+	.m-hide {
+		display: none !important;
+	}
+}

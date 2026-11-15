@@ -100,4 +100,28 @@
 	nav a.active {
 		font-weight: 600;
 	}
+
+	/* Phones: the nav takes its own row and wraps, the links never break mid-label. */
+	@media (max-width: 40em) {
+		.header {
+			padding-block: 0.75rem;
+		}
+
+		nav {
+			width: 100%;
+			flex-wrap: wrap;
+			gap: 0.5rem 1rem;
+			font-size: var(--text-sm);
+		}
+
+		nav a {
+			white-space: nowrap;
+		}
+
+		.group {
+			flex-wrap: wrap;
+			gap: 0.25rem 0.9rem;
+			padding: 0.3rem 0.8rem;
+		}
+	}
 </style>

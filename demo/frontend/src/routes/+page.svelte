@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import '../lib/espoo/tokens.css';
+	import '../lib/espoo/mobile.css';
 	import { EspooFooter, EspooHeader } from '../lib/espoo/index.js';
 	import ExamRoom from '../lib/ExamRoom.svelte';
 	import Intro from '../lib/Intro.svelte';

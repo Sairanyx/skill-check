@@ -759,4 +759,48 @@
 	@media (prefers-reduced-motion: reduce) {
 		.rise, .zoom, .pop, .pop.ring, .rise.ring, .grow-y, .grow-x { animation: none; }
 	}
+	/* Phones: every grid becomes one column, the flow map runs top to bottom. */
+	@media (max-width: 40em) {
+		.intro {
+			min-height: 0;
+			padding-block: 1rem 2rem;
+		}
+
+		.slide {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.text,
+		.visual {
+			padding: 1.25rem;
+		}
+
+		.map,
+		.panel,
+		.pair,
+		.links {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.5rem;
+		}
+
+		.map--links {
+			display: none;
+		}
+
+		.arrow {
+			flex-direction: row;
+			padding-block: 0.25rem;
+		}
+
+		.arrow__line {
+			width: 2px;
+			height: 1.25rem;
+			order: -1;
+		}
+
+		.nav .btn {
+			flex: 1 1 100%;
+			justify-content: center;
+		}
+	}
 </style>
