@@ -71,7 +71,7 @@
 		padding: 1.5rem;
 		background-color: #ffffff;
 		border-radius: var(--espoo-radius-lg);
-		box-shadow: 0 1px 3px rgba(1, 33, 105, 0.08);
+		border: 2px solid var(--espoo-border);
 	}
 
 	h2 {

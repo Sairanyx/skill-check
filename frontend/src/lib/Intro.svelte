@@ -191,7 +191,7 @@
 		padding: 0;
 		border: 0;
 		border-radius: 1rem;
-		background-color: #c5d0dd;
+		background-color: var(--espoo-tint);
 		cursor: pointer;
 		transition: background-color 0.4s ease;
 	}
@@ -220,7 +220,7 @@
 		flex-direction: column;
 		padding: 2.25rem;
 		border-radius: var(--espoo-radius-lg);
-		background-color: var(--espoo-blue);
+		background-color: var(--espoo-deep);
 		color: var(--espoo-on-blue);
 	}
 
@@ -261,23 +261,23 @@
 		font-weight: 600;
 	}
 
-	/* The picture: grey cards on a white panel, calm to look at */
+	/* The picture: white cards on a light grey panel, like the demo on skillcheck.fi */
 	.visual {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		gap: 0.85rem;
 		padding: 2rem;
-		background-color: #ffffff;
+		background-color: var(--espoo-mist);
 		border-radius: var(--espoo-radius-lg);
-		box-shadow: 0 1px 3px rgba(1, 33, 105, 0.08);
 	}
 
 	.card {
 		display: grid;
 		gap: 0.25rem;
 		padding: 1rem 1.2rem;
-		background-color: #f3f4f6;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
 		color: #0b1b33;
 		border-radius: var(--espoo-radius);
 	}
@@ -371,7 +371,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.8rem 1rem;
-		background-color: #f3f4f6;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
 		border-radius: var(--espoo-radius);
 		font-weight: 600;
 	}

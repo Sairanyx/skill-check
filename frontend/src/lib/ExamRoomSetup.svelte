@@ -236,11 +236,10 @@
 		gap: 0.4rem;
 		padding: 1.25rem 1.4rem;
 		background-color: #ffffff;
-		border: 2px solid transparent;
-		box-shadow: 0 1px 2px rgba(1, 33, 105, 0.08);
 		cursor: pointer;
 		transition: border-color var(--espoo-ease);
 		border-radius: var(--espoo-radius);
+		border: 2px solid var(--espoo-border);
 	}
 
 	.role:hover {
@@ -249,6 +248,7 @@
 
 	.role.selected {
 		border-color: var(--espoo-apricot);
+		background-color: #f5f8fd;
 	}
 
 	.role:has(:focus-visible) {

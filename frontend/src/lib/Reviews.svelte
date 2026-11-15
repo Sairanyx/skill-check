@@ -166,6 +166,7 @@
 		border-left: 3px solid transparent;
 		transition: border-color var(--espoo-ease);
 		border-radius: var(--espoo-radius);
+		border: 2px solid var(--espoo-border);
 	}
 
 	.list a:hover {

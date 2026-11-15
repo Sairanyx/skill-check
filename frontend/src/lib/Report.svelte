@@ -262,6 +262,7 @@
 		padding: 1.25rem;
 		background-color: var(--espoo-midnight);
 		border-radius: var(--espoo-radius);
+		border: 2px solid var(--espoo-border);
 	}
 
 	.skill__head {

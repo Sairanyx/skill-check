@@ -11,10 +11,10 @@
 
 	--espoo-blue: #003580; /* hero and answer bubbles: Finnish blue */
 	--espoo-navy: #ffffff; /* page and header background */
-	--espoo-midnight: #ffffff; /* cards and inputs: white on the mist band, as on espoo.fi */
-	--espoo-mist: #dfe5eb; /* espoo.fi mist: page band behind cards */
-	--espoo-deep: #012169; /* espoo.fi navy: hero side, footer, intro */
-	--espoo-glow: #ffc386; /* espoo.fi apricot: a few highlights on navy */
+	--espoo-midnight: #ffffff; /* cards and inputs: white with a thin grey border */
+	--espoo-mist: #f3f4f6; /* light grey bands, as on skillcheck.fi */
+	--espoo-deep: #001a40; /* deep Finnish blue: hero side, footer, intro text panel (skillcheck.fi navy) */
+	--espoo-glow: #dce8f8; /* light blue highlights on deep blue (skillcheck.fi tint) */
 	--espoo-apricot: #003580; /* accent: titles, selection, links */
 	--espoo-tint: #dce8f8; /* light blue for highlights */
 	--espoo-coral: #ff4f57;
@@ -26,8 +26,8 @@
 	--espoo-border: #e3e8ef;
 	--espoo-border-strong: #b8c4d6;
 
-	--espoo-radius: 0.75rem;
-	--espoo-radius-lg: 1.25rem;
+	--espoo-radius: 0.625rem;
+	--espoo-radius-lg: 1rem;
 	--espoo-max-width: 76rem;
 	--espoo-gutter: 1rem;
 	--espoo-ease: 0.15s ease;
@@ -42,7 +42,7 @@
 html,
 body {
 	margin: 0;
-	background-color: var(--espoo-mist);
+	background-color: #ffffff;
 	color: var(--espoo-white);
 	font-family: var(--espoo-font-body);
 	font-size: 1rem;
@@ -176,4 +176,18 @@ a {
 
 .espoo-input:disabled {
 	opacity: 0.55;
+}
+
+/* Every screen fades up when it opens, as on skillcheck.fi. Off for people who prefer less motion. */
+@keyframes espoo-fade-up {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: none; }
+}
+
+.espoo-section {
+	animation: espoo-fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.espoo-section { animation: none; }
 }
