@@ -89,18 +89,18 @@ export function CheckRunner(props: { kiosk?: boolean; demo?: boolean; checkId: s
         {turns.map((t, i) => (
           <div key={i} className="space-y-3">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-primary">Question {i + 1}</p>
+              <p className="text-xs font-medium text-primary">Question {i + 1}</p>
               <p className="mt-1 font-medium">{t.question}</p>
             </div>
             {t.said && (
               <div className="ml-auto max-w-[85%]">
-                <p className="mb-1 text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">{props.who ?? "Your"} answer</p>
+                <p className="mb-1 text-right text-xs font-medium text-muted-foreground">{props.who ?? "Your"} answer</p>
                 <div className="rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground">{t.said}</div>
               </div>
             )}
             {props.demo && (
               <div className="ml-auto max-w-[85%] rounded-lg border-2 border-dashed border-primary/40 bg-surface px-4 py-3 text-sm">
-                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">What the AI saw</p>
+                <p className="mb-1 text-xs font-medium text-primary">What the AI saw</p>
                 <p className="leading-relaxed text-foreground/80">
                   <Redacted text={t.seen} />
                 </p>

@@ -14,7 +14,7 @@ export async function SiteHeader({ lang, nav }: { lang: Locale; nav: Dictionary[
         <Link href={`/${lang}`} aria-label="SkillCheck home">
           <Logo />
         </Link>
-        <div className="ml-auto flex items-center gap-6 text-[15px]">
+        <div className="ml-auto flex items-center gap-6 text-base">
           <Suspense fallback={null}>
             <Account lang={lang} nav={nav} />
           </Suspense>

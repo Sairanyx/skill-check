@@ -33,7 +33,7 @@ export function ExamRoomStart({ appointmentId, place, lang }: { appointmentId: s
       {open && (
         <div role="dialog" aria-modal="true" aria-labelledby="exam-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={() => !busy && setOpen(false)}>
           <div className="w-full max-w-md space-y-4 rounded-xl bg-background p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <p className="text-xs font-medium uppercase tracking-wide text-primary">Demo</p>
+            <p className="text-xs font-medium text-primary">Demo</p>
             <h2 id="exam-title" className="text-xl font-semibold">You are in the EXAM room</h2>
             <p className="text-sm text-muted-foreground">
               Normally you can only take the skill check on the City computer you booked, in the EXAM room, during your time. You cannot start it from home or from your own laptop.

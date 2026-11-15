@@ -4,6 +4,31 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* One type scale, the same six sizes as the demo front end (12, 14, 16, 20, 28, 36 px).
+   Tailwind's size steps map onto them, so every page follows. */
+@theme {
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.55;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.25rem;
+  --text-2xl--line-height: 1.4;
+  --text-3xl: 1.75rem;
+  --text-3xl--line-height: 1.25;
+  --text-4xl: 1.75rem;
+  --text-4xl--line-height: 1.25;
+  --text-5xl: 2.25rem;
+  --text-5xl--line-height: 1.2;
+  --text-6xl: 2.25rem;
+  --text-6xl--line-height: 1.2;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

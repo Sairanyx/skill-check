@@ -72,7 +72,7 @@ export function DemoStory({ lang, event, screens, tryNeeds }: { lang: string; ev
     <div>
       <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
         <div>
-          <p className="font-heading text-xs font-bold uppercase tracking-[0.08em] text-primary">Demo</p>
+          <p className="font-heading text-xs font-bold text-primary">Demo</p>
           <h1 className="text-3xl tracking-tight">SkillCheck in two minutes</h1>
         </div>
         <p className="max-w-xl text-sm text-muted-foreground">
@@ -190,7 +190,7 @@ function BigPicture({ event }: { event: DemoEvent }) {
   };
   const arrow = (label: string, delay: number, reverse = false) => (
     <div className="flex flex-col items-center justify-center gap-1 px-1 text-center">
-      <span className="demo-rise text-[11px] leading-tight text-muted-foreground" style={at(delay + 0.3)}>{label}</span>
+      <span className="demo-rise text-xs leading-tight text-muted-foreground" style={at(delay + 0.3)}>{label}</span>
       <span className={`demo-grow block h-0.5 w-full bg-primary ${reverse ? "[transform-origin:right]" : ""}`} style={at(delay)} />
     </div>
   );

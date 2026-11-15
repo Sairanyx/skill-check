@@ -82,12 +82,12 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
                 <dl className="mt-2 space-y-2 text-sm">
                   {strong(r.criterion) && (
                     <div>
-                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">What a strong answer shows</dt>
+                      <dt className="text-xs font-medium text-muted-foreground">What a strong answer shows</dt>
                       <dd>{strong(r.criterion)}</dd>
                     </div>
                   )}
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{audience === "candidate" ? "From your answers" : "From the answers"}</dt>
+                    <dt className="text-xs font-medium text-muted-foreground">{audience === "candidate" ? "From your answers" : "From the answers"}</dt>
                     {r.evidence.length ? (
                       r.evidence.map((q) => (
                         <dd key={q} className="italic text-muted-foreground">“<Redacted text={q} />”</dd>
@@ -98,7 +98,7 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
                   </div>
                   {r.evidence.length > 0 && r.reason && (
                     <div>
-                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Feedback</dt>
+                      <dt className="text-xs font-medium text-muted-foreground">Feedback</dt>
                       <dd>{r.reason}</dd>
                     </div>
                   )}
