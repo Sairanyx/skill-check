@@ -13,7 +13,7 @@
 	const SLIDES = [
 		{
 			title: 'The problem, and where SkillCheck fits',
-			text: 'City of Espoo events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. SkillCheck adds a short, supervised skill check in between.',
+			text: 'City of Espoo events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. A short, supervised skill check helps them filter down to the jobseekers who show the skills, and spend their time on those conversations.',
 			source: { text: 'Espoo TalentMatch events bring 200 to 1,000 jobseekers and 5 to 50 employers together.', name: 'City of Espoo', href: 'https://www.espoo.fi/en/talentmatch-events' }
 		},
 		{
