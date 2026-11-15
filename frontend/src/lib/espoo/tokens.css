@@ -32,16 +32,16 @@
 	--espoo-gutter: 1rem;
 	--espoo-ease: 0.15s ease;
 
-	/* One type scale for every screen (same steps as skillcheck.fi). Lato for headings, Work Sans for text. */
-	--text-xs: 0.75rem; /* small uppercase labels */
-	--text-sm: 0.875rem; /* secondary text, captions, badges, sources */
-	--text-base: 1rem; /* body text */
-	--text-lg: 1.125rem; /* lead sentences, card titles */
-	--text-xl: 1.25rem; /* sub-headings, job titles */
-	--text-2xl: 1.75rem; /* section headings */
-	--text-3xl: clamp(1.875rem, 3.2vw, 2.25rem); /* page and slide titles */
-	--text-hero: clamp(2.25rem, 4vw, 2.75rem); /* the hero headline */
-	--text-display: 3rem; /* the score number */
+	/* One type scale for every screen, six sizes only. Lato for headings, Work Sans for text. */
+	--text-xs: 0.75rem; /* 12px: small uppercase labels only */
+	--text-sm: 0.875rem; /* 14px: captions, sources, badges */
+	--text-base: 1rem; /* 16px: all normal text, leads and card titles (bold) */
+	--text-lg: 1rem; /* same as base: one size for text */
+	--text-xl: 1.25rem; /* 20px: section headings, job titles */
+	--text-2xl: 1.25rem; /* same as xl: one size for headings */
+	--text-3xl: 1.75rem; /* 28px: page and slide titles */
+	--text-hero: 2.25rem; /* 36px: hero headline */
+	--text-display: 2.25rem; /* 36px: the score number */
 }
 
 @media (min-width: 50em) {

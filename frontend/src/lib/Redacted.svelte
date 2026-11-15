@@ -31,14 +31,14 @@
 		line-height: 1.5;
 	}
 
-	@keyframes pop {
-		0% { opacity: 0; transform: scale(0.5); }
-		70% { opacity: 1; transform: scale(1.1); }
-		100% { opacity: 1; transform: scale(1); }
+	/* The chip fades in where the detail was, no bounce */
+	@keyframes appear {
+		from { opacity: 0; transform: translateY(3px); }
+		to { opacity: 1; transform: none; }
 	}
 
 	.pop {
-		animation: pop 0.45s ease-out both;
+		animation: appear 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

@@ -7,26 +7,31 @@
 	 * How it works, in four short slides with motion that leads the eye.
 	 * Facts and sources come from docs/RESEARCH.md on the dev branch.
 	 */
+	// The story follows the Espoo challenge and names the judging criterion each part answers.
 	const SLIDES = [
 		{
-			title: 'The City of Espoo organises recruitment events',
-			text: 'About 30,000 jobseekers. Companies join and say what they need.',
-			source: { text: 'Since 2025 the City is the employment authority for Espoo and Kauniainen.', name: 'Työmarkkinatori', href: 'https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle' }
+			tag: 'Impact & Relevance · 45%',
+			title: 'The problem: CVs no longer show skills',
+			text: 'Espoo serves about 30,000 jobseekers. AI now writes many CVs, so companies at City events cannot see who can do the job.',
+			source: { text: 'Since 2025 the City of Espoo is the employment authority for about 30,000 jobseekers.', name: 'Työmarkkinatori', href: 'https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle' }
 		},
 		{
-			title: 'Jobseekers go to an EXAM room',
-			text: '30 minutes on a supervised City computer. No CV, no phone, just a real task.',
+			tag: 'Innovation & UX · 35%',
+			title: 'Our answer: a skill check in an EXAM room',
+			text: 'Jobseekers book 30 minutes on a supervised City computer and talk through a real task from the company. No CV, no cover letter.',
 			source: { text: '29 Finnish universities already use booked, supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
 		},
 		{
-			title: 'Personal details removed, then the panel listens',
-			text: 'Gemma 4 on our server in Finland removes name, age, employer, place and origin. The three Gemini 4 models only see the skill, so bias has nothing to work with.',
+			tag: 'Responsible & Feasible · 20%',
+			title: 'Fair by design',
+			text: 'Gemma 4 removes personal details on our server in Finland. Three Gemini 4 models then judge only the skill, never the name, age or origin.',
 			source: { text: 'Language models rank identical CVs differently by name.', name: 'CUHK audit of 14 LLMs, 2026', href: 'https://arxiv.org/pdf/2606.28978' }
 		},
 		{
-			title: 'People decide',
-			text: 'The company sees the result under an alias, never a name, and invites the candidate to sit down at the event. An accepted check becomes a SkillCheck badge.',
-			source: { text: 'Recruitment AI is high-risk under the EU AI Act: people must stay in control.', name: 'DLA Piper', href: 'https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act' }
+			tag: 'Impact & Relevance · 45%',
+			title: 'The result: better matches at the event',
+			text: 'Companies get evidence under aliases and invite people to sit down at the event. People decide. An accepted check becomes a SkillCheck badge.',
+			source: { text: 'Recruitment AI is high-risk under the EU AI Act, so people stay in control.', name: 'DLA Piper', href: 'https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act' }
 		}
 	];
 	const PANEL = ['Hydrogen', 'Argon', 'Carbon'];
@@ -81,7 +86,10 @@
 		{#key index}
 			<div class="slide">
 				<div class="text rise">
-					<span class="number">{index + 1}</span>
+					<div class="slide__head">
+						<span class="number">{index + 1}</span>
+						<span class="tag">{slide.tag}</span>
+					</div>
 					<h1>{slide.title}</h1>
 					<p class="lead">{slide.text}</p>
 					<p class="source rise" style={delay(0.6)}>
@@ -163,12 +171,12 @@
 
 		<div class="nav">
 			<button class="btn btn--ghost" onclick={() => go(index - 1)} disabled={index === 0}>Back</button>
-			<span class="hint">or use the arrow keys</span>
 			{#if index < last}
 				<button class="btn" onclick={() => go(index + 1)}>Next</button>
 			{:else}
-				<a class="btn" href="#exam-room">Go to the EXAM room</a>
+				<a class="btn" href="#exam-room">Try the EXAM room</a>
 				<a class="btn btn--ghost" href="#review">See a finished result</a>
+				<a class="btn btn--ghost" href="#platform">Explore the platform</a>
 			{/if}
 		</div>
 	</div>
@@ -224,6 +232,23 @@
 		color: var(--espoo-on-blue);
 	}
 
+	.slide__head {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.tag {
+		padding: 0.25rem 0.75rem;
+		border-radius: 1rem;
+		background-color: rgba(220, 232, 248, 0.15);
+		color: var(--espoo-glow);
+		font-size: var(--text-xs);
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
 	.number {
 		display: inline-grid;
 		place-items: center;
@@ -244,7 +269,7 @@
 
 	.lead {
 		margin-top: 1rem;
-		font-size: var(--text-lg);
+		font-size: var(--text-base);
 		color: rgba(255, 255, 255, 0.9);
 	}
 
@@ -274,6 +299,7 @@
 
 	.card {
 		display: grid;
+		align-content: start; /* title and text stay together when boxes share a row */
 		gap: 0.25rem;
 		padding: 1rem 1.2rem;
 		background-color: #ffffff;
@@ -284,13 +310,13 @@
 
 	.card strong {
 		font-family: var(--espoo-font-heading);
-		font-size: var(--text-lg);
+		font-size: var(--text-base);
 		color: var(--espoo-apricot);
 	}
 
 	.card span {
 		color: #5b6577;
-		font-size: var(--text-base);
+		font-size: var(--text-sm);
 	}
 
 	.card b {
@@ -394,10 +420,6 @@
 		gap: 0.6rem;
 	}
 
-	.card--model strong {
-		font-size: var(--text-base);
-	}
-
 	.card .score {
 		font-family: var(--espoo-font-heading);
 		font-weight: 900;
@@ -450,6 +472,10 @@
 		gap: 0.75rem;
 	}
 
+	.nav .btn:first-child {
+		margin-right: auto;
+	}
+
 	.hint {
 		margin-right: auto;
 		font-size: var(--text-sm);
@@ -492,37 +518,31 @@
 		cursor: default;
 	}
 
-	/* Motion that leads the eye. Off for people who prefer less motion. */
+	/* One motion family: things fade up a little, in reading order. One soft highlight on the key box.
+	   Off for people who prefer less motion. */
 	@keyframes rise {
-		from { opacity: 0; transform: translateY(14px); }
+		from { opacity: 0; transform: translateY(8px); }
 		to { opacity: 1; transform: none; }
 	}
 	@keyframes zoom {
-		from { opacity: 0; transform: scale(0.85); }
+		from { opacity: 0; transform: translateY(8px) scale(0.99); }
 		to { opacity: 1; transform: none; }
-	}
-	@keyframes pop {
-		0% { opacity: 0; transform: scale(0.6); }
-		70% { opacity: 1; transform: scale(1.06); }
-		100% { opacity: 1; transform: scale(1); }
 	}
 	@keyframes grow-y {
 		from { transform: scaleY(0); }
 		to { transform: scaleY(1); }
 	}
-	@keyframes ring {
-		0% { box-shadow: 0 0 0 0 rgba(0, 53, 128, 0.35); }
-		100% { box-shadow: 0 0 0 14px rgba(0, 53, 128, 0); }
+	@keyframes glow {
+		0%, 100% { box-shadow: 0 0 0 0 rgba(0, 53, 128, 0); }
+		50% { box-shadow: 0 0 0 6px rgba(0, 53, 128, 0.12); }
 	}
 
-	.rise { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-	.zoom { animation: zoom 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-	.pop { animation: pop 0.5s ease-out both; }
-	.pop.ring { animation: pop 0.5s ease-out both, ring 1.4s ease-out 0.6s 3; }
-	.rise.ring { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both, ring 1.4s ease-out 1.2s 3; }
-	.grow-y, .grow-x { animation: grow-y 0.5s ease-out both; transform-origin: top; }
+	.rise, .pop { animation: rise 0.55s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
+	.zoom { animation: zoom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
+	.pop.ring, .rise.ring { animation: rise 0.55s cubic-bezier(0.25, 0.8, 0.25, 1) both, glow 1.6s ease-in-out 0.8s 1; }
+	.grow-y, .grow-x { animation: grow-y 0.45s ease-out both; transform-origin: top; }
 
 	@media (prefers-reduced-motion: reduce) {
-		.rise, .zoom, .pop, .pop.ring, .grow-y, .grow-x { animation: none; }
+		.rise, .zoom, .pop, .pop.ring, .rise.ring, .grow-y, .grow-x { animation: none; }
 	}
 </style>

@@ -14,10 +14,14 @@
 		</span>
 
 		<nav aria-label="Main">
-			{#each links as link (link.href)}
-				<a href={link.href} class:active={link.active} aria-current={link.active ? 'page' : undefined}>
-					{link.label}
-				</a>
+			<span class="group" role="group" aria-label="Demo">
+				<span class="group__label">Demo</span>
+				{#each links.filter((l) => l.group === 'demo') as link (link.href)}
+					<a href={link.href} class:active={link.active} aria-current={link.active ? 'page' : undefined}>{link.label}</a>
+				{/each}
+			</span>
+			{#each links.filter((l) => l.group !== 'demo') as link (link.href)}
+				<a href={link.href} class:active={link.active} aria-current={link.active ? 'page' : undefined}>{link.label}</a>
 			{/each}
 		</nav>
 	</div>
@@ -57,7 +61,26 @@
 		font-size: var(--text-base);
 	}
 
+	.group {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 0.35rem 1.1rem;
+		border: 1px solid var(--espoo-border);
+		border-radius: 2rem;
+		background-color: var(--espoo-mist);
+	}
+
+	.group__label {
+		font-size: var(--text-xs);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--espoo-text-muted);
+	}
+
 	nav {
+		align-items: center;
 		display: flex;
 		gap: 1.75rem;
 	}

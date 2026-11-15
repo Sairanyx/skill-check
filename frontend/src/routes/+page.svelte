@@ -22,9 +22,9 @@
 	let roles = $state(FALLBACK_ROLES);
 
 	const links = $derived([
-		{ label: 'How it works', href: '#/', active: route.page === 'intro' },
-		{ label: 'EXAM room', href: '#exam-room', active: route.page === 'exam-room' },
-		{ label: 'Results', href: '#review', active: route.page === 'review' },
+		{ label: 'How it works', href: '#/', active: route.page === 'intro', group: 'demo' },
+		{ label: 'EXAM room', href: '#exam-room', active: route.page === 'exam-room', group: 'demo' },
+		{ label: 'Results', href: '#review', active: route.page === 'review', group: 'demo' },
 		{ label: 'Platform', href: '#platform', active: route.page === 'platform' }
 	]);
 
