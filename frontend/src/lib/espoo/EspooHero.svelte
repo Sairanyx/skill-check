@@ -1,105 +1,87 @@
 <script>
 	/**
-	 * EspooHero — Signature Espoo Blue (#0050bb) hero banner with Lato H1 & Work Sans lead.
+	 * espoo.fi split hero: royal-blue text column with the wavy edge on the left,
+	 * a midnight panel (`aside`) on the right.
 	 */
-	let {
-		eyebrow = '',
-		title,
-		lead = '',
-		actions = undefined,
-		children = undefined
-	} = $props();
+	let { title, lead, aside } = $props();
 </script>
 
-<section class="espoo-hero">
-	<div class="espoo-hero__inner">
-		{#if eyebrow}
-			<div class="espoo-hero__eyebrow">{eyebrow}</div>
-		{/if}
-		<h1 class="espoo-hero__title">{title}</h1>
-		{#if lead}
-			<p class="espoo-hero__lead">{lead}</p>
-		{/if}
-		{#if children}
-			<div class="espoo-hero__extra">
-				{@render children()}
-			</div>
-		{/if}
-		{#if actions}
-			<div class="espoo-hero__actions">
-				{@render actions()}
-			</div>
-		{/if}
+<section class="hero">
+	<div class="hero__text">
+		<div class="hero__text-inner">
+			<h1>{title}</h1>
+			<p>{lead}</p>
+		</div>
+		<svg class="hero__wave" viewBox="0 0 110 420" preserveAspectRatio="none" aria-hidden="true">
+			<path
+				d="M0,0 L48,0 C30,28 65,62 42,102 C18,144 55,188 34,238 C14,285 45,322 62,360 C78,392 98,408 110,420 L0,420 Z"
+			/>
+		</svg>
+	</div>
+	<div class="hero__aside">
+		{@render aside()}
 	</div>
 </section>
 
 <style>
-	.espoo-hero {
-		background-color: var(--backgrounds--hero);
-		color: var(--typography--bodyOnThemeColor);
-		padding: 3rem var(--spacing--basicPadding);
+	.hero {
+		display: grid;
+		background-color: var(--espoo-midnight);
 	}
 
-	@media all and (min-width: 60em) {
-		.espoo-hero {
-			padding: 4.5rem var(--spacing--basicPadding);
+	@media (min-width: 58em) {
+		.hero {
+			grid-template-columns: 1fr 1fr;
 		}
 	}
 
-	.espoo-hero__inner {
-		max-width: 76rem;
-		margin: 0 auto;
+	.hero__text {
+		position: relative;
 		display: flex;
-		flex-direction: column;
+		justify-content: flex-end;
+		padding: 3rem var(--espoo-gutter);
+		background-color: var(--espoo-blue);
+	}
+
+	.hero__text-inner {
+		max-width: 32rem;
+		display: grid;
 		gap: 1rem;
 	}
 
-	.espoo-hero__eyebrow {
-		font-family: var(--espoo-font-heading);
-		font-weight: 700;
-		font-size: 0.875rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--espoo-apricot);
+	.hero__text p {
+		font-size: 1.0625rem;
 	}
 
-	.espoo-hero__title {
-		font-family: var(--espoo-font-heading);
-		font-weight: 400;
-		font-size: 2rem;
-		line-height: 2.5rem;
-		color: #ffffff;
-		margin: 0;
-		max-width: 48rem;
+	.hero__wave {
+		display: none;
 	}
 
-	@media all and (min-width: 60em) {
-		.espoo-hero__title {
-			font-size: 2.75rem;
-			line-height: 3.375rem;
+	@media (min-width: 58em) {
+		.hero__text {
+			padding-right: 3rem;
+		}
+
+		.hero__wave {
+			display: block;
+			position: absolute;
+			top: 0;
+			right: -68px;
+			width: 70px;
+			height: 100%;
+			fill: var(--espoo-blue);
 		}
 	}
 
-	.espoo-hero__lead {
-		font-family: var(--espoo-font-body);
-		font-size: 1.125rem;
-		line-height: 1.75rem;
-		margin: 0;
-		max-width: 44rem;
-		color: rgba(255, 255, 255, 0.94);
-	}
-
-	@media all and (min-width: 60em) {
-		.espoo-hero__lead {
-			font-size: 1.25rem;
-			line-height: 1.875rem;
-		}
-	}
-
-	.espoo-hero__actions {
+	.hero__aside {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.875rem;
-		margin-top: 0.5rem;
+		align-items: center;
+		padding: 2.5rem var(--espoo-gutter);
+	}
+
+	@media (min-width: 58em) {
+		.hero__aside {
+			padding-left: 6rem;
+		}
 	}
 </style>

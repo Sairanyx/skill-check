@@ -1,61 +1,35 @@
 <script>
-	/**
-	 * EspooHeader — Top navigation bar with brand mark, nav links, and optional actions slot.
-	 */
-	let {
-		brand = 'ESPOO',
-		brandHref = '/',
-		subtitle = '',
-		links = [],
-		actions = undefined
-	} = $props();
+	import EspooLogo from './EspooLogo.svelte';
+
+	/** @type {{ subtitle: string, links: Array<{ label: string, href: string, active: boolean }> }} */
+	let { subtitle, links } = $props();
 </script>
 
-<header class="espoo-header">
-	<div class="espoo-header__inner">
-		<a href={brandHref} class="espoo-header__brand">
-			<span class="espoo-header__logo" aria-hidden="true">E</span>
-			<span class="espoo-header__brand-text">
-				<span class="espoo-header__brand-name">{brand}</span>
-				{#if subtitle}
-					<span class="espoo-header__brand-sub">{subtitle}</span>
-				{/if}
-			</span>
+<header class="header">
+	<div class="espoo-container header__inner">
+		<a href="#/" class="header__brand">
+			<EspooLogo />
+			<span class="header__subtitle">{subtitle}</span>
 		</a>
 
-		{#if links.length > 0}
-			<nav class="espoo-header__nav" aria-label="Primary navigation">
-				{#each links as link}
-					<a
-						href={link.href}
-						class="espoo-header__link"
-						class:is-active={link.active}
-						aria-current={link.active ? 'page' : undefined}
-					>
-						{link.label}
-					</a>
-				{/each}
-			</nav>
-		{/if}
-
-		{#if actions}
-			<div class="espoo-header__actions">
-				{@render actions()}
-			</div>
-		{/if}
+		<nav aria-label="Main">
+			{#each links as link (link.href)}
+				<a href={link.href} class:active={link.active} aria-current={link.active ? 'page' : undefined}>
+					{link.label}
+				</a>
+			{/each}
+		</nav>
 	</div>
 </header>
 
 <style>
-	.espoo-header {
-		background-color: var(--backgrounds--header);
-		border-bottom: 0.125rem solid var(--backgrounds--border);
-		padding: var(--spacing--headerPadding) var(--spacing--basicPadding);
+	.header {
+		background-color: var(--espoo-navy);
+		padding-block: 1.1rem;
+		border-bottom: 1px solid var(--espoo-border);
 	}
 
-	.espoo-header__inner {
-		max-width: 76rem;
-		margin: 0 auto;
+	.header__inner {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -63,83 +37,40 @@
 		gap: 1rem 2rem;
 	}
 
-	.espoo-header__brand {
+	.header__brand {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 0.9rem;
+		color: var(--espoo-white);
 		text-decoration: none;
-		color: var(--typography--header);
 	}
 
-	.espoo-header__logo {
-		display: inline-grid;
-		place-items: center;
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: var(--espoo-radius-sm);
-		background-color: var(--espoo-blue);
-		color: #ffffff;
-		font-family: var(--espoo-font-heading);
-		font-weight: 900;
-		font-size: 1.25rem;
-		letter-spacing: 0.04em;
+	.header__subtitle {
+		padding-left: 0.9rem;
+		border-left: 1px solid var(--espoo-border-strong);
+		font-size: 0.95rem;
 	}
 
-	.espoo-header__brand-text {
+	nav {
 		display: flex;
-		flex-direction: column;
+		gap: 1.75rem;
 	}
 
-	.espoo-header__brand-name {
-		font-family: var(--espoo-font-heading);
-		font-weight: 900;
-		font-size: 1.25rem;
-		line-height: 1.2;
-		letter-spacing: 0.06em;
-	}
-
-	.espoo-header__brand-sub {
-		font-family: var(--espoo-font-body);
-		font-size: 0.75rem;
-		color: var(--typography--placeholder);
-	}
-
-	.espoo-header__nav {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.5rem 1.5rem;
-	}
-
-	.espoo-header__link {
-		font-family: var(--espoo-font-heading);
-		font-weight: 700;
-		font-size: 1.0625rem;
-		color: var(--typography--linkHeading);
+	nav a {
+		color: var(--espoo-white);
 		text-decoration: none;
-		padding: 0.35rem 0.25rem;
-		border-bottom: 0.1875rem solid transparent;
-		transition: color 0.15s ease, border-color 0.15s ease;
+		padding-block: 0.3rem;
+		border-bottom: 2px solid transparent;
+		transition: color var(--espoo-ease), border-color var(--espoo-ease);
 	}
 
-	.espoo-header__link:hover {
-		color: var(--typography--linkHeadingHover);
-		border-bottom-color: var(--typography--linkHeadingHover);
+	nav a:hover,
+	nav a.active {
+		color: var(--espoo-apricot);
+		border-bottom-color: var(--espoo-apricot);
 	}
 
-	.espoo-header__link.is-active {
-		border-bottom-color: var(--interactives--primary);
-	}
-
-	.espoo-header__link:focus-visible {
-		outline: 0.125rem solid var(--interactives--primaryOutline);
-		outline-offset: 0.25rem;
-		border-radius: 0.125rem;
-	}
-
-	.espoo-header__actions {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
+	nav a.active {
+		font-weight: 600;
 	}
 </style>
