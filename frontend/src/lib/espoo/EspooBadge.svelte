@@ -22,16 +22,17 @@
 	}
 
 	.badge--apricot {
-		background-color: var(--espoo-apricot);
-		color: var(--espoo-midnight);
+		background-color: var(--espoo-tint);
+		color: var(--espoo-blue);
 	}
 
 	.badge--alert {
 		background-color: var(--espoo-coral);
+		color: var(--espoo-white);
 	}
 
 	.badge--note {
 		background-color: var(--espoo-sun);
-		color: var(--espoo-midnight);
+		color: var(--espoo-ink);
 	}
 </style>

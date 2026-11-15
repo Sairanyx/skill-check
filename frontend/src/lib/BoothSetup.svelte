@@ -75,30 +75,52 @@
 	</label>
 {/snippet}
 
+<form onsubmit={submit}>
 <EspooHero
 	title="Show what you can do, not what your CV says"
 	lead="Solve real problems from the job you want, in your own words. No CV, no phone, no points for grammar — only your skill counts."
 >
+	{#snippet actions()}
+		<div class="hero-launch">
+			<EspooField label="Interview language" for="language">
+				<select id="language" class="espoo-input" bind:value={language} disabled={busy}>
+					{#each LANGUAGES as lang (lang.value)}
+						<option value={lang.value}>{lang.label}</option>
+					{/each}
+				</select>
+			</EspooField>
+			<EspooButton type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start interview'}</EspooButton>
+		</div>
+		<div class="hero-links">
+			<a class="espoo-arrow-link" href="#demo">Watch 2-min demo</a>
+			<a class="espoo-arrow-link" href="#review">Sample results</a>
+		</div>
+		{#if busy}
+			<EspooSpinner>The panel is preparing your first question. This takes about 15 seconds.</EspooSpinner>
+		{/if}
+		{#if error || createError}<EspooAlert variant="alert">{error || createError}</EspooAlert>{/if}
+	{/snippet}
+
 	{#snippet aside()}
 		<ol class="steps">
 			<li>
-				<strong>Come to the booth</strong>
-				<span>Just you and a real work scenario. Nothing else in the room, so it's really you.</span>
+				<strong>Book an EXAM room</strong>
+				<span>A supervised City computer, like Finnish universities use. No phone, no ChatGPT — really you.</span>
 			</li>
 			<li>
 				<strong>Talk it through</strong>
 				<span>Three AI panelists listen and agree together on each next question.</span>
 			</li>
 			<li>
-				<strong>People decide</strong>
-				<span>The employer gets a report backed by your own words, and chooses whom to meet.</span>
+				<strong>Gemma pseudonyms & people decide</strong>
+				<span>Gemma in Finland strips your name into a pseudonym before scoring; employers choose whom to meet.</span>
 			</li>
 		</ol>
 	{/snippet}
 </EspooHero>
 
 <section class="espoo-container espoo-section">
-	<form class="setup" onsubmit={submit}>
+	<div class="setup">
 		<h2 id="role-heading">Which job are you here for?</h2>
 
 		<div class="roles" role="radiogroup" aria-labelledby="role-heading">
@@ -155,28 +177,14 @@
 						bind:value={custom.skills}
 					></textarea>
 				</EspooField>
+				<div class="setup__go">
+					<EspooButton type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start custom interview'}</EspooButton>
+				</div>
 			</fieldset>
 		{/if}
-
-		<div class="setup__go">
-			<EspooField label="Interview language" for="language">
-				<select id="language" class="espoo-input" bind:value={language} disabled={busy}>
-					{#each LANGUAGES as lang (lang.value)}
-						<option value={lang.value}>{lang.label}</option>
-					{/each}
-				</select>
-			</EspooField>
-			<EspooButton type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start interview'}</EspooButton>
-		</div>
-
-		{#if busy}
-			<EspooSpinner>The panel is preparing your first question. This takes about 15 seconds.</EspooSpinner>
-		{/if}
-		{#if error || createError}<EspooAlert variant="alert">{error || createError}</EspooAlert>{/if}
-	</form>
-
-	<a class="espoo-arrow-link" href="#review">No time for an interview? Read a finished sample report</a>
+	</div>
 </section>
+</form>
 
 <style>
 	.steps {
@@ -203,15 +211,15 @@
 		place-items: center;
 		width: 2.25rem;
 		height: 2.25rem;
-		border: 1.5px solid var(--espoo-apricot);
+		border: 1.5px solid var(--espoo-tint);
 		border-radius: 50%;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
-		color: var(--espoo-apricot);
+		color: var(--espoo-tint);
 	}
 
 	.steps span {
-		color: var(--espoo-text-muted);
+		color: rgba(255, 255, 255, 0.85);
 		font-size: 0.95rem;
 	}
 
@@ -231,10 +239,11 @@
 		align-content: start;
 		gap: 0.4rem;
 		padding: 1.25rem 1.4rem;
-		background-color: var(--espoo-midnight);
-		border: 2px solid transparent;
+		background-color: var(--espoo-white);
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
 		cursor: pointer;
-		transition: border-color var(--espoo-ease);
+		transition: border-color var(--espoo-ease), box-shadow var(--espoo-ease);
 	}
 
 	.role:hover {
@@ -242,7 +251,8 @@
 	}
 
 	.role.selected {
-		border-color: var(--espoo-apricot);
+		border-color: var(--espoo-blue);
+		background-color: var(--espoo-tint);
 	}
 
 	.role:has(:focus-visible) {
@@ -284,5 +294,18 @@
 		flex-wrap: wrap;
 		align-items: flex-end;
 		gap: 1rem;
+	}
+
+	.hero-launch {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 0.9rem;
+	}
+
+	.hero-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
 	}
 </style>

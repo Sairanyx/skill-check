@@ -37,22 +37,23 @@
 	}
 
 	.btn--primary {
-		background-color: var(--espoo-white);
-		border-color: var(--espoo-white);
-		color: var(--espoo-navy);
+		background-color: var(--espoo-blue);
+		border-color: var(--espoo-blue);
+		color: var(--espoo-white);
 	}
 
-	.btn--secondary {
-		background-color: transparent;
+	.btn--secondary,
+	.btn--outline {
+		background-color: var(--espoo-white);
 		border-color: var(--espoo-border-strong);
-		color: var(--espoo-white);
-		font-weight: 400;
+		color: var(--espoo-ink);
+		font-weight: 600;
 	}
 
 	.btn:hover:not(:disabled) {
-		background-color: var(--espoo-apricot);
-		border-color: var(--espoo-apricot);
-		color: var(--espoo-midnight);
+		background-color: var(--espoo-blue-hover);
+		border-color: var(--espoo-blue-hover);
+		color: var(--espoo-white);
 	}
 
 	.btn:disabled {

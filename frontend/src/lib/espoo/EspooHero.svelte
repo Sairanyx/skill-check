@@ -3,7 +3,7 @@
 	 * espoo.fi split hero: royal-blue text column with the wavy edge on the left,
 	 * a midnight panel (`aside`) on the right.
 	 */
-	let { title, lead, aside } = $props();
+	let { title, lead, actions = undefined, aside } = $props();
 </script>
 
 <section class="hero">
@@ -11,6 +11,11 @@
 		<div class="hero__text-inner">
 			<h1>{title}</h1>
 			<p>{lead}</p>
+			{#if actions}
+				<div class="hero__actions">
+					{@render actions()}
+				</div>
+			{/if}
 		</div>
 		<svg class="hero__wave" viewBox="0 0 110 420" preserveAspectRatio="none" aria-hidden="true">
 			<path
@@ -26,7 +31,33 @@
 <style>
 	.hero {
 		display: grid;
-		background-color: var(--espoo-midnight);
+		background-color: var(--espoo-navy);
+		color: var(--espoo-white);
+	}
+
+	.hero :global(.espoo-arrow-link) {
+		color: var(--espoo-white);
+	}
+
+	.hero :global(.espoo-arrow-link:hover) {
+		color: var(--espoo-tint);
+	}
+
+	.hero :global(.espoo-arrow-link:hover::before) {
+		background-color: var(--espoo-white);
+		color: var(--espoo-blue);
+	}
+
+	.hero :global(.btn--primary) {
+		background-color: var(--espoo-white);
+		border-color: var(--espoo-white);
+		color: var(--espoo-blue);
+	}
+
+	.hero :global(.btn--primary:hover:not(:disabled)) {
+		background-color: var(--espoo-tint);
+		border-color: var(--espoo-tint);
+		color: var(--espoo-blue);
 	}
 
 	@media (min-width: 58em) {
@@ -51,6 +82,12 @@
 
 	.hero__text p {
 		font-size: 1.0625rem;
+	}
+
+	.hero__actions {
+		margin-top: 0.75rem;
+		display: grid;
+		gap: 0.9rem;
 	}
 
 	.hero__wave {

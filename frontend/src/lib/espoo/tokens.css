@@ -8,22 +8,26 @@
 	--espoo-font-heading: 'Lato', Helvetica, Arial, sans-serif;
 	--espoo-font-body: 'Work Sans', Helvetica, Arial, sans-serif;
 
-	--espoo-blue: #0050bb;
-	--espoo-navy: #012169;
-	--espoo-midnight: #011135;
-	--espoo-apricot: #ffc386;
-	--espoo-coral: #ff4f57;
+	--espoo-blue: #003580;
+	--espoo-blue-hover: #00245a;
+	--espoo-navy: #001a40;
+	--espoo-midnight: #f3f4f6;
+	--espoo-surface: #f3f4f6;
+	--espoo-tint: #dce8f8;
+	--espoo-apricot: #003580;
+	--espoo-coral: #c92a2a;
 	--espoo-sun: #ffdc47;
 	--espoo-white: #ffffff;
+	--espoo-ink: #0b1b33;
 
-	--espoo-text-muted: rgba(255, 255, 255, 0.78);
-	--espoo-border: rgba(255, 255, 255, 0.2);
-	--espoo-border-strong: rgba(255, 255, 255, 0.6);
+	--espoo-text-muted: #5b6577;
+	--espoo-border: #e3e8ef;
+	--espoo-border-strong: #c7d2e0;
 
-	--espoo-radius: 0.1875rem;
+	--espoo-radius: 0.375rem;
 	--espoo-max-width: 76rem;
 	--espoo-gutter: 1rem;
-	--espoo-ease: 0.15s ease;
+	--espoo-ease: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 50em) {
@@ -35,8 +39,8 @@
 html,
 body {
 	margin: 0;
-	background-color: var(--espoo-navy);
-	color: var(--espoo-white);
+	background-color: var(--espoo-white);
+	color: var(--espoo-ink);
 	font-family: var(--espoo-font-body);
 	font-size: 1rem;
 	line-height: 1.6;
@@ -118,7 +122,8 @@ a {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.65rem;
-	color: var(--espoo-white);
+	color: var(--espoo-blue);
+	font-weight: 600;
 	text-decoration: none;
 	transition: color var(--espoo-ease);
 }
@@ -137,23 +142,23 @@ a {
 }
 
 .espoo-arrow-link:hover {
-	color: var(--espoo-apricot);
+	color: var(--espoo-blue-hover);
 }
 
 .espoo-arrow-link:hover::before {
-	background-color: var(--espoo-apricot);
-	color: var(--espoo-midnight);
+	background-color: var(--espoo-blue);
+	color: var(--espoo-white);
 }
 
-/* Recessed form controls (inputs, selects, textareas). */
+/* Form controls (inputs, selects, textareas). */
 .espoo-input {
 	width: 100%;
-	padding: 0.7rem 0.95rem;
+	padding: 0.65rem 0.9rem;
 	font: inherit;
-	color: var(--espoo-white);
-	background-color: var(--espoo-midnight);
+	color: var(--espoo-ink);
+	background-color: var(--espoo-white);
 	border: 1px solid var(--espoo-border-strong);
-	border-radius: 0;
+	border-radius: var(--espoo-radius);
 	transition: border-color var(--espoo-ease);
 }
 

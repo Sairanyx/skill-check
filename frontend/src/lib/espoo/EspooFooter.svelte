@@ -5,10 +5,10 @@
 <footer class="footer">
 	<div class="espoo-container footer__inner">
 		<EspooLogo />
-		<p class="espoo-muted">
-			SkillCheck Booth — a City of Espoo recruitment pilot. Synthetic data only. Junction 2026.
+		<p class="footer__text">
+			SkillCheck EXAM — a City of Espoo recruitment pilot. Synthetic data only. Junction 2026.
 		</p>
-		<a class="espoo-arrow-link" href="https://www.espoo.fi/en">espoo.fi</a>
+		<a class="espoo-arrow-link footer__link" href="https://www.espoo.fi/en">espoo.fi</a>
 	</div>
 </footer>
 
@@ -16,8 +16,21 @@
 	.footer {
 		margin-top: auto;
 		padding-block: 2.5rem;
-		background-color: var(--espoo-midnight);
-		border-top: 1px solid var(--espoo-border);
+		background-color: var(--espoo-navy);
+		color: var(--espoo-white);
+	}
+
+	.footer__text {
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.footer :global(.footer__link) {
+		color: var(--espoo-white);
+	}
+
+	.footer :global(.footer__link:hover::before) {
+		background-color: var(--espoo-white);
+		color: var(--espoo-navy);
 	}
 
 	.footer__inner {

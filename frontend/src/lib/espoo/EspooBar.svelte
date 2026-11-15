@@ -18,8 +18,10 @@
 
 <style>
 	.bar {
-		height: 0.4rem;
-		background-color: var(--espoo-navy);
+		height: 0.45rem;
+		background-color: var(--espoo-border);
+		border-radius: 999px;
+		overflow: hidden;
 	}
 
 	.bar__fill {

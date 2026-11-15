@@ -3,14 +3,19 @@
 	import '../lib/espoo/tokens.css';
 	import { EspooFooter, EspooHeader } from '../lib/espoo/index.js';
 	import Booth from '../lib/Booth.svelte';
+	import Demo from '../lib/Demo.svelte';
+	import Platform from '../lib/Platform.svelte';
 	import Reviews from '../lib/Reviews.svelte';
 	import { api } from '../lib/api.js';
 	import { FALLBACK_ROLES } from '../lib/samples.js';
 
-	/** Two screens, chosen by the address: `#/` is the booth, `#review/<id?>` the reports. */
+	/** Four screens, chosen by the address: `#/` booth, `#demo` walkthrough, `#review` results, `#platform` portals. */
 	function parseRoute(hash) {
 		const [page, id = ''] = hash.replace(/^#\/?/, '').split('/');
-		return page === 'review' ? { page: 'review', id } : { page: 'booth', id: '' };
+		if (page === 'review') return { page: 'review', id };
+		if (page === 'demo') return { page: 'demo', id: '' };
+		if (page === 'platform') return { page: 'platform', id: '' };
+		return { page: 'booth', id: '' };
 	}
 
 	let route = $state(parseRoute(location.hash));
@@ -18,7 +23,9 @@
 
 	const links = $derived([
 		{ label: 'Interview', href: '#/', active: route.page === 'booth' },
-		{ label: 'Reports', href: '#review', active: route.page === 'review' }
+		{ label: 'Demo', href: '#demo', active: route.page === 'demo' },
+		{ label: 'Results', href: '#review', active: route.page === 'review' },
+		{ label: 'Platform', href: '#platform', active: route.page === 'platform' }
 	]);
 
 	onMount(() => {
@@ -38,18 +45,22 @@
 </script>
 
 <svelte:head>
-	<title>SkillCheck Booth · City of Espoo</title>
+	<title>SkillCheck EXAM · City of Espoo</title>
 </svelte:head>
 
 <div class="app">
-	<EspooHeader subtitle="SkillCheck Booth" {links} />
+	<EspooHeader subtitle="SkillCheck EXAM" {links} />
 	<main>
-		<!-- Kept mounted so an interview survives a look at the reports. -->
+		<!-- Kept mounted so an interview survives a look at the other tabs. -->
 		<div hidden={route.page !== 'booth'}>
 			<Booth {roles} onaddrole={(role) => (roles = [...roles, role])} />
 		</div>
-		{#if route.page === 'review'}
+		{#if route.page === 'demo'}
+			<Demo />
+		{:else if route.page === 'review'}
 			<Reviews {roles} selectedId={route.id} />
+		{:else if route.page === 'platform'}
+			<Platform />
 		{/if}
 	</main>
 	<EspooFooter />

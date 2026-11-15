@@ -15,7 +15,9 @@
 		align-content: start;
 		gap: 0.6rem;
 		padding: 1.4rem 1.5rem;
-		background-color: var(--espoo-midnight);
+		background-color: var(--espoo-white);
+		border: 1px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
 	}
 
 	.card__eyebrow {
@@ -24,6 +26,6 @@
 	}
 
 	h3 {
-		color: var(--espoo-apricot);
+		color: var(--espoo-blue);
 	}
 </style>

@@ -24,8 +24,8 @@
 
 <style>
 	.header {
-		background-color: var(--espoo-navy);
-		padding-block: 1.1rem;
+		background-color: var(--espoo-white);
+		padding-block: 1rem;
 		border-bottom: 1px solid var(--espoo-border);
 	}
 
@@ -41,7 +41,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.9rem;
-		color: var(--espoo-white);
+		color: var(--espoo-blue);
 		text-decoration: none;
 	}
 
@@ -49,6 +49,8 @@
 		padding-left: 0.9rem;
 		border-left: 1px solid var(--espoo-border-strong);
 		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--espoo-ink);
 	}
 
 	nav {
@@ -57,7 +59,7 @@
 	}
 
 	nav a {
-		color: var(--espoo-white);
+		color: var(--espoo-ink);
 		text-decoration: none;
 		padding-block: 0.3rem;
 		border-bottom: 2px solid transparent;
@@ -66,11 +68,11 @@
 
 	nav a:hover,
 	nav a.active {
-		color: var(--espoo-apricot);
-		border-bottom-color: var(--espoo-apricot);
+		color: var(--espoo-blue);
+		border-bottom-color: var(--espoo-blue);
 	}
 
 	nav a.active {
-		font-weight: 600;
+		font-weight: 700;
 	}
 </style>
