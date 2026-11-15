@@ -20,6 +20,7 @@ Espoo's recruitment events bring hundreds of jobseekers and dozens of companies 
 
 ## What SkillCheck does
 
+- **EXAM rooms filter before the events.** A short supervised skill check filters out candidates who cannot yet show the skills, so companies meet the people who can.
 - **One real task, not a job ad.** A company describes a problem from its work, or City staff do it with them.
 - **In person, in rooms Espoo already has.** Jobseekers talk the task through on a supervised computer in an EXAM room, in spaces like Sello library or Espoo Talent Hub.
 - **Personal details removed first.** Gemma 4 on our server in Finland replaces name, age, employer, places and origin before any other AI reads an answer.
