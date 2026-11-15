@@ -80,6 +80,7 @@ Set `GUARD_BASE_URL` to a Gemma server so names are removed before Gemini reads 
 
 | | |
 |---|---|
+| [Challenge](docs/CHALLENGE.md) | The Espoo challenge and how SkillCheck meets each criterion |
 | [Architecture](docs/ARCHITECTURE.md) | System, one skill check and who decides, as diagrams |
 | [Database](docs/DATABASE.md) | Every table and how personal data is protected |
 | [Decisions](docs/DECISIONS.md) | Each design choice with research, pros and cons |
