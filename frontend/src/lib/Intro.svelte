@@ -17,9 +17,9 @@
 			source: { text: 'Espoo TalentMatch events bring 200 to 1,000 jobseekers and 5 to 50 employers together.', name: 'City of Espoo', href: 'https://www.espoo.fi/en/talentmatch-events' }
 		},
 		{
-			title: 'Our answer: a skill check in an EXAM room',
-			text: 'Jobseekers book 30 minutes on a supervised City computer and talk through a real task from the company. No CV, no cover letter.',
-			source: { text: '29 Finnish universities already use booked, supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
+			title: 'Our answer: a skill check in rooms the City already has',
+			text: 'Instead of a CV, jobseekers talk through a real task on a supervised computer. It runs in City spaces that already host recruitment events, so no new buildings are needed.',
+			source: { text: '29 Finnish universities already run exams this way, in supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
 		},
 		{
 			title: 'Fair by design',
@@ -139,12 +139,19 @@
 						<p class="caption rise" style={delay(2.2)}>Accepted checks become a sit-down at the event</p>
 					{:else if index === 1}
 						<div class="node node--exam node--big rise ring" style={delay(0.1)}>
-							<span class="node__title">{@render icon('chat')} EXAM room · Leppävaara</span>
-							<span class="node__text">Fri 27 Nov, 13:00 to 13:30. A supervised City computer, booked by the jobseeker.</span>
+							<span class="node__title">{@render icon('chat')} EXAM room</span>
+							<span class="node__text">A supervised computer in a space the City already uses</span>
 						</div>
-						<ul class="checks">
-							{#each ['No CV, no cover letter', 'No phone, nobody else', 'Your name stays with the City', 'A real task from the company'] as item, n (item)}
-								<li class="pop" style={delay(0.8 + n * 0.35)}><span>✓</span>{item}</li>
+						<ul class="places">
+							{#each [
+								{ name: 'Sello library', what: 'Already hosts City employer meet-ups' },
+								{ name: 'Lippulaiva library', what: 'Already hosts City employer meet-ups' },
+								{ name: 'Espoo Talent Hub, Otaniemi', what: 'Already runs employer speed dating' }
+							] as place, n (place.name)}
+								<li class="rise" style={delay(0.7 + n * 0.3)}>
+									<span class="places__pin">{@render icon('city')}</span>
+									<span><strong>{place.name}</strong><span>{place.what}</span></span>
+								</li>
 							{/each}
 						</ul>
 					{:else if index === 2}
@@ -243,8 +250,7 @@
 	@media (min-width: 58em) {
 		.slide {
 			grid-template-columns: 5fr 6fr;
-			min-height: 30rem; /* every slide the same height, so the buttons never move */
-			height: 30rem;
+			min-height: 34rem; /* every slide the same height, so the buttons never move */
 		}
 	}
 
@@ -493,6 +499,57 @@
 		text-align: center;
 		font-weight: 600;
 		color: var(--espoo-blue);
+	}
+
+	.places {
+		display: grid;
+		gap: 0.6rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.places li {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		padding: 0.7rem 1rem;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
+	}
+
+	.places li > span:last-child {
+		display: grid;
+		gap: 0.1rem;
+	}
+
+	.places strong {
+		font-family: var(--espoo-font-heading);
+		font-weight: 700;
+		font-size: var(--text-base);
+		color: var(--espoo-blue);
+	}
+
+	.places li > span:last-child > span {
+		font-size: var(--text-sm);
+		color: #5b6577;
+	}
+
+	.places__pin {
+		display: inline-grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		flex-shrink: 0;
+		border-radius: 50%;
+		background-color: var(--espoo-tint);
+		color: var(--espoo-blue);
+	}
+
+	.places__pin svg {
+		width: 1rem;
+		height: 1rem;
 	}
 
 	.checks {
