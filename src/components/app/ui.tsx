@@ -2,8 +2,8 @@
 export function PageTitle({ kicker, title, children }: { kicker?: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="mb-10">
-      {kicker && <p className="text-sm font-medium text-primary">{kicker}</p>}
-      <h1 className="mt-1 text-4xl tracking-tight">{title}</h1>
+      {kicker && <p className="font-heading text-xs font-bold uppercase tracking-[0.08em] text-primary">{kicker}</p>}
+      <h1 className="mt-2 text-4xl tracking-tight">{title}</h1>
       {children && <div className="mt-2 max-w-2xl text-sm text-muted-foreground">{children}</div>}
     </div>
   );

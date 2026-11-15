@@ -15,10 +15,10 @@ export default async function Landing({ params }: PageProps<"/[lang]">) {
       <section className="overflow-hidden bg-primary text-primary-foreground">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-[1fr_auto] md:py-24">
           <div>
-            <p className="text-sm font-medium text-tint">{t.eyebrow}</p>
+            <p className="font-heading text-sm font-bold uppercase tracking-[0.08em] text-tint">{t.eyebrow}</p>
             <h1 className="mt-3 max-w-3xl text-4xl tracking-tight md:text-6xl">{t.title}</h1>
             <p className="mt-6 max-w-2xl text-lg text-primary-foreground/85">{t.subtitle}</p>
-            <Link href={`/${lang}/demo`} className="mt-10 inline-flex h-12 items-center rounded-lg bg-background px-7 text-base font-semibold text-primary transition-colors hover:bg-tint">
+            <Link href={`/${lang}/demo`} className="mt-10 inline-flex h-12 items-center rounded-lg border-2 border-background bg-background px-7 font-heading text-base font-bold text-primary transition-colors hover:bg-transparent hover:text-primary-foreground">
               {t.demoCta} →
             </Link>
           </div>

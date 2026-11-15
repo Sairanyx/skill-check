@@ -72,7 +72,7 @@ export function DemoStory({ lang, event, screens, tryNeeds }: { lang: string; ev
     <div>
       <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
         <div>
-          <p className="text-sm font-medium text-primary">Demo</p>
+          <p className="font-heading text-xs font-bold uppercase tracking-[0.08em] text-primary">Demo</p>
           <h1 className="text-3xl tracking-tight">SkillCheck in two minutes</h1>
         </div>
         <p className="max-w-xl text-sm text-muted-foreground">
@@ -121,10 +121,10 @@ export function DemoStory({ lang, event, screens, tryNeeds }: { lang: string; ev
       </section>
 
       <div className="mt-4 flex items-center gap-3">
-        <button onClick={() => go(i - 1)} disabled={i === 0} className="rounded-lg border-2 bg-background px-5 py-2 font-medium disabled:opacity-40">Back</button>
+        <button onClick={() => go(i - 1)} disabled={i === 0} className="rounded-lg border-2 border-primary bg-background px-5 py-2 font-heading font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-40">Back</button>
         <span className="hidden text-xs text-muted-foreground sm:inline">or use the arrow keys</span>
         {i < last && (
-          <button onClick={() => go(i + 1)} className="ml-auto rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground hover:opacity-90">
+          <button onClick={() => go(i + 1)} className="ml-auto rounded-lg bg-primary px-6 py-2 font-heading font-bold text-primary-foreground transition-colors hover:bg-primary-hover">
             {i === last - 1 ? "Your turn" : "Next"}
           </button>
         )}
@@ -372,7 +372,7 @@ function TryIt({ lang, tryNeeds }: { lang: string; tryNeeds: { id: string; title
               ))}
             </div>
           </fieldset>
-          <button disabled={pending || !tryNeeds.length} className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-lg font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60">
+          <button disabled={pending || !tryNeeds.length} className="mt-6 w-full rounded-lg bg-primary px-6 py-3 font-heading text-lg font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60">
             {pending ? "Preparing your EXAM room…" : "Start a random skill check"}
           </button>
           {pending && <p className="mt-2 text-sm text-muted-foreground">The panel is writing its first question. This takes about 15 seconds.</p>}
@@ -390,7 +390,7 @@ function TryIt({ lang, tryNeeds }: { lang: string; tryNeeds: { id: string; title
             {PLATFORM.map((p) => {
               const Icon = p.as === "candidate" ? User : p.as === "company" ? Building2 : Landmark;
               return (
-                <Link key={p.as} href={`/${lang}/login?as=${p.as}`} className="flex items-center justify-between rounded-lg border-2 border-primary px-4 py-3 font-medium text-primary hover:bg-tint">
+                <Link key={p.as} href={`/${lang}/login?as=${p.as}`} className="flex items-center justify-between rounded-lg border-2 border-primary px-4 py-3 font-heading font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
                   <span className="flex items-center gap-2">
                     <Icon className="size-4" aria-hidden />
                     {p.as === "candidate" ? "Jobseeker: Aino" : p.as === "company" ? "Company: Kauklahti Parcel" : "City of Espoo"}

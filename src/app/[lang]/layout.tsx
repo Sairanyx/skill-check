@@ -4,6 +4,7 @@ import { Geist_Mono, Lato, Work_Sans } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
 import { hasLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
@@ -35,9 +36,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <TooltipProvider>
           <SiteHeader lang={lang} nav={dict.nav} />
           <main className="flex-1">{children}</main>
-          <footer className="bg-primary py-10 text-center text-sm text-primary-foreground/90">
-            {dict.footer.made}
-          </footer>
+          <SiteFooter lang={lang} dict={dict} />
           <Toaster />
           {/* Local dev only: hide the Next.js overlay badges so screen recordings stay clean. Errors still print in the terminal and the console. */}
           {process.env.NODE_ENV === "development" && <style>{"nextjs-portal{display:none!important}"}</style>}
