@@ -32,7 +32,7 @@ export default async function CardPage({ params }: PageProps<"/[lang]/candidate/
           <ul className="mt-6 space-y-2">
             {stamps.map((s) => (
               <li key={s.checkId} className="flex items-center gap-3 text-sm">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">✓</span>
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden><path d="M5 12l5 5L20 7" /></svg></span>
                 <span>
                   Skill check for <strong>{s.company}</strong>
                   <span className="block text-xs text-muted-foreground">

@@ -133,7 +133,7 @@ export function NeedSettings(props: {
               </div>
             ))}
             <div className="flex items-start gap-3 text-sm">
-              <span className="w-4 pt-2 text-muted-foreground">✓</span>
+              <span className="w-4 pt-2 text-muted-foreground" aria-hidden>•</span>
               <Textarea rows={3} value={a.checklist.join("\n")} onChange={(e) => setChecklist(i, e.target.value)} placeholder="Checklist, one item per line" />
             </div>
           </div>
