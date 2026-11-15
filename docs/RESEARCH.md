@@ -1,8 +1,8 @@
-# Research: evidence for the pitch and the demo
+# Research
 
-Collected 14 Nov 2026. Vendor numbers are marked as such. Use the wording below in the pitch.
+The evidence behind SkillCheck, with sources. Collected 14 Nov 2026. Vendor numbers are marked as such.
 
-## Headline facts for the pitch and the video
+## Key facts
 - **Since 1 Jan 2025 (TE24 reform), the City of Espoo is the employment authority for Espoo and Kauniainen, responsible for about 30,000 jobseekers.** Matching people to jobs is literally the City's job now. [Kauniainen](https://kauniainen.fi/en/news/te-services-will-become-municipal-services-on-1-january-2025) · [Työmarkkinatori](https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle)
 - Espoo already finds candidates and lets employers choose. **SkillCheck gives that work evidence, scale and fairness.**
 - "EXAM rooms for reasoning", using existing City spaces (libraries, Espoo Talent Hub).
@@ -15,7 +15,7 @@ Collected 14 Nov 2026. Vendor numbers are marked as such. Use the wording below 
 
 ## Our answer: "EXAM rooms for reasoning"
 - Finland already has **EXAM**: booked, supervised electronic exam rooms in **29 higher-education institutions** (run by CSC). Students book a time and get an **assigned computer**. Rooms are camera-monitored and the computers only run the exam system. [Aalto](https://www.aalto.fi/en/services/electronic-examinations-exam-service) · [UEF](https://kamu.uef.fi/en/?p=3531) · [Xamk](https://www.xamk.fi/?p=10624)
-- Nobody applies this to recruitment. Pitch: **"The infrastructure already exists. We use it to check a reasoning baseline before the interview or the event, in person or online."**
+- Nobody applies this to recruitment. **The infrastructure already exists. SkillCheck uses it to check a reasoning baseline before the interview or the event.**
 - ⚠️ Do not claim the rooms are "empty". Say "spare capacity outside exam periods" unless we get numbers from the City or a university.
 
 ## Why the method works
@@ -23,14 +23,14 @@ Collected 14 Nov 2026. Vendor numbers are marked as such. Use the wording below 
 - **AI judges are biased by names.** LLMs rank identical CVs differently by name. [CUHK 2026 audit of 14 LLMs](https://arxiv.org/pdf/2606.28978) · [AIES 2024 coverage](https://getcoai.com/news/ai-models-prefer-white-and-male-job-candidates-new-study-finds) → our privacy guard runs **before** any scoring. **It is a fairness feature, not just privacy.**
 - **Anonymous recruitment works when it is the default.** The **City of Helsinki pilot** (VATT/LABORE 2023): anonymisation increased hiring of applicants with foreign names, but opt-in by managers weakened it. [LABORE](https://labore.fi/en/publications/anatomy-of-an-anonymous-hiring-pilot/) → **anonymity is the default, companies cannot switch it off.**
 - **Human in the loop alone is not enough.** Recruiters followed biased AI recommendations ~90% of the time (secondary source). [TechRepublic](https://www.techrepublic.com/article/ai-hiring-bias-research/) → we show **evidence and confidence**, and the City dashboard measures **how often people agree with the AI**.
-- **Reliable AI judges need:** a clear rubric, quotes as evidence, calibration against human ratings, separate bias tests, regular human spot-checks. [MLflow](https://mlflow.org/articles/llm-judge-calibration/) · [guide](https://futureagi.com/blog/llm-as-judge-best-practices-2026) → we have rubric + evidence. Calibration and spot-checks are on the checklist.
+- **Reliable AI judges need:** a clear rubric, quotes as evidence, calibration against human ratings, separate bias tests, regular human spot-checks. [MLflow](https://mlflow.org/articles/llm-judge-calibration/) · [guide](https://futureagi.com/blog/llm-as-judge-best-practices-2026) → we have rubric + evidence. Calibration and spot-checks are planned for a pilot.
 
 ## Rules and public sector
-- **EU AI Act:** recruitment AI is high-risk. The Digital Omnibus moved those obligations from Aug 2026 to **2 Dec 2027**. Pitch: **"Built to be compliant before it is required."** [DLA Piper](https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act) · [Cooley](https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/)
+- **EU AI Act:** recruitment AI is high-risk. The Digital Omnibus moved those obligations from Aug 2026 to **2 Dec 2027**. SkillCheck is **built to be compliant before it is required.** [DLA Piper](https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act) · [Cooley](https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/)
 - **Public employment services:** France Travail uses AI for CV skills analysis. [OECD](https://read.oecd-ilibrary.org/en/about/programmes/sg-reform/improving-public-employment-services-through-artificial-intelligence-in-france-and-greece.html). The World Bank warns AI **cannot replace core skills assessment**, and Austria's AMS faced backlash over a discriminating chatbot. [World Bank](https://thedocs.worldbank.org/en/doc/98d7502c78085efeab2772e84e820572-0090012025/original/02-Use-of-data-and-AI-in-PES-May22.pdf) → "AI gathers evidence, people decide."
 - **Roadmap:** stamps → **European Digital Credentials** (signed, machine-readable, linkable to ESCO skills). [Europass](https://europass.europa.eu/en/news/how-employers-can-use-european-digital-credentials-hiring)
 
-## How buyers judge assessment tools (use as our self-check)
+## How buyers judge assessment tools
 From a 2026 buyer's guide ([Sapia](https://sapia.ai/resources/blog/ai-candidate-assessment-software/), vendor source):
 | Criterion | Our answer |
 |---|---|
@@ -97,7 +97,7 @@ Comparison table of platforms (for the Q&A): Sapia.ai, HireVue, TestGorilla, Ver
 - **Testing rooms can use existing City places:** Espoo already runs events in **libraries (Sello, Lippulaiva)** and **Espoo Talent Hub**. Library computer spaces + EXAM-style booking = testing rooms without new buildings.
 - **Fits existing events:** TalentMatch already uses 15-min 1:1 meetings on mutual interest. Our stamps and evidence plug into that flow (and into whatever platform they use, via our API).
 - **Link to the €5,000 subsidy:** the platform can tell a company when a candidate they accepted may make them eligible (young Espoo resident or foreign-language speaker), without showing the reason to anyone else.
-- **Open questions for the Espoo mentors:** How do staff screen candidates today? Which event platform runs TalentMatch? How many staff hours does one event take? Would libraries or Talent Hub host testing rooms?
+- **Open questions for Espoo:** How do staff screen candidates today? Which event platform runs TalentMatch? How many staff hours does one event take? Would libraries or Talent Hub host testing rooms?
 
 ---
 
@@ -113,6 +113,6 @@ Large language models learn from human text, so they carry human prejudices, som
 | **Age and gender** | Models assume women are younger and less experienced and rate older male applicants higher (Nature, Oct 2025). Age bias persists even under corrective instructions. [PMLR 2026](https://proceedings.mlr.press/v350/grenzebach26a.html) · [arXiv 2603.11736](https://arxiv.org/html/2603.11736v1) | Age signals (birth years, graduation years) removed. Gender not collected |
 | **Judge biases** | LLM judges favour the first answer (position), longer answers (verbosity) and their own outputs (self-preference). [Zheng et al., NeurIPS 2023](https://arxiv.org/abs/2306.05685) | Each candidate scored alone against fixed anchors (no position effect), quotes not length, a second judge from another model family (planned with Gemini) |
 
-**Takeaway for the pitch:** "We do not trust the AI to be fair. We design so it cannot see what it could be unfair about, and we check it anyway."
+**In short:** we do not trust the AI to be fair. We design it so it cannot see what it could be unfair about, and we check it anyway.
 
 **Legal basis in Finland:** the **Non-Discrimination Act (Yhdenvertaisuuslaki 1325/2014)** forbids discrimination based on age, origin, nationality, language, religion, belief, opinion, political activity, trade union activity, family relationships, state of health, disability, sexual orientation or other personal characteristics. The **Equality Act (609/1986)** covers gender. The privacy guard removes exactly these. The same Act allows different treatment only for a **genuine and determining requirement of the work** that is proportionate, which is why a language requirement is optional, per need, and scored separately (DECISIONS D16). CEFR levels A1 to C2 match the Finnish YKI language certificate levels 1 to 6.
