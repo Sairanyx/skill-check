@@ -9,7 +9,7 @@
 
 <div class="round">
 	{#if round.ended_because}
-		<EspooAlert variant="note" title="The interview ended here">{round.ended_because}</EspooAlert>
+		<EspooAlert variant="note" title="The skill check ended here">{round.ended_because}</EspooAlert>
 	{/if}
 
 	<p><strong class="round__label">Chair's decision:</strong> {round.chair_reasoning}</p>

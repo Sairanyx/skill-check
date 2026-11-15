@@ -99,7 +99,7 @@
 		</section>
 
 		<section>
-			<h3>For the face-to-face meeting</h3>
+			<h3>For the 15-minute meeting</h3>
 			<div class="grid">
 				<EspooCard title="What to talk about"><p>{report.suggested_conversation}</p></EspooCard>
 				<EspooCard title="Strengths">{@render bulletList(report.strengths)}</EspooCard>
@@ -112,7 +112,7 @@
 			<p>{report.candidate_feedback}</p>
 		</EspooCard>
 	{:else if interview.status === 'reporting'}
-		<EspooSpinner>The panel is writing the report. This page updates by itself in 1–2 minutes.</EspooSpinner>
+		<EspooSpinner>The panel is writing the report. This page updates by itself in 1 to 2 minutes.</EspooSpinner>
 	{:else if interview.status === 'failed'}
 		<EspooAlert variant="alert" title="The report couldn't be written">
 			Nothing is lost: the panel can try again from the same interview.
@@ -121,7 +121,7 @@
 			<EspooButton onclick={retry} disabled={retrying}>{retrying ? 'Retrying…' : 'Try again'}</EspooButton>
 		</div>
 	{:else}
-		<p>This interview is still going. The report appears here when it ends.</p>
+		<p>This skill check is still going. The result appears here when it ends.</p>
 	{/if}
 
 	<EspooAccordion title="Transcript ({count(interview.transcript.length, 'turn')})">

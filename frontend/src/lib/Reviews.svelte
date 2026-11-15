@@ -85,14 +85,14 @@
 
 <section class="espoo-container espoo-section">
 	<header class="reviews__head">
-		<h1>Interview reports</h1>
+		<h1>Results</h1>
 		<p class="espoo-muted">The panel recommends. People decide whom to meet.</p>
 	</header>
 
 	{#if error}<EspooAlert variant="alert">{error}</EspooAlert>{/if}
 
 	<div class="reviews__layout">
-		<nav aria-label="Interviews">
+		<nav aria-label="Skill checks">
 			<ul class="list">
 				{#each rows as row (row.id)}
 					<li>
@@ -119,7 +119,7 @@
 			{#if current}
 				<Report interview={current} role={findRole(roles, current.role_id)} onretry={retry} />
 			{:else if currentId}
-				<EspooSpinner>Loading the interview…</EspooSpinner>
+				<EspooSpinner>Loading…</EspooSpinner>
 			{/if}
 		</div>
 	</div>

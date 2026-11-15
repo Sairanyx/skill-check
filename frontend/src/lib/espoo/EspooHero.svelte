@@ -41,6 +41,7 @@
 		justify-content: flex-end;
 		padding: 3rem var(--espoo-gutter);
 		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 	}
 
 	.hero__text-inner {

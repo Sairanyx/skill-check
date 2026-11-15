@@ -1,18 +1,25 @@
 <script>
 	import EspooLogo from './EspooLogo.svelte';
+	import SkillCheckLogo from '../SkillCheckLogo.svelte';
 </script>
 
 <footer class="footer">
 	<div class="espoo-container footer__inner">
-		<EspooLogo />
+		<span class="footer__logos"><EspooLogo /><SkillCheckLogo /></span>
 		<p class="espoo-muted">
-			SkillCheck Booth — a City of Espoo recruitment pilot. Synthetic data only. Junction 2026.
+			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemini 4 Hydrogen, Argon and Carbon.
 		</p>
 		<a class="espoo-arrow-link" href="https://www.espoo.fi/en">espoo.fi</a>
 	</div>
 </footer>
 
 <style>
+	.footer__logos {
+		display: inline-flex;
+		align-items: center;
+		gap: 1.25rem;
+	}
+
 	.footer {
 		margin-top: auto;
 		padding-block: 2.5rem;

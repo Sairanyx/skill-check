@@ -1,26 +1,29 @@
 /*
- * City of Espoo look (espoo.fi): deep-navy pages, a royal-blue hero with a
- * wavy edge, apricot highlights, sharp corners and circled-arrow links.
- * Components read these tokens; nothing else hard-codes a colour.
+ * City of Espoo layout (espoo.fi): a blue hero with a wavy edge, sharp corners and circled-arrow links,
+ * in SkillCheck's calm colours: white page, dark text, Finnish blue accent, light grey cards.
+ * The token names are kept from the first dark version, the comments say what each one is now.
+ * Components read these tokens. Nothing else hard-codes a colour.
  */
 
 :root {
 	--espoo-font-heading: 'Lato', Helvetica, Arial, sans-serif;
 	--espoo-font-body: 'Work Sans', Helvetica, Arial, sans-serif;
 
-	--espoo-blue: #0050bb;
-	--espoo-navy: #012169;
-	--espoo-midnight: #011135;
-	--espoo-apricot: #ffc386;
+	--espoo-blue: #003580; /* hero and answer bubbles: Finnish blue */
+	--espoo-navy: #ffffff; /* page and header background */
+	--espoo-midnight: #f3f4f6; /* cards and inputs: light grey */
+	--espoo-apricot: #003580; /* accent: titles, selection, links */
+	--espoo-tint: #dce8f8; /* light blue for highlights */
 	--espoo-coral: #ff4f57;
 	--espoo-sun: #ffdc47;
-	--espoo-white: #ffffff;
+	--espoo-white: #0b1b33; /* text */
+	--espoo-on-blue: #ffffff; /* text on Finnish blue */
 
-	--espoo-text-muted: rgba(255, 255, 255, 0.78);
-	--espoo-border: rgba(255, 255, 255, 0.2);
-	--espoo-border-strong: rgba(255, 255, 255, 0.6);
+	--espoo-text-muted: #5b6577;
+	--espoo-border: #e3e8ef;
+	--espoo-border-strong: #b8c4d6;
 
-	--espoo-radius: 0.1875rem;
+	--espoo-radius: 0.5rem;
 	--espoo-max-width: 76rem;
 	--espoo-gutter: 1rem;
 	--espoo-ease: 0.15s ease;
@@ -142,7 +145,7 @@ a {
 
 .espoo-arrow-link:hover::before {
 	background-color: var(--espoo-apricot);
-	color: var(--espoo-midnight);
+	color: var(--espoo-on-blue);
 }
 
 /* Recessed form controls (inputs, selects, textareas). */

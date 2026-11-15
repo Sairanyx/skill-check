@@ -444,7 +444,7 @@ export const SAMPLE_INTERVIEWS = [
 	},
 	{
 		id: '01J8ESP00CARE77B3N9P2W5L1Z',
-		tagline: 'Panel split — look closer',
+		tagline: 'Panel split, look closer',
 		role_id: 'practical-nurse',
 		language: 'en',
 		status: 'done',

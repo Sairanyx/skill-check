@@ -37,9 +37,11 @@
 	}
 
 	.btn--primary {
-		background-color: var(--espoo-white);
-		border-color: var(--espoo-white);
-		color: var(--espoo-navy);
+		background-color: var(--espoo-apricot);
+		border-color: var(--espoo-apricot);
+		color: var(--espoo-on-blue);
+		font-family: var(--espoo-font-heading);
+		font-weight: 700;
 	}
 
 	.btn--secondary {
@@ -50,9 +52,9 @@
 	}
 
 	.btn:hover:not(:disabled) {
-		background-color: var(--espoo-apricot);
-		border-color: var(--espoo-apricot);
-		color: var(--espoo-midnight);
+		background-color: #00245a;
+		border-color: #00245a;
+		color: var(--espoo-on-blue);
 	}
 
 	.btn:disabled {

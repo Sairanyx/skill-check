@@ -1,15 +1,16 @@
 <script>
 	import EspooLogo from './EspooLogo.svelte';
+	import SkillCheckLogo from '../SkillCheckLogo.svelte';
 
-	/** @type {{ subtitle: string, links: Array<{ label: string, href: string, active: boolean }> }} */
-	let { subtitle, links } = $props();
+	/** @type {{ subtitle?: string, links: Array<{ label: string, href: string, active: boolean }> }} */
+	let { links } = $props();
 </script>
 
 <header class="header">
 	<div class="espoo-container header__inner">
 		<a href="#/" class="header__brand">
 			<EspooLogo />
-			<span class="header__subtitle">{subtitle}</span>
+			<span class="header__subtitle"><SkillCheckLogo /></span>
 		</a>
 
 		<nav aria-label="Main">

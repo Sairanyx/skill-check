@@ -10,7 +10,7 @@
 	let { roles, starting, error, onaddrole, onstart } = $props();
 
 	const CUSTOM = 'custom';
-	const CUSTOM_COMPANY = 'Your own scenario (synthetic)';
+	const CUSTOM_COMPANY = 'Your own task (synthetic)';
 	/** Used when the person doesn't name any skills: the panel still needs something to score. */
 	const DEFAULT_SKILLS = ['Practical know-how', 'Problem solving', 'Safety and quality'];
 	const EMPTY_CUSTOM = { title: '', summary: '', skills: '' };
@@ -76,22 +76,22 @@
 {/snippet}
 
 <EspooHero
-	title="Show what you can do, not what your CV says"
-	lead="Solve real problems from the job you want, in your own words. No CV, no phone, no points for grammar — only your skill counts."
+	title="No CV. No cover letter. Just talk about your skills."
+	lead="Take a short skill check in a City EXAM room, in Finnish, Swedish or English. People decide whom to meet."
 >
 	{#snippet aside()}
 		<ol class="steps">
 			<li>
-				<strong>Come to the booth</strong>
-				<span>Just you and a real work scenario. Nothing else in the room, so it's really you.</span>
+				<strong>Come to the EXAM room</strong>
+				<span>A supervised City computer. Just you and a real task from the company.</span>
 			</li>
 			<li>
-				<strong>Talk it through</strong>
-				<span>Three AI panelists listen and agree together on each next question.</span>
+				<strong>Talk about your skills</strong>
+				<span>An AI panel of three Gemini 4 models asks about the task.</span>
 			</li>
 			<li>
 				<strong>People decide</strong>
-				<span>The employer gets a report backed by your own words, and chooses whom to meet.</span>
+				<span>The company sees your feedback under an alias and chooses whom to meet.</span>
 			</li>
 		</ol>
 	{/snippet}
@@ -99,18 +99,38 @@
 
 <section class="espoo-container espoo-section">
 	<form class="setup" onsubmit={submit}>
-		<h2 id="role-heading">Which job are you here for?</h2>
+		<div class="setup__head">
+			<div>
+				<h2 id="role-heading">Choose a skill check</h2>
+				<a class="espoo-arrow-link setup__sample" href="#review">No time? See a finished result</a>
+			</div>
+			<div class="setup__go">
+				<EspooField label="Language" for="language">
+					<select id="language" class="espoo-input" bind:value={language} disabled={busy}>
+						{#each LANGUAGES as lang (lang.value)}
+							<option value={lang.value}>{lang.label}</option>
+						{/each}
+					</select>
+				</EspooField>
+				<EspooButton type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start skill check'}</EspooButton>
+			</div>
+		</div>
+
+		{#if busy}
+			<EspooSpinner>The panel is preparing your first question. This takes about 15 seconds.</EspooSpinner>
+		{/if}
+		{#if error || createError}<EspooAlert variant="alert">{error || createError}</EspooAlert>{/if}
 
 		<div class="roles" role="radiogroup" aria-labelledby="role-heading">
 			{#each roles as r (r.id)}
-				{@render roleCard(r.id, r.company, r.title, r.summary, `Assessed: ${r.skills.join(' · ')}`)}
+				{@render roleCard(r.id, r.company, r.title, r.summary, `Skills checked: ${r.skills.join(' · ')}`)}
 			{/each}
 			{@render roleCard(
 				CUSTOM,
 				'Any job you can describe',
-				'Your own scenario',
-				'Type the job you want to test — a plumber, a chef, a forklift driver — and the panel interviews for it.',
-				'Good for judges: try to fool it.'
+				'Your own task',
+				'Type any job, for example a plumber, a chef or a forklift driver. The panel asks about it.',
+				'For judges: try to fool it.'
 			)}
 		</div>
 
@@ -130,7 +150,7 @@
 				<EspooField
 					label="What should they be able to do?"
 					for="custom-summary"
-					hint="The panel builds its scenarios from this."
+					hint="The panel builds its questions from this."
 				>
 					<textarea
 						id="custom-summary"
@@ -158,24 +178,8 @@
 			</fieldset>
 		{/if}
 
-		<div class="setup__go">
-			<EspooField label="Interview language" for="language">
-				<select id="language" class="espoo-input" bind:value={language} disabled={busy}>
-					{#each LANGUAGES as lang (lang.value)}
-						<option value={lang.value}>{lang.label}</option>
-					{/each}
-				</select>
-			</EspooField>
-			<EspooButton type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start interview'}</EspooButton>
-		</div>
-
-		{#if busy}
-			<EspooSpinner>The panel is preparing your first question. This takes about 15 seconds.</EspooSpinner>
-		{/if}
-		{#if error || createError}<EspooAlert variant="alert">{error || createError}</EspooAlert>{/if}
 	</form>
 
-	<a class="espoo-arrow-link" href="#review">No time for an interview? Read a finished sample report</a>
 </section>
 
 <style>
@@ -277,6 +281,21 @@
 		font-weight: 700;
 		font-size: 1.1875rem;
 		color: var(--espoo-apricot);
+	}
+
+	.setup__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--espoo-border);
+	}
+
+	.setup__sample {
+		margin-top: 0.75rem;
+		font-size: 0.95rem;
 	}
 
 	.setup__go {

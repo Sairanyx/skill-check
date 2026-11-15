@@ -17,8 +17,8 @@
 	let roles = $state(FALLBACK_ROLES);
 
 	const links = $derived([
-		{ label: 'Interview', href: '#/', active: route.page === 'booth' },
-		{ label: 'Reports', href: '#review', active: route.page === 'review' }
+		{ label: 'Skill check', href: '#/', active: route.page === 'booth' },
+		{ label: 'Results', href: '#review', active: route.page === 'review' }
 	]);
 
 	onMount(() => {
@@ -38,11 +38,11 @@
 </script>
 
 <svelte:head>
-	<title>SkillCheck Booth · City of Espoo</title>
+	<title>SkillCheck · City of Espoo</title>
 </svelte:head>
 
 <div class="app">
-	<EspooHeader subtitle="SkillCheck Booth" {links} />
+	<EspooHeader {links} />
 	<main>
 		<!-- Kept mounted so an interview survives a look at the reports. -->
 		<div hidden={route.page !== 'booth'}>

@@ -50,6 +50,7 @@
 	.turn--candidate {
 		justify-self: end;
 		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 	}
 
 	.turn__who {

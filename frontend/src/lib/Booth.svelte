@@ -145,7 +145,7 @@
 					<h2>{role.title}</h2>
 				</div>
 				{#if canReply && hasAnswered}
-					<EspooButton variant="secondary" size="sm" onclick={finish}>End interview</EspooButton>
+					<EspooButton variant="secondary" size="sm" onclick={finish}>End skill check</EspooButton>
 				{/if}
 			</header>
 
@@ -197,9 +197,9 @@
 				</form>
 			{:else}
 				{#if status === 'reporting'}
-					<EspooSpinner>Thank you! The panel is writing its report. This takes 1–2 minutes.</EspooSpinner>
+					<EspooSpinner>Thank you! The panel is writing its report. This takes 1 to 2 minutes.</EspooSpinner>
 				{:else if status === 'done'}
-					<EspooCard title="Thank you — here is your feedback">
+					<EspooCard title="Thank you. Here is your feedback">
 						<p>{feedback}</p>
 					</EspooCard>
 				{:else}
@@ -208,8 +208,8 @@
 					</EspooAlert>
 				{/if}
 				<div class="outcome-actions">
-					<EspooButton href="#review/{interviewId}">See the employer's report</EspooButton>
-					<EspooButton variant="secondary" onclick={reset}>New interview</EspooButton>
+					<EspooButton href="#review/{interviewId}">See what the company sees</EspooButton>
+					<EspooButton variant="secondary" onclick={reset}>New skill check</EspooButton>
 				</div>
 			{/if}
 			<span bind:this={chatEnd}></span>
@@ -218,8 +218,8 @@
 		<aside class="notes" aria-labelledby="notes-heading">
 			<h3 id="notes-heading">Behind the scenes</h3>
 			<p class="espoo-muted">
-				After every answer, each panelist writes private notes and suggests a question; the chair picks
-				one. Only staff see this — never the candidate.
+				After every answer, each panelist writes private notes and suggests a question. The chair picks
+				one. Only staff see this, never the candidate.
 			</p>
 			{#if latestRound}
 				<RoundNotes round={latestRound} />
