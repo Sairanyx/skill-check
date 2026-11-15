@@ -7,8 +7,8 @@ Legend: ✅ works · ❌ broken · ✏️ works but change wording or layout · 
 
 ## 0. Everywhere
 - [ ] Header: logo goes home, name shown, Log out works
-- [ ] Language switch EN / FI / SV keeps you on the same page
-- [ ] Finnish and Swedish texts exist on every screen (not only the landing page)
+- [oki] Language switch EN / FI / SV keeps you on the same page
+- [oki] Finnish and Swedish texts exist on every screen (not only the landing page)
 - [ ] Logged-out visitor opening a portal page goes to login, then back to that page
 - [ ] Wrong role (company opening `/city`) is sent to its own portal
 - [ ] Every button shows a busy state and a clear error message when something fails
