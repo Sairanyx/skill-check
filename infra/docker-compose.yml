@@ -79,6 +79,21 @@ services:
     restart: unless-stopped
     env_file: .env
 
+  # The demo (demo/): Chris's interview server with the Gemma privacy guard, and the demo front end.
+  # Gemini reads only answers that went through Gemma first. Interviews are JSON files in a volume.
+  demo:
+    build: ./app/demo
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - GUARD_BASE_URL=http://gemma:8000/v1
+      - GUARD_MODEL=gemma
+      - PORT=8020
+      - DATA_DIR=/app/data
+    volumes:
+      - demo-data:/app/data
+    depends_on: [gemma]
+
   # HTTPS (ports 80/443 are the only ones open in the firewall besides SSH).
   caddy:
     image: caddy:2
@@ -92,8 +107,9 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
-    depends_on: [app]
+    depends_on: [app, demo]
 
 volumes:
   hf-cache:
   caddy-data:
+  demo-data:

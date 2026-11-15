@@ -1,8 +1,18 @@
 # HTTPS in front of the app. Caddy gets and renews the certificates automatically.
 {$SITE_HOST} {
 	encode zstd gzip
-	reverse_proxy app:3000 {
-		flush_interval -1 # keep streaming responses streaming
+
+	# The demo: the front page, its files and its own API. Their paths never overlap with the platform.
+	@demo path / /index.html /_app/* /api/roles* /api/interviews* /api/review* /api/health
+	handle @demo {
+		reverse_proxy demo:8020
+	}
+
+	# Everything else is the platform (/en/..., /api/auth, /api/v1).
+	handle {
+		reverse_proxy app:3000 {
+			flush_interval -1 # keep streaming responses streaming
+		}
 	}
 }
 
