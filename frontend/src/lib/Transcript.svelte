@@ -51,8 +51,8 @@
 
 	.turn--interviewer {
 		justify-self: start;
-		background-color: var(--espoo-midnight);
-		border-left: 0.25rem solid var(--espoo-apricot);
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
 	}
 
 	.turn--candidate {
@@ -73,7 +73,7 @@
 	}
 
 	.turn--candidate .turn__who {
-		color: var(--espoo-white);
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	p {

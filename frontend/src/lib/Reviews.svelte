@@ -158,8 +158,8 @@
 
 	.list a {
 		display: grid;
-		gap: 0.3rem;
-		padding: 0.9rem 1.1rem;
+		gap: 0.15rem;
+		padding: 0.7rem 0.95rem;
 		color: var(--espoo-white);
 		text-decoration: none;
 		background-color: var(--espoo-midnight);

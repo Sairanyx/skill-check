@@ -27,11 +27,14 @@
 	}
 
 	.badge--alert {
-		background-color: var(--espoo-coral);
+		background-color: #fdecec;
+		border-color: #f3c4c4;
+		color: #9b1c1c;
 	}
 
 	.badge--note {
-		background-color: var(--espoo-sun);
-		color: var(--espoo-midnight);
+		background-color: #fff6dc;
+		border-color: #f1d891;
+		color: #6b4e00;
 	}
 </style>

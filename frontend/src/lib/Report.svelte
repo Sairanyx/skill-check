@@ -155,13 +155,17 @@
 		gap: 1.75rem;
 	}
 
+	/* The one place to look first: the job, the score and the verdict together */
 	.report__head {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
+		align-items: center;
 		gap: 1.25rem;
-		padding-bottom: 1.25rem;
-		border-bottom: 1px solid var(--espoo-border);
+		padding: 1.4rem 1.6rem;
+		background-color: #f5f8fd;
+		border: 2px solid var(--espoo-apricot);
+		border-radius: var(--espoo-radius-lg);
 	}
 
 	.report__meta {

@@ -24,18 +24,19 @@
 	}
 
 	.alert--info {
-		background-color: var(--espoo-midnight);
+		background-color: #f5f8fd;
 		border-color: var(--espoo-apricot);
 	}
 
 	.alert--note {
-		background-color: var(--espoo-sun);
-		border-color: var(--espoo-navy);
-		color: var(--espoo-midnight);
+		background-color: #fff8e6;
+		border-color: #d9a400;
+		color: #0b1b33;
 	}
 
 	.alert--alert {
-		background-color: var(--espoo-coral);
-		border-color: var(--espoo-midnight);
+		background-color: #fdecec;
+		border-color: #d64545;
+		color: #0b1b33;
 	}
 </style>

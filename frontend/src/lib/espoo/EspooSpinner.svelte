@@ -14,8 +14,9 @@
 		align-items: center;
 		gap: 0.85rem;
 		padding: 0.9rem 1.1rem;
-		background-color: var(--espoo-navy);
-		border-left: 0.25rem solid var(--espoo-apricot);
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
 	}
 
 	.spinner {

@@ -216,7 +216,7 @@
 		</div>
 
 		<aside class="notes" aria-labelledby="notes-heading">
-			<h3 id="notes-heading">Behind the scenes</h3>
+			<h3 id="notes-heading">Behind the scenes <span class="staff">staff only</span></h3>
 			<p class="espoo-muted">
 				After every answer, each panelist writes private notes and suggests a question. The chair picks
 				one. Only staff see this, never the candidate.
@@ -259,8 +259,14 @@
 	.composer {
 		display: grid;
 		gap: 1rem;
-		padding: 1.25rem;
-		background-color: var(--espoo-midnight);
+		padding: 1.25rem 1.4rem;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius-lg);
+	}
+
+	.composer > div:last-child {
+		justify-self: end;
 	}
 
 	.samples {
@@ -280,9 +286,10 @@
 	.notes {
 		display: grid;
 		gap: 0.85rem;
-		padding: 1.25rem;
-		background-color: var(--espoo-midnight);
-		border-top: 3px solid var(--espoo-apricot);
+		padding: 1.25rem 1.4rem;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius-lg);
 	}
 
 	@media (min-width: 64em) {
@@ -295,7 +302,19 @@
 	}
 
 	.notes h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		color: var(--espoo-apricot);
+	}
+
+	.staff {
+		padding: 0.1rem 0.55rem;
+		border-radius: 1rem;
+		background-color: var(--espoo-tint);
+		font-family: var(--espoo-font-body);
+		font-size: var(--text-xs);
+		font-weight: 600;
 	}
 
 	.notes > p {
