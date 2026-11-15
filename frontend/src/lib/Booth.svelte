@@ -141,7 +141,7 @@
 		<div class="chat">
 			<header class="chat__head">
 				<div>
-					<span class="espoo-muted">{role.company}</span>
+					<span class="espoo-muted">EXAM room · {role.company}</span>
 					<h2>{role.title}</h2>
 				</div>
 				{#if canReply && hasAnswered}
