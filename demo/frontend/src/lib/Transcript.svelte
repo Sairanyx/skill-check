@@ -79,4 +79,10 @@
 	p {
 		white-space: pre-line;
 	}
+
+	/* Removed-detail chips on the blue answer bubble: white, so they stand out */
+	.turn--candidate :global(.chip) {
+		background-color: #ffffff;
+		color: var(--espoo-blue);
+	}
 </style>
