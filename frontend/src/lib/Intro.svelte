@@ -11,9 +11,9 @@
 	const SLIDES = [
 		{
 			tag: 'Impact & Relevance · 45%',
-			title: 'The problem: CVs no longer show skills',
-			text: 'Espoo serves about 30,000 jobseekers. AI now writes many CVs, so companies at City events cannot see who can do the job.',
-			source: { text: 'Since 2025 the City of Espoo is the employment authority for about 30,000 jobseekers.', name: 'Työmarkkinatori', href: 'https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle' }
+			title: 'The problem, and where SkillCheck fits',
+			text: 'City of Espoo events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job. SkillCheck adds a short, supervised skill check in between.',
+			source: { text: 'Espoo TalentMatch events bring 200 to 1,000 jobseekers and 5 to 50 employers together.', name: 'City of Espoo', href: 'https://www.espoo.fi/en/talentmatch-events' }
 		},
 		{
 			tag: 'Innovation & UX · 35%',
@@ -69,6 +69,15 @@
 	});
 </script>
 
+{#snippet icon(name)}
+	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+		{#if name === 'city'}<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l9 5H3z" />
+		{:else if name === 'person'}<circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+		{:else if name === 'company'}<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18zM6 12H4a2 2 0 0 0-2 2v8h4M18 9h2a2 2 0 0 1 2 2v11h-4M10 6h4M10 10h4M10 14h4M10 18h4" />
+		{:else}<path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2zM18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />{/if}
+	</svg>
+{/snippet}
+
 <section class="intro" aria-roledescription="carousel" aria-label="How SkillCheck works">
 	<div class="espoo-container">
 		<div class="progress" role="tablist">
@@ -100,19 +109,30 @@
 
 				<div class="visual zoom" aria-hidden="true">
 					{#if index === 0}
-						<div class="card card--city pop ring" style={delay(0.1)}>
-							<strong>City of Espoo</strong>
-							<span><b>{jobseekers.toLocaleString('en-US')}</b> jobseekers</span>
+						<div class="node node--city rise ring" style={delay(0.1)}>
+							<span class="node__title">{@render icon('city')} City of Espoo</span>
+							<span class="node__text">Runs the event and the EXAM rooms. Responsible for <b>{jobseekers.toLocaleString('en-US')}</b> jobseekers.</span>
 						</div>
-						<div class="links">
-							<span class="line-y grow-y" style={delay(0.7)}></span>
-							<span class="line-y grow-y" style={delay(0.7)}></span>
+						<div class="map map--links">
+							<span class="line-y grow-y" style={delay(0.6)}></span><span></span><span></span><span></span><span class="line-y grow-y" style={delay(0.6)}></span>
 						</div>
-						<div class="pair">
-							<div class="card pop" style={delay(1)}><strong>Jobseekers</strong><span>pick companies</span></div>
-							<div class="card pop" style={delay(1.2)}><strong>Companies</strong><span>say what they need</span></div>
+						<div class="map">
+							<div class="node rise" style={delay(0.9)}>
+								<span class="node__title">{@render icon('person')} Jobseeker</span>
+								<span class="node__text">Picks companies, takes one check</span>
+							</div>
+							<div class="arrow"><span class="arrow__label rise" style={delay(1.6)}>books 30 min</span><span class="arrow__line grow-x" style={delay(1.4)}></span></div>
+							<div class="node node--exam rise" style={delay(1.2)}>
+								<span class="node__title">{@render icon('chat')} EXAM room + AI</span>
+								<span class="node__text">Personal details removed, then a Gemini 4 panel interview</span>
+							</div>
+							<div class="arrow"><span class="arrow__label rise" style={delay(1.8)}>one real task</span><span class="arrow__line arrow__line--left grow-x" style={delay(1.6)}></span></div>
+							<div class="node rise" style={delay(1)}>
+								<span class="node__title">{@render icon('company')} Company</span>
+								<span class="node__text">Says what it needs, sees evidence</span>
+							</div>
 						</div>
-						<p class="caption rise" style={delay(1.7)}>One recruitment event, both sides</p>
+						<p class="caption rise" style={delay(2.2)}>Accepted checks become a sit-down at the event</p>
 					{:else if index === 1}
 						<div class="card card--room pop ring" style={delay(0.1)}>
 							<span class="eyebrow">EXAM room · Leppävaara</span>
@@ -170,7 +190,7 @@
 		{/key}
 
 		<div class="nav">
-			<button class="btn btn--ghost" onclick={() => go(index - 1)} disabled={index === 0}>Back</button>
+			{#if index > 0}<button class="btn btn--ghost" onclick={() => go(index - 1)}>Back</button>{/if}
 			{#if index < last}
 				<button class="btn" onclick={() => go(index + 1)}>Next</button>
 			{:else}
@@ -378,6 +398,91 @@
 		background-color: var(--espoo-blue);
 	}
 
+	.node {
+		display: grid;
+		align-content: start;
+		gap: 0.3rem;
+		padding: 0.9rem 1rem;
+		background-color: #ffffff;
+		border: 2px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
+	}
+
+	.node--city {
+		border-color: var(--espoo-blue);
+	}
+
+	.node--exam {
+		border-color: var(--espoo-blue);
+		background-color: #f5f8fd;
+	}
+
+	.node__title {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-family: var(--espoo-font-heading);
+		font-weight: 700;
+		font-size: var(--text-base);
+		color: var(--espoo-blue);
+	}
+
+	.node__title svg {
+		width: 1.1rem;
+		height: 1.1rem;
+		flex-shrink: 0;
+	}
+
+	.node__text {
+		font-size: var(--text-sm);
+		color: #5b6577;
+	}
+
+	.node__text b {
+		color: #0b1b33;
+	}
+
+	.map {
+		display: grid;
+		grid-template-columns: 1fr 3.5rem 1.2fr 3.5rem 1fr;
+		align-items: stretch;
+	}
+
+	.map--links {
+		margin-block: -0.35rem;
+	}
+
+	.map--links .line-y {
+		justify-self: center;
+	}
+
+	.arrow {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+		padding-inline: 0.25rem;
+		text-align: center;
+	}
+
+	.arrow__label {
+		font-size: var(--text-xs);
+		line-height: 1.2;
+		color: var(--espoo-text-muted);
+	}
+
+	.arrow__line {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background-color: var(--espoo-blue);
+	}
+
+	.arrow__line--left.grow-x {
+		transform-origin: right;
+	}
+
 	.caption {
 		text-align: center;
 		font-weight: 600;
@@ -476,6 +581,11 @@
 		margin-right: auto;
 	}
 
+	.nav .btn:only-child {
+		margin-left: auto;
+		margin-right: 0;
+	}
+
 	.hint {
 		margin-right: auto;
 		font-size: var(--text-sm);
@@ -532,6 +642,10 @@
 		from { transform: scaleY(0); }
 		to { transform: scaleY(1); }
 	}
+	@keyframes grow-x {
+		from { transform: scaleX(0); }
+		to { transform: scaleX(1); }
+	}
 	@keyframes glow {
 		0%, 100% { box-shadow: 0 0 0 0 rgba(0, 53, 128, 0); }
 		50% { box-shadow: 0 0 0 6px rgba(0, 53, 128, 0.12); }
@@ -540,7 +654,8 @@
 	.rise, .pop { animation: rise 0.55s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
 	.zoom { animation: zoom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
 	.pop.ring, .rise.ring { animation: rise 0.55s cubic-bezier(0.25, 0.8, 0.25, 1) both, glow 1.6s ease-in-out 0.8s 1; }
-	.grow-y, .grow-x { animation: grow-y 0.45s ease-out both; transform-origin: top; }
+	.grow-y { animation: grow-y 0.45s ease-out both; transform-origin: top; }
+	.grow-x { animation: grow-x 0.45s ease-out both; transform-origin: left; }
 
 	@media (prefers-reduced-motion: reduce) {
 		.rise, .zoom, .pop, .pop.ring, .rise.ring, .grow-y, .grow-x { animation: none; }
