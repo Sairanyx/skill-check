@@ -1,5 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import { PANELIST_FOCUS } from './samples.js';
 	import Redacted from './Redacted.svelte';
 
@@ -40,7 +42,14 @@
 	let jobseekers = $state(0);
 	const slide = $derived(SLIDES[index]);
 	const last = SLIDES.length - 1;
-	const go = (n) => (index = Math.max(0, Math.min(last, n)));
+	let dir = $state(1);
+	const go = (n) => {
+		const next = Math.max(0, Math.min(last, n));
+		if (next === index) return;
+		dir = next > index ? 1 : -1;
+		index = next;
+	};
+	const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const delay = (s) => `animation-delay: ${s}s`;
 
 	// Slide 1 counts up to 30,000 (instantly for people who prefer less motion).
@@ -93,7 +102,7 @@
 		</div>
 
 		{#key index}
-			<div class="slide">
+			<div class="slide" in:fly={{ x: reduced ? 0 : 40 * dir, duration: reduced ? 0 : 450, easing: cubicOut }}>
 				<div class="text rise">
 					<div class="slide__head">
 						<span class="number">{index + 1}</span>
@@ -134,9 +143,9 @@
 						</div>
 						<p class="caption rise" style={delay(2.2)}>Accepted checks become a sit-down at the event</p>
 					{:else if index === 1}
-						<div class="card card--room pop ring" style={delay(0.1)}>
-							<span class="eyebrow">EXAM room · Leppävaara</span>
-							<strong>Fri 27 Nov, 13:00 to 13:30</strong>
+						<div class="node node--exam node--big rise ring" style={delay(0.1)}>
+							<span class="node__title">{@render icon('chat')} EXAM room · Leppävaara</span>
+							<span class="node__text">Fri 27 Nov, 13:00 to 13:30. A supervised City computer, booked by the jobseeker.</span>
 						</div>
 						<ul class="checks">
 							{#each ['No CV, no cover letter', 'No phone, nobody else', 'Your name stays with the City', 'A real task from the company'] as item, n (item)}
@@ -239,7 +248,8 @@
 	@media (min-width: 58em) {
 		.slide {
 			grid-template-columns: 5fr 6fr;
-			min-height: 30rem;
+			min-height: 30rem; /* every slide the same height, so the buttons never move */
+			height: 30rem;
 		}
 	}
 
@@ -408,6 +418,17 @@
 		border-radius: var(--espoo-radius);
 	}
 
+	.map .node,
+	.node--city,
+	.node--big {
+		justify-items: center;
+		text-align: center;
+	}
+
+	.node--big {
+		padding: 1.25rem 1.4rem;
+	}
+
 	.node--city {
 		border-color: var(--espoo-blue);
 	}
@@ -420,6 +441,7 @@
 	.node__title {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.45rem;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
