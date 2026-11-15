@@ -25,13 +25,13 @@ Big tech interviews care about how a person solves problems. SkillCheck asks the
 
 | Model | Looks at | Weight |
 |---|---|---|
-| **Gemini 4 Carbon** (chair) | Real experience: what is true, not what only sounds right | 1.5× |
+| **Gemini 4 Carbon** | Real experience: what is true, not what only sounds right | 1.5× |
 | **Gemini 4 Hydrogen** | Job knowledge | 1× |
 | **Gemini 4 Argon** | How the candidate reasons | 1× |
 
 **How the interview runs**
 - After every message all three write a private note: how they read it and how ready they are to score.
-- The chair asks the next question. Clarifying questions are free, because asking well is a skill.
+- Carbon asks the next question. Clarifying questions are free, because asking well is a skill.
 - Off-topic replies, fishing for answers and stalling use up a limited budget.
 - The interview ends when the weighted readiness reaches 85 out of 100, after at least three real answers, and never runs past 30 messages.
 

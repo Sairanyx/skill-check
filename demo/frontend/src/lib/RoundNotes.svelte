@@ -12,7 +12,7 @@
 		<EspooAlert variant="note" title="The skill check ended here">{round.ended_because}</EspooAlert>
 	{/if}
 
-	<p><strong class="round__label">Chair's decision:</strong> {round.chair_reasoning}</p>
+	<p><strong class="round__label">Next step:</strong> {round.chair_reasoning}</p>
 
 	<ul class="memos">
 		{#each round.memos as memo (memo.panelist)}

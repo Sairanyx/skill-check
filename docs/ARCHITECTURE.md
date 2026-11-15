@@ -62,7 +62,7 @@ sequenceDiagram
     App->>G: The answer
     G-->>App: Same answer with [NAME], [EMPLOYER], [PLACE], [YEAR] instead of details
     App->>P: Pseudonymised answer
-    P-->>J: Next question, agreed by the chair
+    P-->>J: Next question
   end
   P-->>App: Verdicts of all three, skills with quotes, agreement
   alt The panel disagrees
@@ -96,7 +96,7 @@ The AI gathers evidence. The company and the City decide. Every decision and eve
 | Gemini 4 Argon | Problem solving, how the candidate reasons |
 | Gemini 4 Carbon | Authenticity, real experience |
 
-After every answer each model writes a private note and proposes a question. The chair picks the next question. The interview ends when the panel can assess every skill, within a set limit of questions. Agreement between the three becomes the confidence. A split panel suggests a human review.
+After every answer each model writes a private note and proposes a question. One of them asks the next question. The interview ends when the panel can assess every skill, within a set limit of questions. Agreement between the three becomes the confidence. A split panel suggests a human review.
 
 ## 5. Where things are
 

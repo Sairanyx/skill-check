@@ -218,8 +218,8 @@
 		<aside class="notes" aria-labelledby="notes-heading">
 			<h3 id="notes-heading">Behind the scenes <span class="staff">staff only</span></h3>
 			<p class="espoo-muted">
-				After every answer, each panelist writes private notes and suggests a question. The chair picks
-				one. Only staff see this, never the candidate.
+				After every answer, each panelist writes private notes and suggests a question. One of them asks
+				it. Only staff see this, never the candidate.
 			</p>
 			{#if latestRound}
 				<RoundNotes round={latestRound} />
