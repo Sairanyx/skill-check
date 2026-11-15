@@ -1,4 +1,4 @@
-/** Labels and colour tones shared by the booth and the report screens. */
+/** Labels and colour tones shared by the EXAM room and the results screens. */
 
 export const LANGUAGES = [
 	{ value: 'en', label: 'English' },

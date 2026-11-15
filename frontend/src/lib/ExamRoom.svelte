@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy, tick } from 'svelte';
 	import { EspooAlert, EspooButton, EspooCard, EspooField, EspooSpinner } from './espoo/index.js';
-	import BoothSetup from './BoothSetup.svelte';
+	import ExamRoomSetup from './ExamRoomSetup.svelte';
 	import ReadinessMeter from './ReadinessMeter.svelte';
 	import RoundNotes from './RoundNotes.svelte';
 	import Transcript from './Transcript.svelte';
@@ -135,7 +135,7 @@
 </script>
 
 {#if status === 'setup' || status === 'starting'}
-	<BoothSetup {roles} starting={status === 'starting'} {error} {onaddrole} onstart={start} />
+	<ExamRoomSetup {roles} starting={status === 'starting'} {error} {onaddrole} onstart={start} />
 {:else}
 	<section class="espoo-container espoo-section interview">
 		<div class="chat">

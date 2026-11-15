@@ -5,8 +5,8 @@
 
 <footer class="footer">
 	<div class="espoo-container footer__inner">
-		<span class="footer__logos"><EspooLogo /><SkillCheckLogo /></span>
-		<p class="espoo-muted">
+		<span class="footer__logos"><EspooLogo /><SkillCheckLogo light /></span>
+		<p class="footer__text">
 			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemini 4 Hydrogen, Argon and Carbon.
 		</p>
 		<a class="espoo-arrow-link" href="https://www.espoo.fi/en">espoo.fi</a>
@@ -23,8 +23,16 @@
 	.footer {
 		margin-top: auto;
 		padding-block: 2.5rem;
-		background-color: var(--espoo-midnight);
-		border-top: 1px solid var(--espoo-border);
+		background-color: var(--espoo-deep);
+		color: var(--espoo-on-blue);
+	}
+
+	.footer__text {
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.footer :global(.espoo-arrow-link) {
+		color: var(--espoo-on-blue);
 	}
 
 	.footer__inner {

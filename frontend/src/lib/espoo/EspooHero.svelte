@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * espoo.fi split hero: royal-blue text column with the wavy edge on the left,
-	 * a midnight panel (`aside`) on the right.
+	 * an espoo.fi navy panel (`aside`) on the right.
 	 */
 	let { title, lead, aside } = $props();
 </script>
@@ -26,7 +26,8 @@
 <style>
 	.hero {
 		display: grid;
-		background-color: var(--espoo-midnight);
+		background-color: var(--espoo-deep);
+		color: var(--espoo-on-blue);
 	}
 
 	@media (min-width: 58em) {

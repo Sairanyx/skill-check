@@ -19,7 +19,7 @@
 <style>
 	.bar {
 		height: 0.4rem;
-		background-color: var(--espoo-navy);
+		background-color: var(--espoo-mist);
 	}
 
 	.bar__fill {

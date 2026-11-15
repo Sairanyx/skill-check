@@ -25,7 +25,7 @@
 
 <style>
 	.header {
-		background-color: var(--espoo-navy);
+		background-color: #ffffff;
 		padding-block: 1.1rem;
 		border-bottom: 1px solid var(--espoo-border);
 	}

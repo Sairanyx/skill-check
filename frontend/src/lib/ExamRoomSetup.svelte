@@ -207,15 +207,15 @@
 		place-items: center;
 		width: 2.25rem;
 		height: 2.25rem;
-		border: 1.5px solid var(--espoo-apricot);
+		border: 1.5px solid var(--espoo-glow);
 		border-radius: 50%;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
-		color: var(--espoo-apricot);
+		color: var(--espoo-glow);
 	}
 
 	.steps span {
-		color: var(--espoo-text-muted);
+		color: rgba(255, 255, 255, 0.8);
 		font-size: 0.95rem;
 	}
 
@@ -235,8 +235,9 @@
 		align-content: start;
 		gap: 0.4rem;
 		padding: 1.25rem 1.4rem;
-		background-color: var(--espoo-midnight);
+		background-color: #ffffff;
 		border: 2px solid transparent;
+		box-shadow: 0 1px 2px rgba(1, 33, 105, 0.08);
 		cursor: pointer;
 		transition: border-color var(--espoo-ease);
 	}

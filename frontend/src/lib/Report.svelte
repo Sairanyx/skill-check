@@ -54,6 +54,7 @@
 	</header>
 
 	{#if report}
+		<!-- 1. The decision: summary and the three verdicts behind the score -->
 		<p class="report__summary">{report.summary}</p>
 
 		{#if report.disagreement >= SPLIT_PANEL}
@@ -62,8 +63,23 @@
 			</EspooAlert>
 		{/if}
 
-		<section>
-			<h3>Skills, with the candidate's own words</h3>
+		<section class="block">
+			<h3 class="block__title"><span>1</span> Panel verdicts</h3>
+			<div class="grid grid--3">
+				{#each report.panel as verdict (verdict.panelist)}
+					<EspooCard
+						eyebrow="Gemini 4 · {PANELIST_FOCUS[verdict.panelist]}"
+						title="{verdict.panelist}: {verdict.how_good_or_bad}/10 · {verdictLabel(verdict.is_person_good)}"
+					>
+						<p class="clamp">{verdict.reasoning}</p>
+					</EspooCard>
+				{/each}
+			</div>
+		</section>
+
+		<!-- 2. The evidence: each skill with the candidate's own words -->
+		<section class="block">
+			<h3 class="block__title"><span>2</span> Skills, with the candidate's own words</h3>
 			<ul class="skills">
 				{#each report.skills as skill (skill.skill)}
 					{@const tone = scoreTone(skill.score)}
@@ -77,40 +93,30 @@
 						{#each skill.quotes as quote (quote)}
 							<blockquote>“{quote}”</blockquote>
 						{:else}
-							<p class="espoo-muted">No quote from the interview supports this skill.</p>
+							<p class="espoo-muted">No quote from the skill check supports this skill.</p>
 						{/each}
 					</li>
 				{/each}
 			</ul>
 		</section>
 
-		<section>
-			<h3>Panel verdicts</h3>
-			<div class="grid">
-				{#each report.panel as verdict (verdict.panelist)}
-					<EspooCard
-						eyebrow={PANELIST_FOCUS[verdict.panelist]}
-						title="{verdict.panelist}: {verdict.how_good_or_bad}/10 · {verdictLabel(verdict.is_person_good)}"
-					>
-						<p>{verdict.reasoning}</p>
-					</EspooCard>
-				{/each}
-			</div>
-		</section>
-
-		<section>
-			<h3>For the 15-minute meeting</h3>
-			<div class="grid">
-				<EspooCard title="What to talk about"><p>{report.suggested_conversation}</p></EspooCard>
+		<!-- 3. Ready for the meeting: what is strong, what to check, what to ask -->
+		<section class="block">
+			<h3 class="block__title"><span>3</span> For the 15-minute meeting</h3>
+			<div class="grid grid--2">
 				<EspooCard title="Strengths">{@render bulletList(report.strengths)}</EspooCard>
 				<EspooCard title="Check in person">{@render bulletList(report.gaps)}</EspooCard>
-				<EspooCard title="How they asked questions"><p>{report.inquiry}</p></EspooCard>
 			</div>
+			<EspooCard title="What to talk about"><p>{report.suggested_conversation}</p></EspooCard>
 		</section>
 
-		<EspooCard eyebrow="Sent to the candidate, without the score" title="Candidate feedback">
+		<!-- Details, folded away -->
+		<EspooAccordion title="Feedback sent to the candidate (without the score)">
 			<p>{report.candidate_feedback}</p>
-		</EspooCard>
+		</EspooAccordion>
+		<EspooAccordion title="How they asked questions">
+			<p>{report.inquiry}</p>
+		</EspooAccordion>
 	{:else if interview.status === 'reporting'}
 		<EspooSpinner>The panel is writing the report. This page updates by itself in 1 to 2 minutes.</EspooSpinner>
 	{:else if interview.status === 'failed'}
@@ -196,6 +202,47 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
 		gap: 1rem;
+	}
+
+	@media (min-width: 50em) {
+		.grid--2 {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.grid--3 {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* Numbered blocks: decision, evidence, meeting */
+	.block {
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--espoo-border-strong);
+	}
+
+	.block__title {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+	}
+
+	.block__title span {
+		display: inline-grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		border-radius: 50%;
+		background-color: var(--espoo-deep);
+		color: var(--espoo-glow);
+		font-size: 0.9rem;
+	}
+
+	.clamp {
+		display: -webkit-box;
+		-webkit-line-clamp: 6;
+		line-clamp: 6;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.skills {

@@ -11,7 +11,10 @@
 
 	--espoo-blue: #003580; /* hero and answer bubbles: Finnish blue */
 	--espoo-navy: #ffffff; /* page and header background */
-	--espoo-midnight: #f3f4f6; /* cards and inputs: light grey */
+	--espoo-midnight: #ffffff; /* cards and inputs: white on the mist band, as on espoo.fi */
+	--espoo-mist: #dfe5eb; /* espoo.fi mist: page band behind cards */
+	--espoo-deep: #012169; /* espoo.fi navy: hero side, footer, intro */
+	--espoo-glow: #ffc386; /* espoo.fi apricot: a few highlights on navy */
 	--espoo-apricot: #003580; /* accent: titles, selection, links */
 	--espoo-tint: #dce8f8; /* light blue for highlights */
 	--espoo-coral: #ff4f57;
@@ -38,7 +41,7 @@
 html,
 body {
 	margin: 0;
-	background-color: var(--espoo-navy);
+	background-color: var(--espoo-mist);
 	color: var(--espoo-white);
 	font-family: var(--espoo-font-body);
 	font-size: 1rem;
