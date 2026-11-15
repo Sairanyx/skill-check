@@ -6,10 +6,12 @@
 <footer class="footer">
 	<div class="espoo-container footer__inner">
 		<span class="footer__logos"><a href="https://www.espoo.fi/en" target="_blank" rel="noreferrer" aria-label="City of Espoo (espoo.fi)"><EspooLogo /></a><a href="#/" aria-label="SkillCheck home"><SkillCheckLogo light /></a></span>
-		<p class="footer__text">
-			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemma 4 privacy guard in Finland, then Gemini 4 Hydrogen, Argon and Carbon.
-		</p>
-		<a class="espoo-arrow-link footer__espoo" href="https://www.espoo.fi/en" target="_blank" rel="noreferrer">espoo.fi</a>
+		<div class="footer__right">
+			<p class="footer__text">
+				Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemma 4 privacy guard in Finland, then Gemini 4 Hydrogen, Argon and Carbon.
+			</p>
+			<a class="espoo-arrow-link footer__espoo" href="https://www.espoo.fi/en" target="_blank" rel="noreferrer">espoo.fi</a>
+		</div>
 	</div>
 </footer>
 
@@ -19,8 +21,33 @@
 		text-decoration: none;
 	}
 
+	/* Text and the espoo.fi link on one line, the link at the right end */
+	.footer__right {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 1.5rem;
+		flex: 1;
+	}
+
+	.footer__text {
+		max-width: 38rem;
+		text-align: right;
+	}
+
 	.footer__espoo {
-		margin-left: auto;
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 50em) {
+		.footer__right {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.footer__text {
+			text-align: left;
+		}
 	}
 
 	.footer__logos {
