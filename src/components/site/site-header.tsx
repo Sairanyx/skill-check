@@ -9,8 +9,8 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 
 export async function SiteHeader({ lang, nav }: { lang: Locale; nav: Dictionary["nav"] }) {
   return (
-    <header className="border-b">
-      <div className="mx-auto flex h-20 max-w-6xl items-center px-4">
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center px-4">
         <Link href={`/${lang}`} aria-label="SkillCheck home">
           <Logo />
         </Link>

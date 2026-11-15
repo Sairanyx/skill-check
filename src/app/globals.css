@@ -160,3 +160,6 @@ h1, h2, h3, .font-heading {
 @media (prefers-reduced-motion: reduce) {
   .demo-rise, .demo-zoom, .demo-pop, .demo-pop-ring, .demo-ring, .demo-grow, .demo-grow-y, .demo-fill { animation: none !important; }
 }
+/* /demo: the key part of a real page, ringed after the page zooms in */
+.demo-spot { outline: 3px solid var(--primary); outline-offset: 6px; border-radius: 6px; animation: demo-ring 1.4s ease-out 3; }
+@media (prefers-reduced-motion: reduce) { .demo-spot { animation: none; } }
