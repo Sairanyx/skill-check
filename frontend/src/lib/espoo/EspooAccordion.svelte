@@ -11,6 +11,7 @@
 	.accordion {
 		background-color: var(--espoo-midnight);
 		border: 1px solid var(--espoo-border);
+		border-radius: var(--espoo-radius);
 	}
 
 	summary {

@@ -8,10 +8,10 @@
 
 <header class="header">
 	<div class="espoo-container header__inner">
-		<a href="#/" class="header__brand">
-			<EspooLogo />
-			<span class="header__subtitle"><SkillCheckLogo /></span>
-		</a>
+		<span class="header__brand">
+			<a href="https://www.espoo.fi/en" target="_blank" rel="noreferrer" aria-label="City of Espoo (espoo.fi)"><EspooLogo /></a>
+			<a href="#/" class="header__subtitle" aria-label="SkillCheck home"><SkillCheckLogo /></a>
+		</span>
 
 		<nav aria-label="Main">
 			{#each links as link (link.href)}
@@ -36,6 +36,11 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem 2rem;
+	}
+
+	.header__brand a {
+		color: inherit;
+		text-decoration: none;
 	}
 
 	.header__brand {

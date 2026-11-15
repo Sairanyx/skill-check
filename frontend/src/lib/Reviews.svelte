@@ -165,6 +165,7 @@
 		background-color: var(--espoo-midnight);
 		border-left: 3px solid transparent;
 		transition: border-color var(--espoo-ease);
+		border-radius: var(--espoo-radius);
 	}
 
 	.list a:hover {

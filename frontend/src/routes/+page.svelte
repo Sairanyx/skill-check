@@ -4,15 +4,17 @@
 	import { EspooFooter, EspooHeader } from '../lib/espoo/index.js';
 	import ExamRoom from '../lib/ExamRoom.svelte';
 	import Intro from '../lib/Intro.svelte';
+	import Platform from '../lib/Platform.svelte';
 	import Reviews from '../lib/Reviews.svelte';
 	import { api } from '../lib/api.js';
 	import { FALLBACK_ROLES } from '../lib/samples.js';
 
-	/** Three screens, chosen by the address: `#/` the intro, `#exam-room` the skill check, `#review/<id?>` the results. */
+	/** Four screens, chosen by the address: `#/` the intro, `#exam-room` the skill check, `#review/<id?>` the results, `#platform` the full platform. */
 	function parseRoute(hash) {
 		const [page, id = ''] = hash.replace(/^#\/?/, '').split('/');
 		if (page === 'review') return { page: 'review', id };
 		if (page === 'exam-room') return { page: 'exam-room', id: '' };
+		if (page === 'platform') return { page: 'platform', id: '' };
 		return { page: 'intro', id: '' };
 	}
 
@@ -22,7 +24,8 @@
 	const links = $derived([
 		{ label: 'How it works', href: '#/', active: route.page === 'intro' },
 		{ label: 'EXAM room', href: '#exam-room', active: route.page === 'exam-room' },
-		{ label: 'Results', href: '#review', active: route.page === 'review' }
+		{ label: 'Results', href: '#review', active: route.page === 'review' },
+		{ label: 'Platform', href: '#platform', active: route.page === 'platform' }
 	]);
 
 	onMount(() => {
@@ -51,6 +54,8 @@
 		<!-- Kept mounted so an interview survives a look at the reports. -->
 		{#if route.page === 'intro'}
 			<Intro />
+		{:else if route.page === 'platform'}
+			<Platform />
 		{/if}
 		<div hidden={route.page !== 'exam-room'}>
 			<ExamRoom {roles} onaddrole={(role) => (roles = [...roles, role])} />

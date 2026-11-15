@@ -1,15 +1,18 @@
 <script>
 	import { EspooBadge } from './espoo/index.js';
 	import { kindOf } from './format.js';
+	import Redacted from './Redacted.svelte';
 
 	/**
 	 * @type {{
-	 *   turns: Array<{ speaker: 'interviewer' | 'candidate', text: string, kind?: string }>,
+	 *   turns: Array<{ speaker: 'interviewer' | 'candidate', text: string, seen?: string, kind?: string }>,
+	 *   redacted?: boolean,
 	 *   candidateName?: string,
 	 *   showKinds?: boolean
 	 * }}
 	 */
-	let { turns, candidateName = 'Candidate', showKinds = false } = $props();
+	/** `redacted`: show candidate answers as the panel read them (company and City views). */
+	let { turns, candidateName = 'Candidate', showKinds = false, redacted = false } = $props();
 </script>
 
 <ol class="transcript">
@@ -20,7 +23,11 @@
 				{turn.speaker === 'interviewer' ? 'Interviewer' : candidateName}
 				{#if kind}<EspooBadge tone={kind.tone}>{kind.label}</EspooBadge>{/if}
 			</span>
-			<p>{turn.text}</p>
+			{#if redacted && turn.speaker === 'candidate' && turn.seen}
+				<p><Redacted text={turn.seen} /></p>
+			{:else}
+				<p>{turn.text}</p>
+			{/if}
 		</li>
 	{/each}
 </ol>
@@ -39,6 +46,7 @@
 		gap: 0.3rem;
 		max-width: min(40rem, 92%);
 		padding: 0.9rem 1.15rem;
+		border-radius: var(--espoo-radius);
 	}
 
 	.turn--interviewer {

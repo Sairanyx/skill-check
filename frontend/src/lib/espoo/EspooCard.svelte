@@ -16,6 +16,7 @@
 		gap: 0.6rem;
 		padding: 1.4rem 1.5rem;
 		background-color: var(--espoo-midnight);
+		border-radius: var(--espoo-radius);
 	}
 
 	.card__eyebrow {

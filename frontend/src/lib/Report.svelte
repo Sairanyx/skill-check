@@ -102,7 +102,7 @@
 
 		<!-- 3. Ready for the meeting: what is strong, what to check, what to ask -->
 		<section class="block">
-			<h3 class="block__title"><span>3</span> For the 15-minute meeting</h3>
+			<h3 class="block__title"><span>3</span> For the sit-down at the event</h3>
 			<div class="grid grid--2">
 				<EspooCard title="Strengths">{@render bulletList(report.strengths)}</EspooCard>
 				<EspooCard title="Check in person">{@render bulletList(report.gaps)}</EspooCard>
@@ -130,8 +130,9 @@
 		<p>This skill check is still going. The result appears here when it ends.</p>
 	{/if}
 
-	<EspooAccordion title="Transcript ({count(interview.transcript.length, 'turn')})">
-		<Transcript turns={interview.transcript} showKinds />
+	<EspooAccordion title="Transcript, as the panel read it ({count(interview.transcript.length, 'turn')})">
+		<p class="espoo-muted">Name, age, employer, places and origin were removed in Finland before any AI read the answers. Companies only see this version.</p>
+		<Transcript turns={interview.transcript} showKinds redacted />
 	</EspooAccordion>
 
 	{#if interview.rounds.length}
@@ -260,6 +261,7 @@
 		gap: 0.65rem;
 		padding: 1.25rem;
 		background-color: var(--espoo-midnight);
+		border-radius: var(--espoo-radius);
 	}
 
 	.skill__head {

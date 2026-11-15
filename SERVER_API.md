@@ -82,3 +82,11 @@ This is a demo, so review is open to anyone: no key, no login. A real deployment
 | 404 | Not found |
 | 409 | The interview is finished, the previous message is still being handled, or the report isn't `failed` (retry) |
 | 503 | The panel couldn't finish thinking. Nothing was saved: send the same message again |
+
+## Privacy guard
+
+Every candidate message is pseudonymised before any Gemini model reads it (`src/guard.rs`, same rules as the platform on dev). Fixed patterns remove emails, phone numbers and web addresses. Gemma 4 26B on our Verda server in Finland replaces names, employers, schools, places, origin, revealing years and everything the Non-Discrimination Act protects with tags like `[NAME]`.
+
+- The transcript keeps both: `text` (what the candidate said, shown to the candidate) and `seen` (what the panel read, shown to staff and companies).
+- Settings: `GUARD_BASE_URL` (OpenAI-compatible, for example `http://127.0.0.1:8000/v1` on the server or `http://127.0.0.1:8001/v1` through `infra/tunnel.sh`), `GUARD_MODEL` (default `gemma`), `VLLM_API_KEY`.
+- Without `GUARD_BASE_URL` only the patterns run (development). If Gemma is set up but does not answer, the message gets a 503 and nothing reaches Gemini.

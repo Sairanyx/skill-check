@@ -5,15 +5,24 @@
 
 <footer class="footer">
 	<div class="espoo-container footer__inner">
-		<span class="footer__logos"><EspooLogo /><SkillCheckLogo light /></span>
+		<span class="footer__logos"><a href="https://www.espoo.fi/en" target="_blank" rel="noreferrer" aria-label="City of Espoo (espoo.fi)"><EspooLogo /></a><a href="#/" aria-label="SkillCheck home"><SkillCheckLogo light /></a></span>
 		<p class="footer__text">
-			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemini 4 Hydrogen, Argon and Carbon.
+			Made at Junction 2026 for the City of Espoo. Synthetic data only. AI: Gemma 4 privacy guard in Finland, then Gemini 4 Hydrogen, Argon and Carbon.
 		</p>
-		<a class="espoo-arrow-link" href="https://www.espoo.fi/en">espoo.fi</a>
+		<a class="espoo-arrow-link footer__espoo" href="https://www.espoo.fi/en" target="_blank" rel="noreferrer">espoo.fi</a>
 	</div>
 </footer>
 
 <style>
+	.footer__logos a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.footer__espoo {
+		margin-left: auto;
+	}
+
 	.footer__logos {
 		display: inline-flex;
 		align-items: center;

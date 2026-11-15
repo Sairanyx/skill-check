@@ -60,6 +60,9 @@ impl Kind {
 pub struct Turn {
     pub speaker: Speaker,
     pub text: String,
+    /// Candidate turns: the answer after the privacy guard. This, never `text`, is what the panel reads.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub seen: Option<String>,
     /// Candidate turns only, once the panel has read them.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kind: Option<Kind>,
@@ -67,7 +70,16 @@ pub struct Turn {
 
 impl Turn {
     pub fn new(speaker: Speaker, text: String) -> Self {
-        Turn { speaker, text, kind: None }
+        Turn { speaker, text, seen: None, kind: None }
+    }
+
+    pub fn candidate(text: String, seen: String) -> Self {
+        Turn { speaker: Speaker::Candidate, text, seen: Some(seen), kind: None }
+    }
+
+    /// The text the models may read: the pseudonymised answer for candidates.
+    pub fn for_models(&self) -> &str {
+        self.seen.as_deref().unwrap_or(&self.text)
     }
 }
 
@@ -247,8 +259,8 @@ fn transcript_block(t: &[Turn]) -> String {
     let lines: Vec<String> = t
         .iter()
         .map(|t| match (t.speaker, t.kind) {
-            (Speaker::Candidate, None) => format!("CANDIDATE: {}", t.text),
-            (Speaker::Candidate, Some(k)) => format!("CANDIDATE [{}]: {}", k.as_str(), t.text),
+            (Speaker::Candidate, None) => format!("CANDIDATE: {}", t.for_models()),
+            (Speaker::Candidate, Some(k)) => format!("CANDIDATE [{}]: {}", k.as_str(), t.for_models()),
             (Speaker::Interviewer, _) => format!("INTERVIEWER: {}", t.text),
         })
         .collect();
@@ -492,7 +504,7 @@ sentences to the candidate in {}, no score. Everything else in English, short an
 
     // Quotes must really be in what the candidate said.
     let norm = |x: &str| x.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect::<Vec<_>>().join(" ");
-    let said = norm(&t.iter().filter(|x| x.speaker == Speaker::Candidate).map(|x| x.text.as_str()).collect::<Vec<_>>().join(" "));
+    let said = norm(&t.iter().filter(|x| x.speaker == Speaker::Candidate).map(|x| x.for_models()).collect::<Vec<_>>().join(" "));
     let out = r["skills"].as_array().cloned().unwrap_or_default();
     let skills = role
         .skills

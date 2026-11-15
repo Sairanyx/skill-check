@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { PANELIST_FOCUS } from './samples.js';
+	import Redacted from './Redacted.svelte';
 
 	/**
 	 * How it works, in four short slides with motion that leads the eye.
@@ -18,13 +19,13 @@
 			source: { text: '29 Finnish universities already use booked, supervised EXAM rooms.', name: 'Aalto University', href: 'https://www.aalto.fi/en/services/electronic-examinations-exam-service' }
 		},
 		{
-			title: 'Three Gemini 4 models listen',
-			text: 'They ask about the task and agree on each next question. Name, accent and grammar never count.',
-			source: { text: 'Structured interviews about the job predict performance best.', name: 'Sackett et al. 2022', href: 'https://www.siop.org/tip-article/is-cognitive-ability-the-best-predictor-of-job-performance' }
+			title: 'Personal details removed, then the panel listens',
+			text: 'Gemma 4 on our server in Finland removes name, age, employer, place and origin. The three Gemini 4 models only see the skill, so bias has nothing to work with.',
+			source: { text: 'Language models rank identical CVs differently by name.', name: 'CUHK audit of 14 LLMs, 2026', href: 'https://arxiv.org/pdf/2606.28978' }
 		},
 		{
 			title: 'People decide',
-			text: "The company sees a result backed by the candidate's own words, and chooses whom to meet for 15 minutes.",
+			text: 'The company sees the result under an alias, never a name, and invites the candidate to sit down at the event. An accepted check becomes a SkillCheck badge.',
 			source: { text: 'Recruitment AI is high-risk under the EU AI Act: people must stay in control.', name: 'DLA Piper', href: 'https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act' }
 		}
 	];
@@ -110,34 +111,50 @@
 							<strong>Fri 27 Nov, 13:00 to 13:30</strong>
 						</div>
 						<ul class="checks">
-							{#each ['No CV, no cover letter', 'No phone, nobody else', 'A real task from the company'] as item, n (item)}
+							{#each ['No CV, no cover letter', 'No phone, nobody else', 'Your name stays with the City', 'A real task from the company'] as item, n (item)}
 								<li class="pop" style={delay(0.8 + n * 0.35)}><span>✓</span>{item}</li>
 							{/each}
 						</ul>
 					{:else if index === 2}
+						<div class="card rise" style={delay(0.1)}>
+							<span class="eyebrow">What Aino said</span>
+							<p class="said">My name is Aino Mäkelä, I am 52 and I worked at Skanska in Vantaa until 2019. First I check the level with a laser.</p>
+						</div>
+						<div class="filter rise" style={delay(0.8)}>
+							<span class="filter__line grow-y"></span>
+							<span class="filter__label">Privacy guard · Gemma 4 on our server in Finland</span>
+						</div>
+						<div class="card card--seen rise ring" style={delay(1.2)}>
+							<span class="eyebrow">What the AI reads</span>
+							<p class="said">
+								<Redacted text="My name is [NAME], I am [PERSONAL] and I worked at [EMPLOYER] in [PLACE] until [YEAR]. First I check the level with a laser." from={1.6} />
+							</p>
+						</div>
 						<div class="panel">
 							{#each PANEL as name, n (name)}
-								<div class="card pop" class:ring={n === 0} style={delay(0.2 + n * 0.35)}>
-									<span class="eyebrow">{PANELIST_FOCUS[name]}</span>
+								<div class="card card--model pop" style={delay(3.4 + n * 0.25)}>
 									<strong>Gemini 4 {name}</strong>
+									<span class="eyebrow">{PANELIST_FOCUS[name]}</span>
 								</div>
 							{/each}
 						</div>
-						<span class="line-x grow-x" style={delay(1.4)}></span>
-						<div class="card card--question rise" style={delay(1.7)}>
-							<span class="eyebrow">Next question, agreed by all three</span>
-							<strong>“Walk me through how you would find the cause.”</strong>
-						</div>
 					{:else}
 						<div class="card card--result pop" style={delay(0.1)}>
-							<span class="eyebrow">Candidate 31F1 · Data analyst</span>
+							<span class="eyebrow">Candidate 31F1 · Data analyst · no name, no photo</span>
 							<span class="score pop" style={delay(0.6)}>8.8<small>/10</small></span>
-							<span class="badge pop ring" style={delay(1)}>Meet this candidate</span>
+							<span class="badge pop" style={delay(1)}>Meet this candidate</span>
 							<p class="quote rise" style={delay(1.4)}>“isolate the incomplete journeys instead of guessing timestamps”</p>
 						</div>
-						<div class="card card--meet rise" style={delay(1.9)}>
-							<strong>15-minute meeting at the event</strong>
-							<span>The company decides. The AI never does.</span>
+						<div class="pair">
+							<div class="card rise" style={delay(1.9)}>
+								<strong>Sit-down at the event</strong>
+								<span>The company decides. The AI never does.</span>
+							</div>
+							<div class="card card--badge pop ring" style={delay(2.4)}>
+								<span class="medal">✓</span>
+								<strong>SkillCheck badge</strong>
+								<span>On the event card, with consent</span>
+							</div>
 						</div>
 					{/if}
 				</div>
@@ -159,10 +176,8 @@
 
 <style>
 	.intro {
-		min-height: calc(100vh - 4.75rem); /* fills the screen under the header */
-		background-color: var(--espoo-deep);
-		color: var(--espoo-on-blue);
-		padding-block: 2.5rem 3rem;
+		min-height: calc(100vh - 4.75rem);
+		padding-block: 2rem 3rem;
 	}
 
 	.progress {
@@ -172,32 +187,41 @@
 	}
 
 	.progress button {
-		height: 0.3rem;
+		height: 0.35rem;
 		padding: 0;
 		border: 0;
 		border-radius: 1rem;
-		background-color: rgba(255, 255, 255, 0.2);
+		background-color: #c5d0dd;
 		cursor: pointer;
 		transition: background-color 0.4s ease;
 	}
 
 	.progress button.on {
-		background-color: var(--espoo-glow);
+		background-color: var(--espoo-blue);
 	}
 
+	/* Two panels side by side, always the same height, so the boxes line up from slide to slide */
 	.slide {
 		display: grid;
-		gap: 2.5rem;
-		align-items: center;
-		min-height: 26rem;
-		padding-block: 2.5rem;
+		gap: 1.25rem;
+		align-items: stretch;
+		padding-block: 1.5rem;
 	}
 
 	@media (min-width: 58em) {
 		.slide {
 			grid-template-columns: 5fr 6fr;
-			gap: 4rem;
+			min-height: 30rem;
 		}
+	}
+
+	.text {
+		display: flex;
+		flex-direction: column;
+		padding: 2.25rem;
+		border-radius: var(--espoo-radius-lg);
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 	}
 
 	.number {
@@ -215,21 +239,21 @@
 
 	h1 {
 		margin-top: 1.25rem;
-		font-size: clamp(2rem, 4vw, 2.75rem);
+		font-size: clamp(1.9rem, 3.4vw, 2.5rem);
 	}
 
 	.lead {
 		margin-top: 1rem;
-		font-size: 1.2rem;
-		color: rgba(255, 255, 255, 0.88);
+		font-size: 1.15rem;
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.source {
-		margin-top: 2rem;
-		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.2);
+		margin-top: auto;
+		padding-top: 1.25rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.25);
 		font-size: 0.9rem;
-		color: rgba(255, 255, 255, 0.72);
+		color: rgba(255, 255, 255, 0.78);
 	}
 
 	.source a {
@@ -237,20 +261,23 @@
 		font-weight: 600;
 	}
 
-	/* The picture side: white cards on the Finnish blue, as on espoo.fi */
+	/* The picture: grey cards on a white panel, calm to look at */
 	.visual {
-		display: grid;
-		gap: 0.9rem;
-		padding: 1.75rem;
-		background-color: var(--espoo-blue);
-		border-radius: var(--espoo-radius);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.85rem;
+		padding: 2rem;
+		background-color: #ffffff;
+		border-radius: var(--espoo-radius-lg);
+		box-shadow: 0 1px 3px rgba(1, 33, 105, 0.08);
 	}
 
 	.card {
 		display: grid;
-		gap: 0.2rem;
+		gap: 0.25rem;
 		padding: 1rem 1.2rem;
-		background-color: #ffffff;
+		background-color: #f3f4f6;
 		color: #0b1b33;
 		border-radius: var(--espoo-radius);
 	}
@@ -270,41 +297,65 @@
 		color: #0b1b33;
 	}
 
+	.card--city,
+	.card--room,
+	.card--seen {
+		background-color: var(--espoo-tint);
+	}
+
 	.eyebrow {
-		font-size: 0.8rem !important;
+		font-size: 0.78rem !important;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
+	}
+
+	.said {
+		font-size: 1rem;
+		line-height: 1.7;
+	}
+
+	.filter {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-left: 1.2rem;
+	}
+
+	.filter__line {
+		width: 2px;
+		height: 1.6rem;
+		background-color: var(--espoo-blue);
+	}
+
+	.filter__label {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--espoo-blue);
 	}
 
 	.pair,
 	.links {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 0.9rem;
+		gap: 0.85rem;
 	}
 
 	.links {
-		margin-block: -0.5rem;
+		margin-block: -0.45rem;
 	}
 
-	.line-y {
-		justify-self: center;
-		width: 2px;
-		height: 1.5rem;
-		background-color: var(--espoo-glow);
-	}
-
+	.line-y,
 	.line-x {
 		justify-self: center;
 		width: 2px;
-		height: 1.25rem;
-		background-color: var(--espoo-glow);
+		height: 1.5rem;
+		background-color: var(--espoo-blue);
 	}
 
 	.caption {
 		text-align: center;
 		font-weight: 600;
-		color: var(--espoo-glow);
+		color: var(--espoo-blue);
 	}
 
 	.checks {
@@ -320,7 +371,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.8rem 1rem;
-		background-color: rgba(255, 255, 255, 0.12);
+		background-color: #f3f4f6;
 		border-radius: var(--espoo-radius);
 		font-weight: 600;
 	}
@@ -331,8 +382,8 @@
 		width: 1.6rem;
 		height: 1.6rem;
 		border-radius: 50%;
-		background-color: var(--espoo-glow);
-		color: var(--espoo-deep);
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 		font-size: 0.85rem;
 	}
 
@@ -342,8 +393,8 @@
 		gap: 0.6rem;
 	}
 
-	.panel .card strong {
-		font-size: 1rem;
+	.card--model strong {
+		font-size: 0.98rem;
 	}
 
 	.card .score {
@@ -351,7 +402,7 @@
 		font-weight: 900;
 		font-size: 3rem;
 		line-height: 1.1;
-		color: var(--espoo-apricot) !important;
+		color: var(--espoo-apricot);
 	}
 
 	.card .score small {
@@ -360,12 +411,27 @@
 
 	.badge {
 		justify-self: start;
-		padding: 0.25rem 0.7rem;
+		padding: 0.25rem 0.75rem;
 		border-radius: 1rem;
-		background-color: var(--espoo-glow);
-		color: var(--espoo-deep) !important;
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue) !important;
 		font-weight: 700;
 		font-size: 0.85rem !important;
+	}
+
+	.card--badge {
+		background-color: var(--espoo-tint);
+	}
+
+	.medal {
+		display: inline-grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 50%;
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue) !important;
+		font-weight: 700;
 	}
 
 	.quote {
@@ -386,17 +452,17 @@
 	.hint {
 		margin-right: auto;
 		font-size: 0.85rem;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--espoo-text-muted);
 	}
 
 	.btn {
 		display: inline-flex;
 		align-items: center;
 		padding: 0.7rem 1.4rem;
-		border: 2px solid var(--espoo-glow);
+		border: 2px solid var(--espoo-blue);
 		border-radius: var(--espoo-radius);
-		background-color: var(--espoo-glow);
-		color: var(--espoo-deep);
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 		font: inherit;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
@@ -406,18 +472,18 @@
 	}
 
 	.btn:hover:not(:disabled) {
-		background-color: transparent;
-		color: var(--espoo-glow);
+		background-color: #00245a;
+		border-color: #00245a;
 	}
 
 	.btn--ghost {
 		background-color: transparent;
-		border-color: rgba(255, 255, 255, 0.5);
-		color: var(--espoo-on-blue);
+		color: var(--espoo-blue);
 	}
 
 	.btn--ghost:hover:not(:disabled) {
-		border-color: var(--espoo-glow);
+		background-color: var(--espoo-blue);
+		color: var(--espoo-on-blue);
 	}
 
 	.btn:disabled {
@@ -444,14 +510,15 @@
 		to { transform: scaleY(1); }
 	}
 	@keyframes ring {
-		0% { box-shadow: 0 0 0 0 rgba(255, 195, 134, 0.7); }
-		100% { box-shadow: 0 0 0 14px rgba(255, 195, 134, 0); }
+		0% { box-shadow: 0 0 0 0 rgba(0, 53, 128, 0.35); }
+		100% { box-shadow: 0 0 0 14px rgba(0, 53, 128, 0); }
 	}
 
 	.rise { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 	.zoom { animation: zoom 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 	.pop { animation: pop 0.5s ease-out both; }
 	.pop.ring { animation: pop 0.5s ease-out both, ring 1.4s ease-out 0.6s 3; }
+	.rise.ring { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both, ring 1.4s ease-out 1.2s 3; }
 	.grow-y, .grow-x { animation: grow-y 0.5s ease-out both; transform-origin: top; }
 
 	@media (prefers-reduced-motion: reduce) {

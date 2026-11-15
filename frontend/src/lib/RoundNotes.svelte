@@ -42,6 +42,7 @@
 		display: grid;
 		gap: 0.85rem;
 		font-size: 0.925rem;
+		border-radius: var(--espoo-radius);
 	}
 
 	.round__label {

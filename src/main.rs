@@ -3,6 +3,7 @@
 //! No names, emails, CVs or audio are stored: a candidate is an interview id.
 
 mod gemini;
+mod guard;
 mod panel;
 mod roles;
 
@@ -27,6 +28,8 @@ use tower_http::services::{ServeDir, ServeFile};
 #[derive(Clone)]
 struct App {
     llm: gemini::Gemini,
+    /// Pseudonymises every answer before the panel reads it (see guard.rs).
+    guard: guard::Guard,
     data: PathBuf,
     roles: Arc<Roles>,
     /// Interviews with a message being handled right now.
@@ -70,6 +73,7 @@ async fn main() -> anyhow::Result<()> {
     std::fs::create_dir_all(&data)?;
     let app = App {
         llm: gemini::Gemini::new(env("GEMINI_API_KEY")),
+        guard: guard::Guard::from_env(),
         roles: Arc::new(Roles::load(&data).context("could not load roles")?),
         data,
         busy: Arc::default(),
@@ -272,8 +276,13 @@ async fn message(State(app): State<App>, Path(id): Path<String>, Body(b): Body<M
     let mut i = load_active(&app, &id)?;
     let role = role(&app, &i.role_id)?;
 
+    // The panel only ever reads the pseudonymised answer. No guard, no answer: nothing reaches Gemini unredacted.
+    let seen = app.guard.pseudonymise(&text).await.map_err(|e| {
+        eprintln!("[guard] failed: {e:#}");
+        fail(StatusCode::SERVICE_UNAVAILABLE, "The privacy guard couldn't check your answer. Please send it again.")
+    })?;
     // Stored only once the panel has answered, so a 503 leaves nothing behind.
-    i.transcript.push(Turn::new(Speaker::Candidate, text));
+    i.transcript.push(Turn::candidate(text, seen));
     let step = panel::next_turn(&app.llm, &role, &i.transcript, &i.rounds, i.language).await.map_err(panel_failed)?;
 
     let reply = Step::new(&id, &step);

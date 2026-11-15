@@ -87,11 +87,11 @@
 			</li>
 			<li>
 				<strong>Talk about your skills</strong>
-				<span>An AI panel of three Gemini 4 models asks about the task.</span>
+				<span>Name, age and origin are removed in Finland first. Three Gemini 4 models only hear the skill.</span>
 			</li>
 			<li>
 				<strong>People decide</strong>
-				<span>The company sees your feedback under an alias and chooses whom to meet.</span>
+				<span>The company sees an alias and invites you to sit down at the event. You earn a SkillCheck badge.</span>
 			</li>
 		</ol>
 	{/snippet}
@@ -240,6 +240,7 @@
 		box-shadow: 0 1px 2px rgba(1, 33, 105, 0.08);
 		cursor: pointer;
 		transition: border-color var(--espoo-ease);
+		border-radius: var(--espoo-radius);
 	}
 
 	.role:hover {
@@ -274,6 +275,7 @@
 		background-color: var(--espoo-midnight);
 		border: 0;
 		border-left: 3px solid var(--espoo-apricot);
+		border-radius: var(--espoo-radius);
 	}
 
 	legend {
