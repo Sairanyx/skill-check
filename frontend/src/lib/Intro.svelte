@@ -209,9 +209,9 @@
 			{#if index < last}
 				<button class="btn" onclick={() => go(index + 1)}>Next</button>
 			{:else}
-				<a class="btn" href="#exam-room">Try the EXAM room</a>
+				<a class="btn" href="#platform">Explore the platform</a>
 				<a class="btn btn--ghost" href="#review">See a finished result</a>
-				<a class="btn btn--ghost" href="#platform">Explore the platform</a>
+				<a class="btn btn--ghost" href="#exam-room">Try the EXAM room</a>
 			{/if}
 		</div>
 	</div>
