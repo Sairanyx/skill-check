@@ -17,10 +17,10 @@
 
 	label {
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 	}
 
 	.field__hint {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 	}
 </style>

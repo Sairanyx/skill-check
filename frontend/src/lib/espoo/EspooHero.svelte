@@ -45,6 +45,10 @@
 		color: var(--espoo-on-blue);
 	}
 
+	.hero__text h1 {
+		font-size: var(--text-hero);
+	}
+
 	.hero__text-inner {
 		max-width: 32rem;
 		display: grid;
@@ -52,7 +56,7 @@
 	}
 
 	.hero__text p {
-		font-size: 1.0625rem;
+		font-size: var(--text-base);
 	}
 
 	.hero__wave {

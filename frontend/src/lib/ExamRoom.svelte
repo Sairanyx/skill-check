@@ -268,7 +268,7 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 	}
 
 	.outcome-actions {
@@ -299,6 +299,6 @@
 	}
 
 	.notes > p {
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 	}
 </style>

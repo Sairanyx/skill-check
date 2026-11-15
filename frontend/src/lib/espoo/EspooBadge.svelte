@@ -9,7 +9,7 @@
 	.badge {
 		display: inline-block;
 		padding: 0.15rem 0.55rem;
-		font-size: 0.78rem;
+		font-size: var(--text-xs);
 		font-weight: 600;
 		line-height: 1.3rem;
 		white-space: nowrap;

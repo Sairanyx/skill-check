@@ -21,11 +21,12 @@
 	}
 
 	.card__eyebrow {
-		font-size: 0.8125rem;
+		font-size: var(--text-xs);
 		color: var(--espoo-text-muted);
 	}
 
 	h3 {
 		color: var(--espoo-apricot);
+		font-size: var(--text-lg); /* card titles */
 	}
 </style>

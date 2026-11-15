@@ -30,7 +30,7 @@
 		flex-direction: column;
 		font-family: var(--espoo-font-heading);
 		font-weight: 900;
-		font-size: 0.875rem;
+		font-size: var(--text-sm);
 		line-height: 1.1;
 		letter-spacing: 0.08em;
 	}

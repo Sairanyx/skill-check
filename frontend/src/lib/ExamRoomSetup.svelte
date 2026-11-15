@@ -216,7 +216,7 @@
 
 	.steps span {
 		color: rgba(255, 255, 255, 0.8);
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 	}
 
 	.setup {
@@ -257,12 +257,12 @@
 	}
 
 	.role__small {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 	}
 
 	.role__title {
 		font-family: var(--espoo-font-heading);
-		font-size: 1.25rem;
+		font-size: var(--text-xl);
 		color: var(--espoo-apricot);
 	}
 
@@ -282,7 +282,7 @@
 		float: left;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
-		font-size: 1.1875rem;
+		font-size: var(--text-xl);
 		color: var(--espoo-apricot);
 	}
 
@@ -298,7 +298,7 @@
 
 	.setup__sample {
 		margin-top: 0.75rem;
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 	}
 
 	.setup__go {

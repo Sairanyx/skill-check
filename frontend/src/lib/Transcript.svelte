@@ -67,7 +67,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-family: var(--espoo-font-heading);
-		font-size: 0.8125rem;
+		font-size: var(--text-xs);
 		font-weight: 700;
 		color: var(--espoo-apricot);
 	}

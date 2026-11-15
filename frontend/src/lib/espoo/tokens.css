@@ -31,6 +31,17 @@
 	--espoo-max-width: 76rem;
 	--espoo-gutter: 1rem;
 	--espoo-ease: 0.15s ease;
+
+	/* One type scale for every screen (same steps as skillcheck.fi). Lato for headings, Work Sans for text. */
+	--text-xs: 0.75rem; /* small uppercase labels */
+	--text-sm: 0.875rem; /* secondary text, captions, badges, sources */
+	--text-base: 1rem; /* body text */
+	--text-lg: 1.125rem; /* lead sentences, card titles */
+	--text-xl: 1.25rem; /* sub-headings, job titles */
+	--text-2xl: 1.75rem; /* section headings */
+	--text-3xl: clamp(1.875rem, 3.2vw, 2.25rem); /* page and slide titles */
+	--text-hero: clamp(2.25rem, 4vw, 2.75rem); /* the hero headline */
+	--text-display: 3rem; /* the score number */
 }
 
 @media (min-width: 50em) {
@@ -45,7 +56,7 @@ body {
 	background-color: #f7f8fa; /* a soft off-white, easier on the eye than pure white */
 	color: var(--espoo-white);
 	font-family: var(--espoo-font-body);
-	font-size: 1rem;
+	font-size: var(--text-base);
 	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
 }
@@ -67,17 +78,17 @@ h4 {
 
 h1 {
 	font-weight: 400;
-	font-size: clamp(2rem, 4vw, 2.625rem);
+	font-size: var(--text-3xl);
 }
 
 h2 {
 	font-weight: 400;
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
+	font-size: var(--text-2xl);
 }
 
 h3 {
 	font-weight: 700;
-	font-size: 1.1875rem;
+	font-size: var(--text-xl);
 }
 
 p {
@@ -138,7 +149,7 @@ a {
 	height: 1.625rem;
 	border: 1.5px solid currentColor;
 	border-radius: 50%;
-	font-size: 0.85rem;
+	font-size: var(--text-sm);
 	flex-shrink: 0;
 	transition: background-color var(--espoo-ease), color var(--espoo-ease);
 }

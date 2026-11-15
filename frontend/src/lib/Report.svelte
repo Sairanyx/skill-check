@@ -165,7 +165,7 @@
 	}
 
 	.report__meta {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 		overflow-wrap: anywhere;
 	}
 
@@ -179,19 +179,19 @@
 	.score__number {
 		font-family: var(--espoo-font-heading);
 		font-weight: 900;
-		font-size: 2.75rem;
+		font-size: var(--text-display);
 		line-height: 1;
 		color: var(--espoo-apricot);
 	}
 
 	.score__number small {
-		font-size: 1.1rem;
+		font-size: var(--text-lg);
 		font-weight: 700;
 		opacity: 0.75;
 	}
 
 	.report__summary {
-		font-size: 1.0625rem;
+		font-size: var(--text-base);
 	}
 
 	section {
@@ -235,7 +235,7 @@
 		border-radius: 50%;
 		background-color: var(--espoo-deep);
 		color: var(--espoo-glow);
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 	}
 
 	.clamp {
@@ -277,7 +277,7 @@
 		padding-left: 0.75rem;
 		border-left: 3px solid var(--espoo-apricot);
 		font-style: italic;
-		font-size: 0.925rem;
+		font-size: var(--text-sm);
 	}
 
 	ul {

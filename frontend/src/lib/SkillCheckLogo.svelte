@@ -27,7 +27,7 @@
 	.sc__word {
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
-		font-size: 1.15rem;
+		font-size: var(--text-lg);
 		letter-spacing: -0.01em;
 		color: #0b1b33;
 	}

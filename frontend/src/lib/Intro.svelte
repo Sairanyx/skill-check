@@ -233,18 +233,18 @@
 		border-radius: 50%;
 		font-family: var(--espoo-font-heading);
 		font-weight: 700;
-		font-size: 1.15rem;
+		font-size: var(--text-lg);
 		color: var(--espoo-glow);
 	}
 
 	h1 {
 		margin-top: 1.25rem;
-		font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+		font-size: var(--text-3xl);
 	}
 
 	.lead {
 		margin-top: 1rem;
-		font-size: 1.15rem;
+		font-size: var(--text-lg);
 		color: rgba(255, 255, 255, 0.9);
 	}
 
@@ -252,7 +252,7 @@
 		margin-top: auto;
 		padding-top: 1.25rem;
 		border-top: 1px solid rgba(255, 255, 255, 0.25);
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 		color: rgba(255, 255, 255, 0.78);
 	}
 
@@ -284,13 +284,13 @@
 
 	.card strong {
 		font-family: var(--espoo-font-heading);
-		font-size: 1.15rem;
+		font-size: var(--text-lg);
 		color: var(--espoo-apricot);
 	}
 
 	.card span {
 		color: #5b6577;
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 	}
 
 	.card b {
@@ -304,13 +304,13 @@
 	}
 
 	.eyebrow {
-		font-size: 0.78rem !important;
+		font-size: var(--text-xs) !important;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 	}
 
 	.said {
-		font-size: 1rem;
+		font-size: var(--text-base);
 		line-height: 1.7;
 	}
 
@@ -328,7 +328,7 @@
 	}
 
 	.filter__label {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 		font-weight: 600;
 		color: var(--espoo-blue);
 	}
@@ -385,7 +385,7 @@
 		border-radius: 50%;
 		background-color: var(--espoo-blue);
 		color: var(--espoo-on-blue);
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 	}
 
 	.panel {
@@ -395,19 +395,19 @@
 	}
 
 	.card--model strong {
-		font-size: 0.98rem;
+		font-size: var(--text-base);
 	}
 
 	.card .score {
 		font-family: var(--espoo-font-heading);
 		font-weight: 900;
-		font-size: 3rem;
+		font-size: var(--text-display);
 		line-height: 1.1;
 		color: var(--espoo-apricot);
 	}
 
 	.card .score small {
-		font-size: 1.1rem;
+		font-size: var(--text-lg);
 	}
 
 	.badge {
@@ -417,7 +417,7 @@
 		background-color: var(--espoo-blue);
 		color: var(--espoo-on-blue) !important;
 		font-weight: 700;
-		font-size: 0.85rem !important;
+		font-size: var(--text-sm) !important;
 	}
 
 	.card--badge {
@@ -452,7 +452,7 @@
 
 	.hint {
 		margin-right: auto;
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 		color: var(--espoo-text-muted);
 	}
 

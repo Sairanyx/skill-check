@@ -54,7 +54,7 @@
 	.header__subtitle {
 		padding-left: 0.9rem;
 		border-left: 1px solid var(--espoo-border-strong);
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 	}
 
 	nav {

@@ -77,6 +77,6 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1.25rem 2rem;
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 	}
 </style>

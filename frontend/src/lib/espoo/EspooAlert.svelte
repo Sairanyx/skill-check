@@ -15,7 +15,7 @@
 		gap: 0.2rem;
 		padding: 0.9rem 1.15rem;
 		border-left: 0.3rem solid;
-		font-size: 0.95rem;
+		font-size: var(--text-base);
 		border-radius: var(--espoo-radius);
 	}
 

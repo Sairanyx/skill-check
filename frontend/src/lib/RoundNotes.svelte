@@ -41,7 +41,7 @@
 	.round {
 		display: grid;
 		gap: 0.85rem;
-		font-size: 0.925rem;
+		font-size: var(--text-sm);
 		border-radius: var(--espoo-radius);
 	}
 
@@ -87,6 +87,6 @@
 	.memo__ask {
 		padding-top: 0.45rem;
 		border-top: 1px dashed var(--espoo-border);
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 	}
 </style>

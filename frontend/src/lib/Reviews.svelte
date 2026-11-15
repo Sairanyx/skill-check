@@ -183,7 +183,7 @@
 	}
 
 	.list .espoo-muted {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 	}
 
 	.list__badges {

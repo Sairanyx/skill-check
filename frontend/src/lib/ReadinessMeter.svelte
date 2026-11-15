@@ -17,7 +17,7 @@
 	.meter {
 		display: grid;
 		gap: 0.4rem;
-		font-size: 0.9rem;
+		font-size: var(--text-sm);
 	}
 
 	.meter__label {
