@@ -192,8 +192,10 @@
 								<span>The company decides. The AI never does.</span>
 							</div>
 							<div class="card card--badge pop ring" style={delay(2.4)}>
-								<span class="medal">✓</span>
-								<strong>SkillCheck badge</strong>
+								<strong class="badge-title">
+									<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M7 3h18a5 5 0 0 1 5 5v12a5 5 0 0 1-5 5H15.5L9 30v-5H7a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5z" fill="#003580" /><path d="M10 14.5l4.2 4.2L22.5 10.5" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+									SkillCheck badge
+								</strong>
 								<span>On the event card, with consent</span>
 							</div>
 						</div>
@@ -634,6 +636,18 @@
 
 	.card--badge {
 		background-color: var(--espoo-tint);
+	}
+
+	.badge-title {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.badge-title svg {
+		width: 1.35rem;
+		height: 1.35rem;
+		flex-shrink: 0;
 	}
 
 	.medal {
