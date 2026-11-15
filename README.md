@@ -1,62 +1,92 @@
-<p align="center"><img src="public/logo.svg" alt="SkillCheck" height="56"></p>
+<p align="center">
+  <img src="public/logo.svg" alt="SkillCheck" height="44">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/assets/espoo.svg" alt="City of Espoo" height="44">
+</p>
 
-<p align="center"><b>Show what you can do, not what an AI wrote for you.</b><br>
-A fair, evidence-based skill check for the City of Espoo's recruitment events.<br>
+<h1 align="center">SkillCheck</h1>
+
+<p align="center"><b>No CV. No cover letter. Just talk about your skills.</b><br>
+Fair skill checks for City of Espoo recruitment events.<br>
 Junction 2026 · City of Espoo challenge "Rethinking Recruitment" · Team SkillCheck</p>
 
-<p align="center"><a href="https://skillcheck.fi"><b>skillcheck.fi</b></a> (live demo, synthetic data only)</p>
+<p align="center"><a href="https://skillcheck.fi"><b>skillcheck.fi</b></a> · synthetic data only</p>
 
 ---
 
 ## The problem
-Since 1 January 2025 the City of Espoo is the employment authority for about 30,000 jobseekers. Employers drown in AI-written CVs and cover letters, and screening by CV favours names, schools and fluent writing over real skill.
+
+Espoo's recruitment events bring hundreds of jobseekers and dozens of companies together. CVs are now often written by AI, so companies cannot see who can do the job.
 
 ## What SkillCheck does
-1. **A jobseeker books 30 minutes on a City computer in a testing room** (like the EXAM rooms Finnish universities use). The check only runs there: no ChatGPT help, no impersonation.
-2. **An AI interviewer asks about a real company problem**, in Finnish, Swedish or English, by voice or text, and adapts the difficulty.
-3. **A privacy guard on our own server in Finland removes names, employers, schools, places, revealing dates and everything the Non-Discrimination Act protects**, before any AI scores the answers.
-4. **A panel of AI judges from three different companies scores the answers** against written anchors, with quotes checked against the real answers. A fairness agent checks for bias. Low confidence goes to a City reviewer.
-5. **No CV, no cover letter.** Only official proofs the job needs (licence, hygiene passport, language certificate), checked in person by City staff.
-6. **People decide.** The City and the company accept or not. Companies see an alias, never a name, until the jobseeker shares contact details. Accepted results become stamps on the event card, and 15-minute meetings at the event.
 
-## Models
-| Job | Model | Made by | Runs on |
-|---|---|---|---|
-| Speech to text | Whisper large-v3-turbo | OpenAI (open weights) | Verda A100 80GB, Finland |
-| Privacy guard, fairness check, judge 1 | Gemma 4 26B-A4B-it | Google (open weights) | Verda A100 80GB, Finland |
-| Judge 2 | Mistral Small 3.2 24B Instruct | Mistral AI, France (open weights) | Verda A100 40GB, Finland |
-| Interviewer, judge 3 | Gemini 3.8 Flash | Google | Google cloud (pseudonymised text only) |
+- **One real task, not a job ad.** A company describes a problem from its work, or City staff do it with them.
+- **In person, in rooms Espoo already has.** Jobseekers talk the task through on a supervised computer in an EXAM room, in spaces like Sello library or Espoo Talent Hub.
+- **Personal details removed first.** Gemma 4 on our server in Finland replaces name, age, employer, places and origin before any other AI reads an answer.
+- **A panel, not one model.** Three Gemini 4 models interview and score only the skills, with the candidate's own words as evidence.
+- **People decide.** Companies see an alias and the evidence, and invite people to sit down at the event. An accepted check becomes a SkillCheck badge.
 
-All open models are served with vLLM. The final score is the median of the three judges, and disagreement lowers the confidence. Why each choice was made, with the research behind it: [docs/DECISIONS.md](docs/DECISIONS.md).
+```mermaid
+flowchart LR
+  A["Answer"] --> G["Gemma removes personal details<br/>(Finland)"]
+  G --> P["Three Gemini 4 models<br/>score the skills"]
+  P --> R["Result with quotes"]
+  R --> H{"People decide"}
+  H --> S["Sit-down at the event<br/>and a SkillCheck badge"]
+```
+
+## Two apps in this repository
+
+| Folder | What it is | Built with |
+|---|---|---|
+| `/` | **Platform.** Portals for jobseekers, companies and the City: events, bookings, skill checks, results, decisions, audit log | Next.js 16, TypeScript, PostgreSQL |
+| `panel/` | **Interview panel** used by the platform | Rust |
+| `demo/` | **Demo.** How it works, a live skill check and finished results | Rust server, SvelteKit |
+
+## AI models
+
+| Job | Model | Runs on |
+|---|---|---|
+| Privacy guard | Gemma 4 26B-A4B-it | Verda GPU, Finland |
+| Interview and report | Gemini 4 Hydrogen, Argon and Carbon | Google, pseudonymised text only |
+| Speech to text | Whisper large-v3-turbo | Verda GPU, Finland |
+
+Open models are served with vLLM. The database is PostgreSQL on Aiven in Finland.
 
 ## Responsible by design
-- **No automated decisions about people.** The AI gives evidence and confidence. A person decides.
-- **Fairness:** pseudonymisation before scoring, scoring that ignores grammar and accent, a separate optional language score only when the job truly needs it, a fairness agent, and a judge panel against self-preference bias.
-- **Privacy (GDPR):** data and models in Finland, companies see aliases only, contact by consent, identity revealed only by the City with a recorded reason, append-only audit log, export and erasure for every jobseeker, results deleted after 12 months.
-- **Fail safe:** if any automatic check cannot run, the result goes to a person.
 
-## Tech
-Next.js 16, React 19, TypeScript, Tailwind, Better Auth, Drizzle ORM, PostgreSQL on **Aiven** (Finland), vLLM on **Verda** GPUs (Finland), **Gemma**, **Gemini**, Mistral, Whisper, ESCO skills taxonomy, **Context.dev** (drafts a company need from its website). CI on **CRACI** runners: lint, typecheck, unit tests and build on every push, with an SBOM of every dependency.
+- **No automated decisions about people.** The AI gathers evidence. The company and the City decide.
+- **Fair.** Personal details are removed before scoring. Accent and grammar never count. A split panel goes to a person.
+- **Private.** Data stays in Finland, companies see aliases, contact only by consent, every access is in an append-only audit log, export and erasure for every jobseeker.
 
 ## Run it
+
+**Platform**
 ```bash
-git clone https://github.com/Sairanyx/skill-check.git && cd skill-check
-cp .env.example .env.local      # database, model servers and API keys
+cp .env.example .env.local      # database, model servers, API keys
 npm install
-npm run db:push && npm run db:seed && npm run db:demo   # tables, demo data, 30 AI-scored jobseekers
-npm run dev -- -p 3100
+npm run db:push && npm run db:seed
+npm run dev
 ```
-`npm run demo:now` books the demo jobseeker into the testing slot running right now. Server setup: [infra/README.md](infra/README.md).
+
+**Demo**
+```bash
+cd demo
+python run.py dev               # needs Rust, bun and GEMINI_API_KEY in ~/.secrets/globals.json
+```
+Set `GUARD_BASE_URL` to a Gemma server so names are removed before Gemini reads an answer. Server setup: [infra/README.md](infra/README.md).
 
 ## Docs
+
 | | |
 |---|---|
-| [Handover](docs/HANDOVER.md) | Start here |
-| [Decisions](docs/DECISIONS.md) | Every design choice, research, pros and cons |
+| [Architecture](docs/ARCHITECTURE.md) | System, one skill check and who decides, as diagrams |
+| [Database](docs/DATABASE.md) | Every table and how personal data is protected |
+| [Decisions](docs/DECISIONS.md) | Each design choice with research, pros and cons |
 | [Research](docs/RESEARCH.md) | Facts and sources |
-| [Architecture](docs/ARCHITECTURE.md) | Diagrams, agents, API, capacity |
-| [Database](docs/DATABASE.md) | All tables and how personal data is protected |
-| [Repository](docs/REPOSITORY.md) | How the code is organised |
-| [Questions for Espoo](docs/QUESTIONS_FOR_ESPOO.md) | What we would ask the City next |
+| [Panel API](docs/PANEL_API.md) | The interview panel service |
+| [Demo server API](demo/SERVER_API.md) | The demo server and its privacy guard |
 
-All companies and people in the demo are fictional. MIT licence.
+## License
+
+MIT. See [LICENSE](LICENSE).

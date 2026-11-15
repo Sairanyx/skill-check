@@ -1,0 +1,9 @@
+/target
+/data
+# Left in this folder by the Next.js app on dev/last (never commit them, .env.local holds secrets)
+/node_modules
+/.next
+/next-env.d.ts
+/tsconfig.tsbuildinfo
+.env*
+frontend/package-lock.json

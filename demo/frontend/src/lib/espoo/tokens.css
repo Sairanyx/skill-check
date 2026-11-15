@@ -1,0 +1,204 @@
+/*
+ * City of Espoo layout (espoo.fi): a blue hero with a wavy edge, sharp corners and circled-arrow links,
+ * in SkillCheck's calm colours: white page, dark text, Finnish blue accent, light grey cards.
+ * The token names are kept from the first dark version, the comments say what each one is now.
+ * Components read these tokens. Nothing else hard-codes a colour.
+ */
+
+:root {
+	--espoo-font-heading: 'Lato', Helvetica, Arial, sans-serif;
+	--espoo-font-body: 'Work Sans', Helvetica, Arial, sans-serif;
+
+	--espoo-blue: #003580; /* hero and answer bubbles: Finnish blue */
+	--espoo-navy: #ffffff; /* page and header background */
+	--espoo-midnight: #ffffff; /* cards and inputs: white with a thin grey border */
+	--espoo-mist: #f3f4f6; /* light grey bands, as on skillcheck.fi */
+	--espoo-deep: #001a40; /* deep Finnish blue: hero side, footer, intro text panel (skillcheck.fi navy) */
+	--espoo-glow: #dce8f8; /* light blue highlights on deep blue (skillcheck.fi tint) */
+	--espoo-apricot: #003580; /* accent: titles, selection, links */
+	--espoo-tint: #dce8f8; /* light blue for highlights */
+	--espoo-coral: #ff4f57;
+	--espoo-sun: #ffdc47;
+	--espoo-white: #0b1b33; /* text */
+	--espoo-on-blue: #ffffff; /* text on Finnish blue */
+
+	--espoo-text-muted: #5b6577;
+	--espoo-border: #e3e8ef;
+	--espoo-border-strong: #b8c4d6;
+
+	--espoo-radius: 0.625rem;
+	--espoo-radius-lg: 1rem;
+	--espoo-max-width: 76rem;
+	--espoo-gutter: 1rem;
+	--espoo-ease: 0.15s ease;
+
+	/* One type scale for every screen, six sizes only. Lato for headings, Work Sans for text. */
+	--text-xs: 0.75rem; /* 12px: small labels only */
+	--text-sm: 0.875rem; /* 14px: captions, sources, badges */
+	--text-base: 1rem; /* 16px: all normal text, leads and card titles (bold) */
+	--text-lg: 1rem; /* same as base: one size for text */
+	--text-xl: 1.25rem; /* 20px: section headings, job titles */
+	--text-2xl: 1.25rem; /* same as xl: one size for headings */
+	--text-3xl: 1.75rem; /* 28px: page and slide titles */
+	--text-hero: 2.25rem; /* 36px: hero headline */
+	--text-display: 2.25rem; /* 36px: the score number */
+}
+
+@media (min-width: 50em) {
+	:root {
+		--espoo-gutter: 2.5rem;
+	}
+}
+
+html,
+body {
+	margin: 0;
+	background-color: #f7f8fa; /* a soft off-white, easier on the eye than pure white */
+	color: var(--espoo-white);
+	font-family: var(--espoo-font-body);
+	font-size: var(--text-base);
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-family: var(--espoo-font-heading);
+	margin: 0;
+	line-height: 1.25;
+}
+
+h1 {
+	font-weight: 400;
+	font-size: var(--text-3xl);
+}
+
+h2 {
+	font-weight: 400;
+	font-size: var(--text-2xl);
+}
+
+h3 {
+	font-weight: 700;
+	font-size: var(--text-xl);
+}
+
+p {
+	margin: 0;
+}
+
+a {
+	color: var(--espoo-apricot);
+}
+
+:focus-visible {
+	outline: 2px solid var(--espoo-apricot);
+	outline-offset: 2px;
+}
+
+/* Page-width wrapper used by every band. */
+.espoo-container {
+	width: 100%;
+	max-width: var(--espoo-max-width);
+	margin: 0 auto;
+	padding-inline: var(--espoo-gutter);
+}
+
+.espoo-section {
+	display: grid;
+	gap: 2rem;
+	padding-block: 3rem;
+}
+
+.espoo-muted {
+	color: var(--espoo-text-muted);
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+/* espoo.fi circled-arrow link: (→) Label */
+.espoo-arrow-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	color: var(--espoo-white);
+	text-decoration: none;
+	transition: color var(--espoo-ease);
+}
+
+.espoo-arrow-link::before {
+	content: '→';
+	display: inline-grid;
+	place-items: center;
+	width: 1.625rem;
+	height: 1.625rem;
+	border: 1.5px solid currentColor;
+	border-radius: 50%;
+	font-size: var(--text-sm);
+	flex-shrink: 0;
+	transition: background-color var(--espoo-ease), color var(--espoo-ease);
+}
+
+.espoo-arrow-link:hover {
+	color: var(--espoo-apricot);
+}
+
+.espoo-arrow-link:hover::before {
+	background-color: var(--espoo-apricot);
+	color: var(--espoo-on-blue);
+}
+
+/* Recessed form controls (inputs, selects, textareas). */
+.espoo-input {
+	width: 100%;
+	padding: 0.7rem 0.95rem;
+	font: inherit;
+	color: var(--espoo-white);
+	background-color: var(--espoo-midnight);
+	border: 1px solid var(--espoo-border-strong);
+	border-radius: var(--espoo-radius);
+	transition: border-color var(--espoo-ease);
+}
+
+.espoo-input:focus {
+	outline: none;
+	border-color: var(--espoo-apricot);
+	box-shadow: 0 0 0 1px var(--espoo-apricot);
+}
+
+.espoo-input::placeholder {
+	color: var(--espoo-text-muted);
+}
+
+.espoo-input:disabled {
+	opacity: 0.55;
+}
+
+/* Every screen fades up when it opens, as on skillcheck.fi. Off for people who prefer less motion. */
+@keyframes espoo-fade-up {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: none; }
+}
+
+.espoo-section {
+	animation: espoo-fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.espoo-section { animation: none; }
+}

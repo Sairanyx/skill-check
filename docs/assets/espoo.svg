@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 48" fill="none">
+  <title>City of Espoo</title>
+  <path d="M11 28.5C9.5 18.5 17.5 8 28.5 8C36.5 8 41 13.5 39.5 20.5C38 27.5 28 31.5 17 29.5C11.5 28.5 8.5 24.5 10.5 19.5C12.8 13.8 21.5 11.5 29.5 14C36.5 16.2 39 23.5 35.5 30.5C32 37.5 23 41 14.5 38.5C10.5 37.3 8 34.5 7.5 31" stroke="#0b1b33" stroke-width="2.35" stroke-linecap="round"/>
+  <text x="50" y="22" font-family="Lato, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.2" fill="#0b1b33">ESPOO</text>
+  <text x="50" y="38" font-family="Lato, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.2" fill="#0b1b33">ESBO</text>
+</svg>
