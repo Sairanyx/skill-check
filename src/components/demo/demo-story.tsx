@@ -12,7 +12,7 @@ type DemoEvent = { title: string; startsAt: string; companies: number } | null;
 type Place = "city" | "company" | "jobseeker" | "exam";
 type Ref = { text: string; source: string; href?: string };
 /** `spot`: CSS selector of the key part inside the page, ringed after the page zooms in. */
-type Step = { title: string; text: string; places: Place[]; refs: Ref[]; screen: ReactNode; spot?: string; map?: false };
+type Step = { title: string; text: string; places: Place[]; refs: Ref[]; screen: ReactNode; spot?: string; map?: false; models?: string[] };
 
 const at = (s: number): CSSProperties => ({ animationDelay: `${s}s` });
 const time = (iso: string) =>
@@ -76,7 +76,7 @@ export function DemoStory({ lang, event, screens, tryNeeds }: { lang: string; ev
           <h1 className="text-3xl tracking-tight">SkillCheck in two minutes</h1>
         </div>
         <p className="max-w-xl text-sm text-muted-foreground">
-          SkillCheck is a working platform with portals for jobseekers, companies and the City of Espoo. This demo shows its real pages with synthetic data. <PlatformLinks lang={lang} />
+          A working platform. Real pages, synthetic data. <PlatformLinks lang={lang} />
         </p>
       </header>
 
@@ -89,34 +89,40 @@ export function DemoStory({ lang, event, screens, tryNeeds }: { lang: string; ev
         ))}
       </nav>
 
-      <section key={i} className="mt-5 grid gap-8 rounded-xl bg-surface p-5 md:grid-cols-[5fr_7fr] md:p-8">
+      <section key={i} className="mt-5 grid gap-4 md:grid-cols-[4fr_7fr]">
         {step ? (
           <>
-            <div className="demo-rise">
-              <p className="text-sm font-semibold text-primary">{i + 1} / {last}</p>
-              <h2 className="mt-1 text-2xl tracking-tight md:text-3xl">{step.title}</h2>
-              <p className="mt-3 leading-relaxed text-foreground/85">{step.text}</p>
-              <ul className="mt-5 space-y-2.5">
-                {step.refs.map((r, n) => (
-                  <li key={r.text} className="demo-rise border-l-2 border-primary pl-3 text-sm text-muted-foreground" style={at(0.5 + n * 0.2)}>
-                    <span className="font-medium text-primary">Research: </span>
-                    {r.text}{" "}
-                    {r.href ? (
-                      <a href={r.href} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">{r.source} ↗</a>
-                    ) : (
-                      <span className="font-medium">{r.source}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+            <div className="demo-rise flex flex-col rounded-xl bg-navy p-6 text-primary-foreground md:p-8">
+              <span className="flex size-11 items-center justify-center rounded-full border-2 border-tint font-heading text-lg font-bold text-tint">{i + 1}</span>
+              <h2 className="mt-5 text-2xl tracking-tight md:text-3xl">{step.title}</h2>
+              <p className="mt-3 text-lg leading-relaxed text-primary-foreground/85">{step.text}</p>
+              {step.models && (
+                <ul className="mt-5 space-y-1.5">
+                  {step.models.map((m, n) => (
+                    <li key={m} className="demo-rise text-sm font-medium text-tint" style={at(0.4 + n * 0.15)}>{m}</li>
+                  ))}
+                </ul>
+              )}
+              {step.refs.map((r) => (
+                <p key={r.text} className="mt-auto border-t border-primary-foreground/20 pt-4 text-sm text-primary-foreground/75">
+                  {r.text}{" "}
+                  {r.href ? (
+                    <a href={r.href} target="_blank" rel="noreferrer" className="font-medium text-tint underline underline-offset-4 hover:no-underline">{r.source} ↗</a>
+                  ) : (
+                    <span className="font-medium text-tint">{r.source}</span>
+                  )}
+                </p>
+              ))}
             </div>
-            <figure ref={frame}>
+            <figure ref={frame} className="rounded-xl bg-surface p-4 md:p-6">
               {step.map !== false && <MiniMap active={step.places} />}
               <div className="demo-zoom" style={{ transformOrigin: zoomFrom }}>{step.screen}</div>
             </figure>
           </>
         ) : (
-          <TryIt lang={lang} tryNeeds={tryNeeds} />
+          <div className="rounded-xl bg-surface p-6 md:col-span-2 md:p-8">
+            <TryIt lang={lang} tryNeeds={tryNeeds} />
+          </div>
         )}
       </section>
 
@@ -266,72 +272,60 @@ function WhyRemoved() {
 function buildSteps(event: DemoEvent, screens: DemoScreens): Step[] {
   return [
     {
-      title: "The City of Espoo organises a recruitment event",
-      text: "The City is responsible for about 30,000 jobseekers. It organises events where jobseekers and companies meet, and runs supervised EXAM rooms. CVs are now often written by AI, so the City needs better evidence of skills.",
+      title: "The City organises the event",
+      text: "The City of Espoo runs the recruitment event and the EXAM rooms.",
       places: ["city"],
       map: false,
-      refs: [
-        { text: "Since the TE24 reform on 1 Jan 2025, the City of Espoo is the employment authority for about 30,000 jobseekers.", source: "Työmarkkinatori", href: "https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle" },
-        { text: "Espoo TalentMatch events already bring 200 to 1,000 jobseekers and 5 to 50 employers together in 15-minute meetings.", source: "City of Espoo", href: "https://www.espoo.fi/en/talentmatch-events" },
-      ],
+      refs: [{ text: "Since 2025 the City is the employment authority for about 30,000 jobseekers.", source: "Työmarkkinatori", href: "https://tyomarkkinatori.fi/en/news/mita-kuuluu-espoon-ja-kauniaisten-tyollisyysalueelle" }],
       screen: <BigPicture event={event} />,
     },
     {
-      title: "Companies join and say what they need",
-      text: "Each company joins the event and decides if it wants a skill check. If it does, it describes one real task and the skills it needs, or AI drafts it from its website. If not, City staff describe it with them.",
+      title: "Companies say what they need",
+      text: "Each company describes one real task. Or City staff do it with them.",
       places: ["company", "city"],
-      refs: [{ text: "Structured interviews about the job are the best single predictor of job performance.", source: "Sackett et al. 2022", href: "https://www.siop.org/tip-article/is-cognitive-ability-the-best-predictor-of-job-performance" }],
+      refs: [{ text: "Structured interviews about the job predict performance best.", source: "Sackett et al. 2022", href: "https://www.siop.org/tip-article/is-cognitive-ability-the-best-predictor-of-job-performance" }],
       screen: screens.companies,
       spot: "ul",
     },
     {
-      title: "Aino, a jobseeker, books an EXAM room",
-      text: "Aino picks the companies she wants to meet, sees what each one asks for, and books 30 minutes on a supervised City computer. Up to three companies in one visit. No CV, no cover letter.",
+      title: "Aino books an EXAM room",
+      text: "She picks companies and books 30 minutes on a City computer. No CV.",
       places: ["jobseeker"],
-      refs: [
-        { text: "Finnish universities already run booked, supervised EXAM rooms in 29 institutions.", source: "Aalto University", href: "https://www.aalto.fi/en/services/electronic-examinations-exam-service" },
-        { text: "One analysis of about 20,000 remote AI interviews flagged 38.5% for cheating. Google, McKinsey and Cisco brought back in-person rounds.", source: "Fabric, Entrepreneur", href: "https://www.entrepreneur.com/business-news/google-mckinsey-reintroduce-in-person-interviews-due-to-ai/496041" },
-      ],
+      refs: [{ text: "29 Finnish universities already use booked, supervised EXAM rooms.", source: "Aalto University", href: "https://www.aalto.fi/en/services/electronic-examinations-exam-service" }],
       screen: screens.book,
       spot: "section:last-of-type",
     },
     {
       title: "Aino takes the skill check",
-      text: "An AI panel asks short questions about the real task, in Finnish, Swedish or English, by voice or text. Before any AI reads an answer, her name, employer, places and years are removed on our server in Finland.",
+      text: "An AI panel asks about the real task. By voice or text, in Finnish, Swedish or English.",
       places: ["exam"],
-      refs: [{ text: "Structured interviews about real tasks predict job performance better than CVs. Finland already trusts supervised EXAM rooms for exams.", source: "Sackett et al. 2022", href: "https://www.siop.org/tip-article/is-cognitive-ability-the-best-predictor-of-job-performance" }],
+      models: ["Gemini 4 Hydrogen · lead interviewer", "Gemini 4 Argon · problem solving", "Gemini 4 Carbon · authenticity", "Whisper large-v3-turbo · speech, in Finland"],
+      refs: [{ text: "Google, McKinsey and Cisco brought back in-person interviews because of AI cheating.", source: "Entrepreneur", href: "https://www.entrepreneur.com/business-news/google-mckinsey-reintroduce-in-person-interviews-due-to-ai/496041" }],
       screen: screens.check,
       spot: ".border-dashed",
     },
     {
-      title: "Why personal details are removed",
-      text: "The AI only needs her reasoning. Her name, employer, school, places, years and anything about age, origin, gender, health or family are removed before any AI or company sees the answer.",
+      title: "Personal details removed",
+      text: "Before any AI reads an answer, names, employers, places and years are removed. For GDPR, safety and no bias.",
       places: ["exam"],
-      refs: [
-        { text: "Language models rank identical CVs differently by name.", source: "CUHK audit of 14 LLMs, 2026", href: "https://arxiv.org/pdf/2606.28978" },
-        { text: "Anonymous recruitment raised hiring of applicants with foreign names in the City of Helsinki, when it was the default.", source: "VATT and LABORE 2023", href: "https://labore.fi/en/publications/anatomy-of-an-anonymous-hiring-pilot/" },
-      ],
+      models: ["Gemma 4 26B · privacy guard, on Verda in Finland"],
+      refs: [{ text: "Language models rank identical CVs differently by name.", source: "CUHK audit of 14 LLMs, 2026", href: "https://arxiv.org/pdf/2606.28978" }],
       screen: <WhyRemoved />,
     },
     {
-      title: "The result: feedback with evidence",
-      text: "Aino gets feedback per skill, with her own words as proof and the reasoning. The company sees the same result under an alias, never her name. Unclear results go to City staff first.",
+      title: "The result",
+      text: "Feedback per skill, with her own words as proof. The company sees an alias, never her name.",
       places: ["jobseeker", "company"],
-      refs: [
-        { text: "A panel of AI judges from different model families agrees better with humans than one large judge.", source: "Verga et al. 2024", href: "https://arxiv.org/pdf/2404.18796" },
-        { text: "In our own test, judges from three companies agreed 82%, with no penalty for answers in a second language.", source: "SkillCheck benchmark, decision D20" },
-      ],
+      models: ["Three Gemini 4 models judge on their own", "Their agreement is the confidence"],
+      refs: [{ text: "Anonymous recruitment raised hiring of applicants with foreign names in Helsinki.", source: "VATT and LABORE 2023", href: "https://labore.fi/en/publications/anatomy-of-an-anonymous-hiring-pilot/" }],
       screen: screens.result,
       spot: ".gap-12",
     },
     {
-      title: "People decide, the City keeps control",
-      text: "The company invites her to a 15-minute meeting at the event. The AI never accepts or rejects anyone, and every decision and every access to personal data is logged for the City.",
+      title: "People decide",
+      text: "The company invites her to a 15-minute meeting. The AI never decides. Every access is logged.",
       places: ["company", "city"],
-      refs: [
-        { text: "Recruitment AI is high-risk under the EU AI Act, so human oversight and logging are built in from the start.", source: "DLA Piper", href: "https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act" },
-        { text: "AI cannot replace core skills assessment in public employment services.", source: "World Bank", href: "https://thedocs.worldbank.org/en/doc/98d7502c78085efeab2772e84e820572-0090012025/original/02-Use-of-data-and-AI-in-PES-May22.pdf" },
-      ],
+      refs: [{ text: "Recruitment AI is high-risk under the EU AI Act: human oversight and logs are required.", source: "DLA Piper", href: "https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/The-Digital-AI-Omnibus-Proposed-deferral-of-high-risk-AI-obligations-under-the-AI-Act" }],
       screen: screens.decide,
       spot: "p.text-base",
     },

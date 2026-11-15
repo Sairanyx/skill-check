@@ -5,9 +5,9 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 export function SiteFooter({ lang, dict }: { lang: string; dict: Dictionary }) {
   const roles = ["candidate", "company", "city"] as const;
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-navy text-primary-foreground">
       <div className="mx-auto max-w-6xl px-4 pt-12 pb-8">
-        <div className="grid gap-8 border-b border-primary-foreground/25 pb-8 sm:grid-cols-[2fr_1fr_1fr]">
+        <div className="grid gap-8 border-b border-primary-foreground/25 pb-8 sm:grid-cols-[2fr_1fr_1fr_1.4fr]">
           <div>
             <Link href={`/${lang}`} aria-label="SkillCheck home" className="inline-flex items-center gap-2 font-heading text-xl font-bold tracking-tight">
               {/* Same logo as the header, inverted for the blue footer */}
@@ -31,6 +31,14 @@ export function SiteFooter({ lang, dict }: { lang: string; dict: Dictionary }) {
                   <Link href={`/${lang}/login?as=${r}`} className="underline underline-offset-4 hover:no-underline">{dict.landing.roles[r].title}</Link>
                 </li>
               ))}
+            </ul>
+          </div>
+          <div>
+            <p className="font-heading font-bold">AI</p>
+            <ul className="mt-3 space-y-2 text-sm text-primary-foreground/85">
+              <li>Gemini 4 Hydrogen, Argon, Carbon</li>
+              <li>Gemma 4 26B, Verda, Finland</li>
+              <li>Whisper large-v3-turbo, Verda, Finland</li>
             </ul>
           </div>
         </div>

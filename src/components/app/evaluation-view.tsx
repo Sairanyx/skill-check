@@ -14,7 +14,11 @@ export type EvaluationData = {
   model: string;
   languageAssessment?: LanguageResult[] | null;
   language?: LanguageResult[];
+  /** Set when the interview panel (three Gemini 4 models) wrote the report. */
+  method?: { engine?: string; summary?: string; suggested_conversation?: string; verdicts?: { panelist: string; is_person_good: boolean; how_good_or_bad: number; reasoning: string }[] } | null;
 };
+/** What each panel member looks at (panel/src/prompt.rs). */
+const LENS: Record<string, string> = { Hydrogen: "Lead interviewer · job knowledge", Argon: "Problem solving", Carbon: "Authenticity" };
 type LanguageResult = { language: string; required: string; assessed: string | null; meets: boolean; score: number; evidence: string[]; reason: string };
 const LANGUAGE_NAMES: Record<string, string> = { fi: "Finnish", sv: "Swedish", en: "English" };
 
@@ -36,6 +40,31 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
         <Stat label="Level" value={e.level} />
         <Stat label="Confidence" value={`${Math.round(e.confidence * 100)}%`} />
       </div>
+
+      {e.method?.summary && <p className="max-w-3xl text-lg leading-relaxed">{e.method.summary}</p>}
+
+      {!!e.method?.verdicts?.length && (
+        <section>
+          <h2 className="font-semibold">Panel verdicts</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Three Gemini 4 models judge on their own. Their agreement is the confidence. Low agreement sends the result to City staff.</p>
+          <div className="mt-4 grid items-start gap-3 md:grid-cols-3">
+            {e.method.verdicts.map((v) => (
+              <div key={v.panelist} className="rounded-lg bg-navy p-4 text-primary-foreground">
+                <p className="text-xs text-primary-foreground/70">{LENS[v.panelist] ?? "Panel member"}</p>
+                <p className="mt-1 font-heading text-lg font-bold text-tint">Gemini 4 {v.panelist}: {v.how_good_or_bad}/10</p>
+                <p title={v.reasoning} className="mt-2 line-clamp-5 text-sm leading-relaxed text-primary-foreground/90">{v.reasoning}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {audience === "reviewer" && e.method?.suggested_conversation && (
+        <section className="rounded-lg bg-tint/60 p-4">
+          <h2 className="font-semibold text-primary">For the 15-minute meeting</h2>
+          <p className="mt-1 text-sm">{e.method.suggested_conversation}</p>
+        </section>
+      )}
 
       {rubric.length > 0 && (
         <section>
