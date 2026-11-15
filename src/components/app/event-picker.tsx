@@ -26,9 +26,9 @@ export function EventPicker({ lang, companies }: { lang: string; companies: Even
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
-      <div data-demo="few" className="space-y-6">
-        {companies.map((c, i) => (
-          <section key={c.id} data-tour={i === 0 ? "company" : undefined} className="rounded-lg border bg-background p-5">
+      <div className="space-y-6">
+        {companies.map((c) => (
+          <section key={c.id} className="rounded-lg border bg-background p-5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-semibold">{c.name}</h2>
               <span className="text-xs text-muted-foreground">{c.sector}</span>

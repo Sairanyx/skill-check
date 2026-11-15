@@ -34,7 +34,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
     <div className="mx-auto max-w-6xl px-4 py-12">
       <PageTitle kicker="City of Espoo" title="Espoo Tech Talent Day" />
 
-      <div data-demo="extra" className="grid grid-cols-2 gap-8 md:grid-cols-6">
+      <div className="grid grid-cols-2 gap-8 md:grid-cols-6">
         {tiles.map((t) => (
           <div key={t.label}>
             <p className="text-3xl font-semibold text-primary">{t.value}</p>
@@ -45,12 +45,12 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
 
       <Section title="Events">
         {events.map((e, i) => (
-          <div key={e.id} data-tour={i === 0 ? "event" : undefined} data-demo={i === 0 ? undefined : "extra"} className="mb-6">
+          <div key={e.id} className="mb-6">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
               <p className="font-medium">{e.title} <span className="ml-2 rounded-full border px-2 py-0.5 text-xs font-normal">{eventMode(e.mode)}</span> <span className="font-normal text-muted-foreground">· {fmtTime(e.startsAt)}</span></p>
               <EventPolicyToggle eventId={e.id} policy={e.checkPolicy} />
             </div>
-            <ul data-demo="few" className="divide-y border-y text-sm">
+            <ul className="divide-y border-y text-sm">
               {applications[i].map((a) => (
                 <li key={a.id} className="flex items-center justify-between gap-4 py-2">
                   <span>{a.company} <span className="text-muted-foreground">· {a.checkMode === "off" ? "no skill check needed" : `skill check ${a.checkMode}`}</span></span>
@@ -62,7 +62,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         ))}
       </Section>
 
-      <Section title="Matching" demo="extra">
+      <Section title="Matching">
         {matching.length ? (
           <PagedList className="divide-y border-y text-sm" noun="matches">
             {matching.map((m) => (
@@ -79,7 +79,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         )}
       </Section>
 
-      <Section title="Human review queue" demo="extra" action={<Link href={`/${lang}/city/audit`} className="text-sm text-primary hover:underline">Audit log</Link>}>
+      <Section title="Human review queue" action={<Link href={`/${lang}/city/audit`} className="text-sm text-primary hover:underline">Audit log</Link>}>
         {queue.length ? (
           <PagedList className="divide-y border-y text-sm" noun="items to review">
             {queue.map((q) => (
@@ -96,7 +96,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         )}
       </Section>
 
-      <Section title="Documents to check" demo="extra">
+      <Section title="Documents to check">
         {proofQueue.length ? (
           <PagedList noun="people">
             {[...new Map(proofQueue.map((p) => [p.candidateId, p])).values()].map((p) => (
@@ -111,7 +111,7 @@ export default async function CityPage({ params }: PageProps<"/[lang]/city">) {
         )}
       </Section>
 
-      <Section title="EXAM rooms" demo="extra">
+      <Section title="EXAM rooms">
         <details>
           <summary className="cursor-pointer text-sm text-primary">Set up a computer as an EXAM room workstation</summary>
           <div className="mt-4">

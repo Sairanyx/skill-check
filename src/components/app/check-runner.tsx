@@ -14,8 +14,11 @@ type AnswerResult = { done: boolean; said: string; seen: string; question?: stri
 const MAX_SECONDS = 30;
 const MAX_TURNS = 6;
 
-/** The skill check conversation: voice or text, privacy guard on every answer, evaluation at the end. */
-export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null; anchors?: SkillAnchor[]; who?: string }) {
+/**
+ * The skill check conversation: voice or text, privacy guard on every answer, evaluation at the end.
+ * `demo` (only on /demo) also shows what the AI received under each answer. Candidates do not see that in the platform.
+ */
+export function CheckRunner(props: { kiosk?: boolean; demo?: boolean; checkId: string; lang: string; initialTurns: Turn[]; pendingQuestion: string | null; evaluation: EvaluationData | null; anchors?: SkillAnchor[]; who?: string }) {
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>(props.initialTurns);
   const [question, setQuestion] = useState(props.pendingQuestion);
@@ -84,7 +87,7 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
 
       <div className="mt-8 space-y-6">
         {turns.map((t, i) => (
-          <div key={i} data-tour="turn" className="space-y-3">
+          <div key={i} className="space-y-3">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-primary">Question {i + 1}</p>
               <p className="mt-1 font-medium">{t.question}</p>
@@ -95,12 +98,15 @@ export function CheckRunner(props: { kiosk?: boolean; checkId: string; lang: str
                 <div className="rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground">{t.said}</div>
               </div>
             )}
-            <div data-tour="ai-saw" className="ml-auto max-w-[85%] rounded-lg bg-surface px-4 py-3 text-sm">
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">What the AI saw</p>
-              <p className="leading-relaxed text-foreground/80">
-                <Redacted text={t.seen} />
-              </p>
-            </div>
+            {props.demo && (
+              <div className="ml-auto max-w-[85%] rounded-lg border-2 border-dashed border-primary/40 bg-surface px-4 py-3 text-sm">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">What the AI saw</p>
+                <p className="leading-relaxed text-foreground/80">
+                  <Redacted text={t.seen} />
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">Shown for the demo. Candidates do not see this in the platform. The company and the City only ever see this version.</p>
+              </div>
+            )}
           </div>
         ))}
         {question && <p className="font-medium">{question}</p>}

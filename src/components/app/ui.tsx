@@ -9,10 +9,9 @@ export function PageTitle({ kicker, title, children }: { kicker?: string; title:
   );
 }
 
-/** `demo="extra"` hides the section during the guided demo, so each step stays short. */
-export function Section({ title, children, action, tour, demo }: { title: string; children: React.ReactNode; action?: React.ReactNode; tour?: string; demo?: "extra" }) {
+export function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <section data-tour={tour} data-demo={demo} className="border-t py-8">
+    <section className="border-t py-8">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 className="font-semibold">{title}</h2>
         {action}

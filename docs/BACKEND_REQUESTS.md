@@ -69,3 +69,12 @@ if (role === "company") {
 }
 ```
 (import `companies` from `@/db`). Then the new company sees the events and can add needs straight away.
+
+## 2. Done by the front end, for your review: "Try a skill check" on /demo
+
+Eduard asked for this on 15 Nov so judges can take a real check without a booking or City login. New files only, no existing rule changed:
+- `src/lib/services/demo.ts`: picks a demo job (by title), makes a computer in a "SkillCheck demo" EXAM room, a 30-minute slot starting now, a booking, and enrols the computer as the City account.
+- `src/app/actions/demo.ts`: makes a visitor account, calls the above, sets the kiosk cookie for 45 minutes, starts the check with `startCheck`. On any error it clears the cookie and logs out. Rate limit: 20 per hour per address, 300 per day.
+- `src/app/[lang]/demo/check/[id]/page.tsx`: the visitor's check, using the normal answer API.
+
+Side effects to know: visitor accounts (`visitor-…@try.skillcheck.fi`) and their checks are normal rows, so their results reach the company and City lists. If that is too noisy, filtering that email domain out of `reviewQueue`, `cityMatchingList` and the company candidate list would fix it.

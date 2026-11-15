@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   // ("Failed to find Server Action"). See docs: next-config-js/deploymentId.
   deploymentId: process.env.NEXT_DEPLOYMENT_ID ?? `build-${Date.now().toString(36)}`,
   cacheComponents: true,
+  devIndicators: false, // no "N" badge on the local dev server (screen recordings)
   partialPrefetching: true,
   turbopack: {
     rules: {

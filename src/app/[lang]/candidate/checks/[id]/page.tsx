@@ -48,7 +48,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
       </div>
 
       {invited && (
-        <Section title={`Accepted for ${accepted.map((a) => a.company).join(", ")}`} demo="extra">
+        <Section title={`Accepted for ${accepted.map((a) => a.company).join(", ")}`}>
           {booking ? (
             <>
             <p className="text-sm">
@@ -85,7 +85,7 @@ export default async function CheckPage({ params }: PageProps<"/[lang]/candidate
 
       {check.status !== "in_progress" && !onKiosk && (
         <div className="mt-12">
-          <Section title="Sharing" demo="extra">
+          <Section title="Sharing">
             <ConsentToggle
               path={`/checks/${id}/share`}
               field="share"

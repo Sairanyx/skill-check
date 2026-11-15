@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Geist_Mono, Lato, Work_Sans } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site/site-header";
-import { TourGuide } from "@/components/site/tour-guide";
 import { hasLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
@@ -32,11 +30,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const dict = await getDictionary(lang);
 
   return (
-    <html lang={lang} suppressHydrationWarning className={`${lato.variable} ${workSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <head>
-        {/* Guided demo: mark the page before it paints, so long lists never flash before they are shortened. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("sc_tour"))document.documentElement.classList.add("tour-on")}catch(e){}` }} />
-      </head>
+    <html lang={lang} className={`${lato.variable} ${workSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground">
         <TooltipProvider>
           <SiteHeader lang={lang} nav={dict.nav} />
@@ -45,9 +39,8 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
             {dict.footer.made}
           </footer>
           <Toaster />
-          <Suspense fallback={null}>
-            <TourGuide />
-          </Suspense>
+          {/* Local dev only: hide the Next.js overlay badges so screen recordings stay clean. Errors still print in the terminal and the console. */}
+          {process.env.NODE_ENV === "development" && <style>{"nextjs-portal{display:none!important}"}</style>}
         </TooltipProvider>
       </body>
     </html>

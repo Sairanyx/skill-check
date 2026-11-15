@@ -24,7 +24,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <Link href={`/${lang}/company`} className="text-sm font-medium text-primary hover:underline">← Candidates</Link>
-      <div data-tour="candidate" className="mt-6">
+      <div className="mt-6">
         <PageTitle kicker={check.need.title} title={check.candidate.alias}>
           Skill check in {check.language.toUpperCase()}, taken at a City of Espoo session. Personal details were removed before AI read the answers.
           {booking && (
@@ -37,7 +37,7 @@ export default async function CandidateEvidence({ params }: PageProps<"/[lang]/c
 
       <EvaluationView e={check.evaluation as unknown as EvaluationData} audience="reviewer" proofs={check.proofs} anchors={((await loadNeed(check.need.id).catch(() => null))?.anchors ?? []) as SkillAnchor[]} />
 
-      <Section title="Your decision" tour="decision">
+      <Section title="Your decision">
         {booking ? (
           <p className="text-sm">Meeting booked: <strong>{fmtTime(booking.startsAt)}</strong>, {booking.room}. {booking.contact ? `Contact shared by the candidate: ${booking.contact}` : "The candidate introduces themselves at the meeting."}</p>
         ) : (

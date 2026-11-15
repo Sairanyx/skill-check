@@ -41,8 +41,8 @@ export function EvaluationView({ e, audience, proofs = [], anchors = [] }: { e: 
         <section>
           <h2 className="font-semibold">Feedback per skill</h2>
           <div className="mt-4 space-y-5">
-            {rubric.map((r, i) => (
-              <div key={r.criterion} data-tour={i === 0 ? "feedback" : undefined}>
+            {rubric.map((r) => (
+              <div key={r.criterion}>
                 <div className="flex justify-between text-sm">
                   <span className="capitalize">{r.criterion}</span>
                   <span className="text-muted-foreground">{r.evidence.length ? `${r.score}/10` : "not shown"}</span>

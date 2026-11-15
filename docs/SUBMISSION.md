@@ -1,6 +1,6 @@
 # Submission kit
 
-Everything for Sunday morning. Live: https://skillcheck.fi · Guided demo: https://skillcheck.fi/en/tour · Code: https://github.com/Sairanyx/skill-check
+Everything for Sunday morning. Live: https://skillcheck.fi · Demo: https://skillcheck.fi/en/demo · Code: https://github.com/Sairanyx/skill-check
 
 ## 1. The narrative (one sentence per beat)
 1. **Problem:** since 2025 Espoo runs employment services for about 30,000 jobseekers. CVs and cover letters are now written by AI, and they show who you are, not what you can do.
@@ -12,7 +12,7 @@ Everything for Sunday morning. Live: https://skillcheck.fi · Guided demo: https
 7. **Why Espoo can trust it:** synthetic demo data, nothing decided by AI alone, every access logged, documents checked in person and never stored.
 
 ## 2. Video script (max 2:00)
-Record the guided demo ("Watch the story") and talk over it. Pause where needed.
+Record the demo at /en/demo and talk over it. Click Next (or the arrow keys) when you are ready.
 
 | Time | Screen | Say |
 |---|---|---|
@@ -46,7 +46,7 @@ Record the guided demo ("Watch the story") and talk over it. Pause where needed.
 ## 6. Recording checklist
 - [ ] Code freeze: no deploys while recording
 - [ ] Browser: one clean window, zoom 110%, close other tabs
-- [ ] Reload https://skillcheck.fi/en/tour, press "Watch the story", pause where you talk longer
+- [ ] Reload https://skillcheck.fi/en/demo, click Next when you are ready
 - [ ] Record the screen (OBS or similar), voice separately if easier, keep under 2:00
 - [ ] Export the deck to PDF
 - [ ] Before 10:00: repo public, form set to FINAL, Verda post sent
